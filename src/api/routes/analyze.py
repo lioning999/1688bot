@@ -58,7 +58,7 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
         raise ValidationError(message="商品 ID 格式不正确")
 
     # ---- 2. 全局限流（风险 #14 L3） ----
-    if not rate_limiter.check():
+    if not await rate_limiter.check():
         logger.warning(f"Global rate limit hit from IP={request.client.host if request.client else '?'}")
         raise InsufficientQuotaError(
             resource_type="系统繁忙",
@@ -145,6 +145,14 @@ async def save_report(body: SaveReportRequest, request: Request) -> dict[str, An
             "message": "分析已过期，请重新搜索该商品",
         }
 
+    # 检查是否已达 20 条上限（result 带 limit_exceeded 标记时）
+    if isinstance(result, dict) and result.get("limit_exceeded"):
+        return {
+            "code": 409,
+            "data": {"count": result.get("count", 20)},
+            "message": "已达 20 条保存上限，请先在历史记录中删除旧记录后再保存",
+        }
+
     logger.info(f"Report saved: offer_id={body.offer_id} user_id={user_id}")
     return {
         "code": 200,
@@ -159,6 +167,11 @@ async def save_report(body: SaveReportRequest, request: Request) -> dict[str, An
 
 def _check_quota(ip: str) -> bool:
     now = time.time()
+    # 每 10 次调用清理过期 IP 条目（48h+ 未活跃），防止内存泄漏（Bug #8）
+    if len(_daily_counter) % 10 == 0:
+        expired = [k for k, v in _daily_counter.items() if (now - v[1]) > 172800]
+        for k in expired:
+            del _daily_counter[k]
     entry = _daily_counter.get(ip)
     if entry is None or (now - entry[1]) > 86400:
         _daily_counter[ip] = (1, now)

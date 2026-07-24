@@ -2,26 +2,30 @@
 
 覆盖风险清单：
   #14 L3 全局限流 → 脚本攻击兜底
+  Bug #9 异步安全 → asyncio.Lock 保护非原子操作
 """
 
+import asyncio
 import time
 from collections import deque
 
 _timestamps: deque[float] = deque()
+_lock: asyncio.Lock = asyncio.Lock()
 LIMIT = 30   # 次
 WINDOW = 60  # 秒
 
 
-def check() -> bool:
+async def check() -> bool:
     """检查是否在速率限制内。True = 放行, False = 超限。
 
     调用时机：每次 POST /api/analyze 到达时。
     正常用户 1 分钟搜 30 次不可能——只有脚本才会触发。
     """
-    now = time.time()
-    while _timestamps and now - _timestamps[0] > WINDOW:
-        _timestamps.popleft()
-    if len(_timestamps) >= LIMIT:
-        return False
-    _timestamps.append(now)
-    return True
+    async with _lock:
+        now = time.time()
+        while _timestamps and now - _timestamps[0] > WINDOW:
+            _timestamps.popleft()
+        if len(_timestamps) >= LIMIT:
+            return False
+        _timestamps.append(now)
+        return True

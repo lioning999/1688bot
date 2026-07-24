@@ -8,6 +8,13 @@
   var searchInput = document.getElementById('searchInput');
   var searchHint = document.querySelector('.search-hint');
   var isSearching = false;
+  var _pollTimer = null;  // Bug #14：定时器引用，beforeunload 时清理
+
+  // 初始状态：空输入时按钮禁用
+  searchBtn.disabled = true;
+  searchInput.addEventListener('input', function () {
+    searchBtn.disabled = !searchInput.value.trim() || isSearching;
+  });
 
   // ===== 搜索按钮 =====
   searchBtn.addEventListener('click', function () {
@@ -51,6 +58,8 @@
       .catch(function (err) {
         // 清理 URL 参数，防止刷新页面重复触发分析
         window.history.replaceState({}, document.title, window.location.pathname);
+        hideSkeleton();
+        resetSearchButton();
         showError('网络错误，请检查网络后重试');
         console.warn('Analyze start failed:', err);
       });
@@ -58,6 +67,10 @@
 
   function pollTask(taskId, attempt) {
     if (attempt > 60) {
+      hideSkeleton();
+      resetSearchButton();
+      sessionStorage.removeItem('lastTaskId');
+      window.history.replaceState({}, document.title, window.location.pathname);
       showError('分析超时，请稍后重试');
       return;
     }
@@ -66,6 +79,10 @@
       .then(function (data) {
         var task = data.data;
         if (!task) {
+          hideSkeleton();
+          resetSearchButton();
+          sessionStorage.removeItem('lastTaskId');
+          window.history.replaceState({}, document.title, window.location.pathname);
           showError('任务不存在或已过期');
           return;
         }
@@ -75,20 +92,27 @@
           searchHint.textContent = '每日免费 3 次 · WhatsApp 登记后不限次数';
           sessionStorage.removeItem('lastTaskId');
           renderResult(task.result);
+          if (task.result && task.result.offerId) {
+            sessionStorage.setItem('lastResult_' + task.result.offerId, JSON.stringify(task.result));
+          }
           if (task.warning) showWarning(task.warning);
         } else if (task.status === 'failed') {
           hideSkeleton();
-          showError(task.error || '分析失败，请稍后重试');
+          resetSearchButton();
           sessionStorage.removeItem('lastTaskId');
+          window.history.replaceState({}, document.title, window.location.pathname);
+          showError(task.error || '分析失败，请稍后重试');
         } else {
           var elapsed = attempt * 2;
           if (elapsed >= 10) {
             searchHint.textContent = '正在获取商品数据，预计还需 ' + Math.max(5, 30 - elapsed) + ' 秒...';
           }
-          setTimeout(function () { pollTask(taskId, attempt + 1); }, 2000);
+          _pollTimer = setTimeout(function () { pollTask(taskId, attempt + 1); }, 2000);
         }
       })
       .catch(function (err) {
+        hideSkeleton();
+        resetSearchButton();
         showError('网络错误，请检查网络后重试');
         console.warn('Poll failed:', err);
         sessionStorage.removeItem('lastTaskId');
@@ -97,7 +121,7 @@
 
   function resetSearchButton() {
     isSearching = false;
-    searchBtn.disabled = false;
+    searchBtn.disabled = !searchInput.value.trim();
     searchBtn.textContent = '分析';
   }
 
@@ -116,21 +140,15 @@
   function showError(msg) {
     hideSkeleton();
     resetSearchButton();
-    searchHint.textContent = msg;
-    searchHint.style.color = 'var(--seal)';
-    // 统一 Toast（用户可能在页面下方，searchHint 不在视野内）
     if (typeof Toast !== 'undefined') {
-      Toast.error(msg);
+      Toast.error(msg, true);
     }
-    setTimeout(function () {
-      searchHint.textContent = '每日免费 3 次 · WhatsApp 登记后不限次数';
-      searchHint.style.color = '';
-    }, 5000);
   }
 
   function showWarning(msg) {
-    searchHint.textContent = '⚠ ' + msg;
-    searchHint.style.color = 'var(--warn)';
+    if (typeof Toast !== 'undefined') {
+      Toast.warning(msg, true);
+    }
   }
 
   // ===== 保存按钮 =====
@@ -150,7 +168,8 @@
       saveBtn.disabled = false;
       saveBtn.classList.remove('saved');
       saveBtn.onclick = function () {
-        window.location.href = '/api/auth/google/login';
+        var returnPath = '/report.html?offerId=' + encodeURIComponent(currentOfferId);
+        window.location.href = '/api/auth/google/login?redirect=' + encodeURIComponent(returnPath);
       };
       return;
     }
@@ -188,6 +207,19 @@
         if (data.code === 200) {
           sessionStorage.setItem('saved_' + currentOfferId, '1');
           showSaved();
+          if (typeof Toast !== 'undefined') {
+            Toast.success('保存成功！<br><small style="color:var(--ink-3)">可在历史记录中查看</small>');
+          }
+        } else if (data.code === 409) {
+          // 已达 20 条上限
+          saveBtn.textContent = '💾 保存';
+          saveBtn.disabled = false;
+          if (typeof Toast !== 'undefined') {
+            Toast.warning(
+              '已达 20 条保存上限<br><small style="color:var(--ink-3)">请前往<a href="history.html" style="color:var(--brand);font-weight:600">历史记录</a>删除旧记录后再保存</small>',
+              true
+            );
+          }
         } else if (data.code === 410) {
           saveBtn.textContent = '⚠ 已过期';
           saveBtn.disabled = true;
@@ -251,18 +283,23 @@
     var tbSold = document.querySelector('.tb-sold');
     var tbYears = document.querySelector('.tb-years');
     var tierStars = document.getElementById('tierStars');
-    if (tbLabel && data.sellerTierLabel) tbLabel.textContent = data.sellerTierLabel;
-    if (tbSold && data.sold) tbSold.textContent = '已售 ' + Verdict.formatNum(data.sold) + '+';
-    if (tbYears && data.shop_years) tbYears.textContent = '开店' + data.shop_years + '年';
-    if (tierStars && data.dataTier) {
-      var starMap = {
-        sufficient: { stars: '★★★', label: '推荐' },
-        partial:    { stars: '★★☆', label: '可考虑' },
-        limited:    { stars: '★☆☆', label: '数据少' }
-      };
-      var s = starMap[data.dataTier] || starMap.limited;
-      tierStars.textContent = s.stars + ' ' + s.label;
-      tierStars.title = data.dataTierReason || '';
+    if (tbLabel) tbLabel.textContent = data.sellerTierLabel || '';
+    if (tbSold) tbSold.textContent = data.sold ? '已售 ' + Verdict.formatNum(data.sold) + '+' : '';
+    if (tbYears) tbYears.textContent = data.shop_years ? '开店' + data.shop_years + '年' : '';
+    if (tierStars) {
+      if (data.dataTier) {
+        var starMap = {
+          sufficient: { stars: '★★★', label: '推荐' },
+          partial:    { stars: '★★☆', label: '可考虑' },
+          limited:    { stars: '★☆☆', label: '数据少' }
+        };
+        var s = starMap[data.dataTier] || starMap.limited;
+        tierStars.textContent = s.stars + ' ' + s.label;
+        tierStars.title = data.dataTierReason || '';
+      } else {
+        tierStars.textContent = '';
+        tierStars.title = '';
+      }
     }
 
     // Badge 行
@@ -279,15 +316,20 @@
     }
 
     // 主图 + 缩略图
+    var mainImg = document.getElementById('mainImg');
+    var thumbCol = document.getElementById('thumbCol');
     if (data.images && data.images.length) {
-      var mainImg = document.getElementById('mainImg');
       if (mainImg) mainImg.src = data.images[0];
-      var thumbCol = document.getElementById('thumbCol');
       if (thumbCol) {
         var imgs = thumbCol.querySelectorAll('img');
         data.images.slice(0, 5).forEach(function (src, i) {
           if (imgs[i]) { imgs[i].src = src; imgs[i].dataset.full = src; if (i === 0) imgs[i].classList.add('active'); }
         });
+      }
+    } else {
+      if (mainImg) mainImg.src = '';
+      if (thumbCol) {
+        thumbCol.querySelectorAll('img').forEach(function (img) { img.src = ''; img.classList.remove('active'); });
       }
     }
   }
@@ -295,30 +337,38 @@
   function renderFactoryInfo(data) {
     // 公司名称（折叠区）
     var rowName = document.getElementById('row-name');
-    if (data.supplierName && rowName) {
+    if (rowName) {
       var nameVal = rowName.querySelector('.row-value');
-      if (nameVal) nameVal.textContent = data.supplierName;
+      if (nameVal) nameVal.textContent = data.supplierName || '';
     }
     // 地址（折叠区）
     var rowAddr = document.getElementById('row-addr');
-    if (data.shippingLocation && rowAddr) {
+    if (rowAddr) {
       var addrVal = rowAddr.querySelector('.row-value');
-      if (addrVal) addrVal.textContent = data.shippingLocation;
-      if (data.industryCluster) {
-        var addrExp = rowAddr.querySelector('.row-explain');
-        if (addrExp) addrExp.textContent = data.industryCluster + '。源头产地，价格有优势。';
+      var addrExp = rowAddr.querySelector('.row-explain');
+      if (data.shippingLocation) {
+        if (addrVal) addrVal.textContent = data.shippingLocation;
+        if (data.industryCluster && addrExp) addrExp.textContent = data.industryCluster + '。源头产地，价格有优势。';
+      } else {
+        if (addrVal) addrVal.textContent = '';
+        if (addrExp) addrExp.textContent = '';
       }
     }
     // 商家身份（高亮区）
     var sellerVal = document.getElementById('sellerVal');
     var sellerExp = document.getElementById('sellerExp');
     var rowIdentity = document.getElementById('row-identity');
-    if (sellerVal && data.sellerTierLabel) {
-      sellerVal.textContent = '🏭 ' + data.sellerTierLabel;
-      if (sellerExp) {
-        sellerExp.textContent = data.sellerTierLabel === '源头工厂'
-          ? '1688 平台认证的生产厂家，具备自主生产能力。'
-          : '该商家为贸易商/代理商，非生产厂家。建议拿样验证货源品质。';
+    if (sellerVal) {
+      if (data.sellerTierLabel) {
+        sellerVal.textContent = '🏭 ' + data.sellerTierLabel;
+        if (sellerExp) {
+          sellerExp.textContent = data.sellerTierLabel === '源头工厂'
+            ? '1688 平台认证的生产厂家，具备自主生产能力。'
+            : '该商家为贸易商/代理商，非生产厂家。建议拿样验证货源品质。';
+        }
+      } else {
+        sellerVal.textContent = '';
+        if (sellerExp) sellerExp.textContent = '';
       }
     } else if (rowIdentity) { rowIdentity.style.display = 'none'; }
 
@@ -326,22 +376,27 @@
     var flagsVal = document.getElementById('flagsValue');
     var flagsExp = document.getElementById('flagsExplain');
     var rowFlags = document.getElementById('row-flags');
-    if (flagsVal && data.factoryFlags) {
-      if (data.factoryFlags.indexOf('非生产厂家') !== -1) {
-        flagsVal.textContent = '不适用';
-        if (flagsExp) flagsExp.textContent = '贸易商无自有工厂产能，货源来自第三方供应商。';
-      } else {
-        flagsVal.textContent = data.factoryFlags;
-        if (flagsExp) {
-          if (data.factoryFlags.indexOf('超级工厂') !== -1)
-            flagsExp.textContent = '1688 最高规格验厂认证，自有工厂与生产线，小单试水到批量翻单都能接。';
-          else if (data.factoryFlags.indexOf('源头旗舰') !== -1)
-            flagsExp.textContent = '1688 现货赛道头部认证，主打现货库存，价格有优势。可放心采购，建议拿样确认。';
-          else if (data.factoryFlags.indexOf('实力工厂') !== -1)
-            flagsExp.textContent = '1688 官方验厂认证（体系更新中），具备稳定生产能力与基础品控。建议拿样试水。';
-          else
-            flagsExp.textContent = '自称工厂但未获 1688 高级验厂。建议先拿样，验证产线和品质。';
+    if (flagsVal) {
+      if (data.factoryFlags) {
+        if (data.factoryFlags.indexOf('非生产厂家') !== -1) {
+          flagsVal.textContent = '不适用';
+          if (flagsExp) flagsExp.textContent = '贸易商无自有工厂产能，货源来自第三方供应商。';
+        } else {
+          flagsVal.textContent = data.factoryFlags;
+          if (flagsExp) {
+            if (data.factoryFlags.indexOf('超级工厂') !== -1)
+              flagsExp.textContent = '1688 最高规格验厂认证，自有工厂与生产线，小单试水到批量翻单都能接。';
+            else if (data.factoryFlags.indexOf('源头旗舰') !== -1)
+              flagsExp.textContent = '1688 现货赛道头部认证，主打现货库存，价格有优势。可放心采购，建议拿样确认。';
+            else if (data.factoryFlags.indexOf('实力工厂') !== -1)
+              flagsExp.textContent = '1688 官方验厂认证（体系更新中），具备稳定生产能力与基础品控。建议拿样试水。';
+            else
+              flagsExp.textContent = '自称工厂但未获 1688 高级验厂。建议先拿样，验证产线和品质。';
+          }
         }
+      } else {
+        flagsVal.textContent = '';
+        if (flagsExp) flagsExp.textContent = '';
       }
     } else if (rowFlags) { rowFlags.style.display = 'none'; }
 
@@ -389,13 +444,15 @@
 
   function renderProductDetails(data) {
     // 规格
+    var specEl = document.querySelector('.prod-specs');
     if (data.specs && data.specs.length) {
-      var specEl = document.querySelector('.prod-specs');
       if (specEl) {
         specEl.innerHTML = data.specs.map(function (s) {
           return '<span class="spec-tag">' + s.name + ': ' + s.value + '</span>';
         }).join('');
       }
+    } else if (specEl) {
+      specEl.innerHTML = '';
     }
     // 阶梯价格表
     var qpTbody = document.querySelector('.qp-table tbody');
@@ -404,10 +461,10 @@
         var qtyRange = t.qty_min + '~' + (t.qty_max || '以上') + data.unit;
         return '<tr><td>' + qtyRange + '</td><td>' + (t.qty_min || '') + '</td><td>¥' + t.unit_price + '</td></tr>';
       }).join('');
-    } else if (qpTbody) { document.querySelector('.qp-table').style.display = 'none'; }
+    } else if (qpTbody) { qpTbody.innerHTML = ''; document.querySelector('.qp-table').style.display = 'none'; }
     // SKU 图
+    var skuEl = document.querySelector('.sku-imgs');
     if (data.skus && data.skus.length) {
-      var skuEl = document.querySelector('.sku-imgs');
       if (skuEl) {
         skuEl.innerHTML = data.skus.slice(0, 6).map(function (s) {
           var imgUrl = s.sku_image || s.imgUrl || s.image || s.picUrl || '';
@@ -415,14 +472,23 @@
           return '<img src="' + imgUrl + '" alt="' + name + '" title="' + name + '">';
         }).join('');
       }
+    } else if (skuEl) {
+      // 无 SKU 数据时清空旧渲染残留（防止上一件商品的 SKU 图残留）
+      skuEl.innerHTML = '';
     }
     // 销售数据行
     var salesRow = document.querySelector('#tab-product .row');
-    if (salesRow && data.sold) {
+    if (salesRow) {
       var salesVal = salesRow.querySelector('.row-value');
-      if (salesVal) salesVal.textContent = Verdict.formatNum(data.sold) + ' 件';
       var salesExp = salesRow.querySelector('.row-explain');
-      if (salesExp && data.sold >= 1000) salesExp.textContent = '累计销量高说明市场验证通过，该品类有持续需求。';
+      if (data.sold) {
+        if (salesVal) salesVal.textContent = Verdict.formatNum(data.sold) + ' 件';
+        if (salesExp && data.sold >= 1000) salesExp.textContent = '累计销量高说明市场验证通过，该品类有持续需求。';
+        else if (salesExp) salesExp.textContent = '';
+      } else {
+        if (salesVal) salesVal.textContent = '';
+        if (salesExp) salesExp.textContent = '';
+      }
     }
   }
 
@@ -471,6 +537,9 @@
       })
       .then(function (data) {
         renderResult(data);
+        if (data && data.offerId) {
+          sessionStorage.setItem('lastResult_' + data.offerId, JSON.stringify(data));
+        }
         updateCost();
         hideSkeleton();
         searchHint.textContent = '静态样例 — 非实时数据，仅供演示';
@@ -490,7 +559,7 @@
       });
   })();
 
-  // ===== URL 参数自动分析 =====
+  // ===== URL 参数自动分析（Bug #1：优先查 DB，Apify 兜底） =====
   (function () {
     if (sessionStorage.getItem('lastTaskId')) return;
 
@@ -502,17 +571,80 @@
     if (sample) return;
     if (!offerId && !urlParam) return;
 
-    var targetUrl = offerId
-      ? 'https://detail.1688.com/offer/' + offerId + '.html'
-      : decodeURIComponent(urlParam);
+    // 提取 lookupId（offerId 参数 或 url 参数中抽取）
+    var lookupId = offerId;
+    if (!lookupId && urlParam) {
+      var m = decodeURIComponent(urlParam).match(/offer(?:Id)?[=/](\d+)/i);
+      lookupId = m ? m[1] : null;
+    }
 
-    searchInput.value = targetUrl;
-    searchHint.textContent = '正在获取 1688 商品数据，预计 20-40 秒...';
-    isSearching = true;
-    showSkeleton();
-    searchBtn.disabled = true;
-    searchBtn.textContent = '分析中...';
-    startAnalysis(targetUrl);
+    if (lookupId) {
+      // 1. sessionStorage 缓存 → 秒恢复（如登录跳转回来）
+      var savedResult = sessionStorage.getItem('lastResult_' + lookupId);
+      if (savedResult) {
+        try {
+          var cached = JSON.parse(savedResult);
+          renderResult(cached);
+          updateCost();
+          searchInput.value = cached.itemUrl || (offerId ? 'https://detail.1688.com/offer/' + offerId + '.html' : decodeURIComponent(urlParam));
+          searchHint.textContent = '已恢复之前的数据 — 每日免费 3 次';
+          searchBtn.disabled = false;
+          searchBtn.textContent = '分析';
+          return;
+        } catch (e) { /* JSON 损坏，走正常流程 */ }
+      }
+
+      // 2. 已登录 → 优先查 DB（Bug #1：历史→report 秒出，不走 Apify）
+      var user = checkAuth();
+      if (user) {
+        isSearching = true;
+        showSkeleton();
+        searchBtn.disabled = true;
+        searchBtn.textContent = '加载中...';
+        searchHint.textContent = '正在加载已保存的分析...';
+
+        API.getReport(lookupId)
+          .then(function (data) {
+            if (data && data.code === 200 && data.data && data.data.status === 'done' && data.data.result) {
+              renderResult(data.data.result);
+              updateCost();
+              searchInput.value = data.data.result.itemUrl || 'https://detail.1688.com/offer/' + lookupId + '.html';
+              searchHint.textContent = '已保存的分析数据';
+              hideSkeleton();
+              resetSearchButton();
+              sessionStorage.setItem('lastResult_' + lookupId, JSON.stringify(data.data.result));
+            } else {
+              // DB 无记录 → 回退到 Apify
+              startFromUrl(offerId, urlParam);
+            }
+          })
+          .catch(function () {
+            // 网络/服务异常 → 回退到 Apify
+            startFromUrl(offerId, urlParam);
+          });
+        return;
+      }
+
+      // 3. 未登录 → 直接走 Apify
+      startFromUrl(offerId, urlParam);
+    } else {
+      // lookupId 为空（url 参数解析不出 offerId）→ 直接用原 URL 分析
+      startFromUrl(offerId, urlParam);
+    }
+
+    function startFromUrl(offerIdParam, urlParamVal) {
+      var targetUrl = offerIdParam
+        ? 'https://detail.1688.com/offer/' + offerIdParam + '.html'
+        : decodeURIComponent(urlParamVal);
+
+      searchInput.value = targetUrl;
+      searchHint.textContent = '正在获取 1688 商品数据，预计 20-40 秒...';
+      isSearching = true;
+      showSkeleton();
+      searchBtn.disabled = true;
+      searchBtn.textContent = '分析中...';
+      startAnalysis(targetUrl);
+    }
   })();
 
   // ===== 国际运费表 =====
@@ -597,7 +729,7 @@
   // ===== 缩略图切主图 =====
   var mainImg = document.getElementById('mainImg');
   var thumbVideo = document.getElementById('thumbVideo');
-  var videoUrl = 'https://cloud.video.taobao.com/play/u/2211084454599/p/2/e/6/t/1/525219744434.mp4';
+  var videoUrl = '';
 
   document.querySelectorAll('#thumbCol img').forEach(function (thumb) {
     thumb.addEventListener('click', function () {
@@ -639,5 +771,10 @@
   // ===== 初始化 =====
   updateCost();
   Share.bindEvents();
+
+  // Bug #14：页面离开时清理轮询定时器
+  window.addEventListener('beforeunload', function () {
+    if (_pollTimer) { clearTimeout(_pollTimer); _pollTimer = null; }
+  });
 
 })();

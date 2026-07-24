@@ -44,9 +44,9 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "title": raw.get("title", ""),
         "image": (raw.get("images") or [""])[0] if raw.get("images") else "",
         "images": (raw.get("images") or [])[:5],
-        "priceLow": round(float(price_low_cny) / Config.CNY_USD_RATE, 2) if price_low_cny else None,
-        "priceHigh": round(float(price_high_cny) / Config.CNY_USD_RATE, 2) if price_high_cny else None,
-        "priceCNY": {"low": price_low_cny, "high": price_high_cny},
+        "priceLow": round(_safe_float(price_low_cny) / Config.CNY_USD_RATE, 2) if price_low_cny else None,
+        "priceHigh": round(_safe_float(price_high_cny) / Config.CNY_USD_RATE, 2) if price_high_cny else None,
+        "priceCNY": {"low": _safe_float(price_low_cny), "high": _safe_float(price_high_cny)},
         "moq": raw.get("minOrderQuantity"),
         "itemUrl": original_url or raw.get("detailUrl", ""),
         "specs": _filter_specs(raw.get("specs", []) or []),
@@ -111,13 +111,6 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
 # ====================================================================
 # 工具函数（供 analyze_svc 使用）
 # ====================================================================
-
-def as_dict_list(val: Any) -> list[dict[str, Any]]:
-    """类型收窄：Any → list[dict]。非列表时返回空列表。"""
-    if isinstance(val, list):  # type: ignore[reportUnnecessaryIsInstance]
-        return cast(list[dict[str, Any]], val)
-    return []
-
 
 # ====================================================================
 # 标签映射常量
@@ -198,7 +191,12 @@ def _data_tier(flags: dict[str, Any], shop_years: Any) -> tuple[str, str]:
         or flags.get('isChtMember')
     )
     is_factory: bool = bool(flags.get('isFactory'))
-    years: float = float(shop_years) if shop_years else 0
+    years: float = 0
+    if shop_years is not None:
+        try:
+            years = float(shop_years)
+        except (ValueError, TypeError):
+            years = 0
 
     if has_advanced_cert and years >= 2:
         return 'sufficient', '平台验厂认证 + 经营 2 年以上 · 拿样风险低'
@@ -270,6 +268,16 @@ def _filter_specs(specs: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def _has_tag(tags: list[str], keyword: str) -> bool:
     return any(keyword in str(t) for t in tags)
+
+
+def _safe_float(val: Any) -> float:
+    """安全转 float。非法值返回 0，不抛异常（Apify 字段格式不稳定）。"""
+    if val is None:
+        return 0
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return 0
 
 
 def _parse_pct(val: Any) -> float | None:

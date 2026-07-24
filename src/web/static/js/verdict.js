@@ -38,7 +38,7 @@ var Verdict = (function () {
     var low = data.priceCNY ? data.priceCNY.low : 0;
     var moq = data.moq || 2;
     var sold = data.sold || 0;
-    var deposit = (low * moq + DOMESTIC_FREIGHT).toFixed(0);
+    var deposit = String(Math.floor(low * moq + DOMESTIC_FREIGHT));  // Bug #15：与后端 int() 截断一致
     var unit = data.unit || '件';
 
     if (hasCert(data) && sold >= 1000 && data.return7day === 'OK') {

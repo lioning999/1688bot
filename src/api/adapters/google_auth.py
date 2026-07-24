@@ -1,6 +1,7 @@
 """Google OAuth 2.0 适配器 — 生成授权 URL + code 换 token + id_token 验证。"""
 
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 from google.auth.transport import requests as google_requests
@@ -21,10 +22,11 @@ class GoogleAuthAdapter:
     2. exchange_code(code) → Google 回调后用 code 换 id_token
     """
 
-    def get_auth_url(self) -> str:
+    def get_auth_url(self, state: str = "") -> str:
         """生成 Google OAuth 授权页 URL。
 
         scope=openid+email+profile 为非敏感 scope，无需 Google 审核。
+        state 参数由 Google 原样传回 callback，用于防 CSRF + 携带回调路径。
         """
         params = (
             f"client_id={Config.GOOGLE_CLIENT_ID}"
@@ -32,6 +34,8 @@ class GoogleAuthAdapter:
             f"&response_type=code"
             f"&scope=openid+email+profile"
         )
+        if state:
+            params += f"&state={quote(state, safe='')}"
         return f"{Config.GOOGLE_AUTH_URL}?{params}"
 
     async def exchange_code(self, code: str) -> dict[str, Any]:

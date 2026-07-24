@@ -29,22 +29,31 @@ function checkAuth() {
       return null;
     }
     var user = sessionStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    if (user) return JSON.parse(user);
+    // Bug #12：从 JWT payload 恢复用户信息（不再从 URL 读取）
+    var derived = {
+      email: payload.email || '',
+      name: payload.name || '',
+      avatar_url: payload.picture || ''
+    };
+    sessionStorage.setItem('user', JSON.stringify(derived));
+    return derived;
   } catch (e) {
     return null;
   }
 }
 
 function initAuth() {
-  // Handle post-login redirect: backend sends token via URL query
+  // Handle post-login redirect: backend sends token via URL query（Bug #12：只传 token，用户信息从 JWT 解码）
   var params = new URLSearchParams(window.location.search);
   var token = params.get('token');
-  var user = params.get('user');
-  if (token && user) {
+  if (token) {
     sessionStorage.setItem('accessToken', token);
-    sessionStorage.setItem('user', user);
-    // Clean URL
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // 清除 URL 中的 token，保留其他参数（如 offerId）
+    params.delete('token');
+    var newSearch = params.toString();
+    var newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
+    window.history.replaceState({}, document.title, newUrl);
   }
 }
 
@@ -62,7 +71,7 @@ var Toast = (function () {
   'use strict';
 
   var CONTAINER_ID = 'toastContainer';
-  var DURATION = 4000;  // ms，错误类型延长到 6s
+  var DURATION = 4000;  // ms
 
   var ICONS = { error: '⚠️', success: '✅', warning: '⚠️', info: 'ℹ️' };
 
@@ -79,23 +88,41 @@ var Toast = (function () {
     return el;
   }
 
-  function show(message, type) {
+  function show(message, type, sticky) {
     type = type || 'info';
+    sticky = !!sticky;
     var container = ensureContainer();
     var toast = document.createElement('div');
-    toast.className = 'toast toast--' + type;
+    toast.className = 'toast toast--' + type + (sticky ? ' toast--sticky' : '');
+
+    var closeHtml = sticky ? '<button class="toast-close" aria-label="关闭">&times;</button>' : '';
     toast.innerHTML =
       '<span class="toast-icon">' + (ICONS[type] || '') + '</span>' +
-      '<span class="toast-msg">' + String(message) + '</span>';
+      '<span class="toast-msg">' + String(message) + '</span>' + closeHtml;
 
-    // 点击关闭
-    toast.style.cursor = 'pointer';
-    toast.addEventListener('click', function () { remove(toast); });
-
+    // Bug #17：限制同时最多 5 个 Toast
+    while (container.children.length >= 5) {
+      if (container.firstChild) container.removeChild(container.firstChild);
+    }
     container.appendChild(toast);
 
-    var delay = type === 'error' ? 6000 : DURATION;
-    setTimeout(function () { remove(toast); }, delay);
+    if (sticky) {
+      // 点击关闭按钮
+      var closeBtn = toast.querySelector('.toast-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function (e) { e.stopPropagation(); remove(toast); });
+      }
+      // 点击 toast 本身也关闭
+      toast.style.cursor = 'pointer';
+      toast.addEventListener('click', function () { remove(toast); });
+    } else {
+      // 自动消失
+      var delay = type === 'error' ? 6000 : DURATION;
+      setTimeout(function () { remove(toast); }, delay);
+      // 点击提前关闭
+      toast.style.cursor = 'pointer';
+      toast.addEventListener('click', function () { remove(toast); });
+    }
   }
 
   function remove(toast) {
@@ -108,10 +135,10 @@ var Toast = (function () {
 
   return {
     show: show,
-    error:   function (msg) { show(msg, 'error'); },
-    success: function (msg) { show(msg, 'success'); },
-    warning: function (msg) { show(msg, 'warning'); },
-    info:    function (msg) { show(msg, 'info'); }
+    error:   function (msg, sticky) { show(msg, 'error', sticky); },
+    success: function (msg, sticky) { show(msg, 'success', sticky); },
+    warning: function (msg, sticky) { show(msg, 'warning', sticky); },
+    info:    function (msg, sticky) { show(msg, 'info', sticky); }
   };
 })();
 

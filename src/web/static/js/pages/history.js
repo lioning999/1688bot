@@ -1,5 +1,5 @@
 // ===== 历史记录页 =====
-// 登录用户查看过往分析记录（只读 DB，不调 Apify）
+// 登录用户查看/删除过往分析记录（只读 DB，不调 Apify）
 
 var historyList = document.getElementById('historyList');
 var historyEmpty = document.getElementById('historyEmpty');
@@ -57,18 +57,75 @@ function renderItems(items) {
       : '<div class="hi-thumb hi-thumb-empty"></div>';
 
     html +=
-      '<a href="report.html?offerId=' + escapeAttr(item.offer_id) + '" class="history-item">' +
-        imgHtml +
-        '<div class="hi-body">' +
-          '<div class="hi-title">' + escapeHTML(item.title || '(无标题)') + '</div>' +
-          '<div class="hi-meta">' +
-            '<span class="hi-price">' + (price || '—') + '</span>' +
-            '<span class="hi-time">' + timeAgo + '</span>' +
+      '<div class="history-item" data-id="' + item.id + '">' +
+        '<a href="report.html?offerId=' + escapeAttr(item.offer_id) + '" class="hi-link">' +
+          imgHtml +
+          '<div class="hi-body">' +
+            '<div class="hi-title">' + escapeHTML(item.title || '(无标题)') + '</div>' +
+            '<div class="hi-meta">' +
+              '<span class="hi-price">' + (price || '—') + '</span>' +
+              '<span class="hi-time">' + timeAgo + '</span>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-      '</a>';
+        '</a>' +
+        '<button class="hi-del" data-id="' + item.id + '" title="删除">×</button>' +
+      '</div>';
   });
   historyList.innerHTML = html;
+
+  // 绑定删除事件
+  var delBtns = historyList.querySelectorAll('.hi-del');
+  delBtns.forEach(function(btn) {
+    btn.addEventListener('click', onDelete);
+  });
+}
+
+// ===== 删除 =====
+
+function onDelete(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  var btn = e.currentTarget;
+  var id = parseInt(btn.getAttribute('data-id'), 10);
+  if (!id) return;
+
+  if (!confirm('确定删除这条记录吗？')) return;
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  API.deleteHistory(id)
+    .then(function(data) {
+      if (data.code === 200) {
+        // 从 DOM 移除
+        var item = btn.closest('.history-item');
+        if (item) item.remove();
+
+        // 更新计数
+        var remaining = historyList.querySelectorAll('.history-item').length;
+        if (remaining === 0) {
+          historyList.style.display = 'none';
+          historyEmpty.style.display = 'block';
+          pageHint.textContent = '暂无分析记录';
+        } else {
+          pageHint.textContent = '共 ' + remaining + ' 条记录';
+        }
+      } else {
+        btn.disabled = false;
+        btn.textContent = '×';
+        if (typeof Toast !== 'undefined') {
+          Toast.error('删除失败，请稍后重试');
+        }
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.textContent = '×';
+      if (typeof Toast !== 'undefined') {
+        Toast.error('网络错误，请稍后重试');
+      }
+    });
 }
 
 // ===== 工具函数 =====

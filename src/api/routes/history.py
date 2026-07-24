@@ -1,4 +1,4 @@
-"""历史记录 API — 登录用户查看过往分析记录（只读 DB，不调 Apify）。"""
+"""历史记录 API — 登录用户查看/删除过往分析记录（只读 DB，不调 Apify）。"""
 
 from typing import Any
 
@@ -25,3 +25,38 @@ async def list_history(request: Request) -> dict[str, Any]:
 
     items = await analyze_service.get_history(user_id)
     return {"code": 200, "data": {"items": items}, "message": "ok"}
+
+
+@router.delete("/api/history/{analysis_id}")
+async def delete_history(analysis_id: int, request: Request) -> dict[str, Any]:
+    """删除一条分析记录。校验归属后才删除。
+
+    需 JWT 认证（/api/ 前缀自动拦截）。
+    """
+    user_id: int = getattr(request.state, "user_id", 0) or 0
+    if not user_id:
+        return {"code": 401, "data": None, "message": "请先登录"}
+
+    deleted = await analyze_service.delete_record(analysis_id, user_id)
+    if not deleted:
+        return {"code": 404, "data": None, "message": "记录不存在或无权操作"}
+
+    logger.info(f"History deleted: id={analysis_id} user_id={user_id}")
+    return {"code": 200, "data": None, "message": "已删除"}
+
+
+@router.get("/api/report/{offer_id}")
+async def get_report(offer_id: str, request: Request) -> dict[str, Any]:
+    """从 DB 加载已保存的分析报告（Bug #1：历史→report 秒出，不走 Apify）。
+
+    需 JWT 认证。
+    """
+    user_id: int = getattr(request.state, "user_id", 0) or 0
+    if not user_id:
+        return {"code": 401, "data": None, "message": "请先登录"}
+
+    result = await analyze_service.get_saved_report(offer_id, user_id)
+    if result is None:
+        return {"code": 404, "data": None, "message": "报告未找到"}
+
+    return {"code": 200, "data": {"status": "done", "result": result}, "message": "ok"}

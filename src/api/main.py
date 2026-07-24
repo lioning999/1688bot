@@ -7,6 +7,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -16,6 +17,7 @@ from middleware import JWTAuthMiddleware
 from routes.auth import auth_router, callback_router
 from routes.analyze import router as analyze_router
 from routes.history import router as history_router
+from routes.proxy import router as proxy_router
 from utils.exceptions import AppError
 from utils.logger import get_logger
 
@@ -25,7 +27,8 @@ logger = get_logger(__name__)
 # ---- 生命周期 ----
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """启动：初始化数据库连接池。关闭：释放连接池。"""
+    """启动：验证配置 → 初始化数据库连接池。关闭：释放连接池。"""
+    Config.validate()
     await AsyncDatabaseConnection.get_pool()
     yield
     await AsyncDatabaseConnection.close_pool()
@@ -43,10 +46,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # TODO: 生产环境限定域名
-    allow_credentials=True,
+    allow_credentials=False,  # Bug #18: allow_origins=["*"] 不能与 allow_credentials=True 并存
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ---- GZip（Bug #24：压缩静态文件，海外用户加载更快） ----
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # ---- JWT 认证中间件 ----
 app.add_middleware(JWTAuthMiddleware)
@@ -81,7 +87,18 @@ async def catch_all_handler(request: Request, exc: Exception):
 # ===== 健康检查 =====
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    """Bug #22：验 DB 连通性，方便运维监控。"""
+    db_ok = True
+    try:
+        conn = await AsyncDatabaseConnection.get_connection()
+        await AsyncDatabaseConnection.close_connection(conn)
+    except Exception as e:
+        db_ok = False
+        logger.warning(f"Health check DB failed: {e}")
+    return {
+        "status": "ok" if db_ok else "degraded",
+        "database": "connected" if db_ok else "disconnected",
+    }
 
 
 # ---- API 路由（必须在 StaticFiles mount 之前注册） ----
@@ -89,6 +106,7 @@ app.include_router(auth_router)
 app.include_router(callback_router)
 app.include_router(analyze_router)
 app.include_router(history_router)
+app.include_router(proxy_router)
 
 
 # ---- 前端静态文件（最后注册，作为 fallback） ----

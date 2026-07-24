@@ -8,6 +8,7 @@
 """
 
 import asyncio
+import json
 import time
 import uuid
 from typing import Any
@@ -16,8 +17,7 @@ from config import Config
 from adapters.apify_adapter import apify_adapter
 from domain import cache as analysis_cache
 from domain.cache import cache as _cache_store  # 只读过期缓存（风险 #3 #7 降级数据源）
-from domain import rate_limiter
-from domain.product_mapper import map_raw, as_dict_list
+from domain.product_mapper import map_raw
 from domain.verdict_engine import judge_all
 from repositories.analysis_repo import AnalysisRepository
 from utils.exceptions import ExternalServiceError
@@ -81,15 +81,32 @@ class AnalyzeService:
         """查用户最近的分析记录（只读 DB，不调 Apify）。"""
         return await self.repo.get_history(user_id, limit)
 
+    async def delete_record(self, analysis_id: int, user_id: int) -> bool:
+        """删除一条分析记录。校验归属，删除成功返回 True。"""
+        return await self.repo.delete(analysis_id, user_id)
+
+    async def get_saved_report(self, offer_id: str, user_id: int) -> dict[str, Any] | None:
+        """从 DB 读已保存的报告（Bug #1：登录用户从历史跳转时秒出，不走 Apify）。"""
+        return await self.repo.get_by_offer_id(offer_id, user_id)
+
     async def save_report(self, user_id: int, offer_id: str) -> dict[str, Any] | None:
         """用户手动保存分析报告到 DB。
 
-        从内存缓存取数据 → 调用 repo.upsert() 写入。
-        缓存不存在返回 None。
+        从内存缓存取数据 → 检查 20 条上限 → 调用 repo.upsert() 写入。
+        缓存不存在返回 None。已达上限返回 {"limit_exceeded": True}。
         """
         cached = analysis_cache.get(offer_id)
         if cached is None:
             return None
+
+        # 检查 20 条上限（upsert 同一条不拦截）
+        count = await self.repo.count_by_user(user_id)
+        if count >= 20:
+            existing = await self.repo.get_history(user_id, limit=100)
+            saved_ids = {r.get("offer_id") for r in existing}
+            if str(offer_id) not in saved_ids:
+                return {"limit_exceeded": True, "count": count}
+
         await self._save_to_db_upsert(cached, user_id, offer_id)
         return cached
 
@@ -109,25 +126,27 @@ class AnalyzeService:
                 _tasks[task_id] = {"status": "done", "result": cached, "created_at": time.time()}
                 return cached
 
-            # ---- 2. 全局限流（风险 #14 L3） ----
-            if not rate_limiter.check():
-                logger.warning(f"Global rate limit hit")
-                # 有过期缓存 → 降级返回（风险 #7 一级降级）
+            # ---- 2. Apify 抓取（风险 #3：90s 超时） ----
+            try:
+                raw = await apify_adapter.fetch_product_by_url(raw_url or Config.URL_1688_DETAIL.format(offer_id=offer_id))
+            except ExternalServiceError as e:
+                logger.error(f"Apify fetch failed: {e}")
+                is_quota = e.details.get("reason") == "quota_exhausted" if e.details else False
+                # 过期缓存兜底（风险 #3 + #7 一级降级）
                 expired = _get_expired_cache(offer_id)
                 if expired:
                     _tasks[task_id] = {
                         "status": "done", "result": expired,
-                        "warning": "数据可能不是最新，系统繁忙中",
+                        "warning": "数据可能不是最新，今日分析额度已用完" if is_quota else "数据可能不是最新，该链接当前无法获取",
                         "created_at": time.time(),
                     }
                     return expired
-                # 无缓存 → 明确拒绝
-                _tasks[task_id] = {"status": "failed", "error": "系统繁忙，请稍后重试", "created_at": time.time()}
-                raise ExternalServiceError(service_name="系统", details={"reason": "global_rate_limit"})
-
-            # ---- 3. Apify 抓取（风险 #3：90s 超时） ----
-            try:
-                raw = await apify_adapter.fetch_product_by_url(raw_url or Config.URL_1688_DETAIL.format(offer_id=offer_id))
+                # 无缓存 → 区分错误原因
+                if is_quota:
+                    _tasks[task_id] = {"status": "failed", "error": "今日分析服务额度已用完，请明天再试", "created_at": time.time()}
+                else:
+                    _tasks[task_id] = {"status": "failed", "error": "获取失败，请稍后重试。如持续失败请联系客服", "created_at": time.time()}
+                raise
             except Exception as e:
                 logger.error(f"Apify fetch failed: {e}")
                 # 过期缓存兜底（风险 #3 + #7 一级降级）
@@ -159,7 +178,7 @@ class AnalyzeService:
                 }
                 raise ExternalServiceError(service_name="Apify", details={"reason": "empty_result"})
 
-            # ---- 4. 映射 + 判词 ----
+            # ---- 3. 映射 + 判词 ----
             mapped = map_raw(raw, raw_url, offer_id)
 
             # 判词（风险 #4 #5 #6）
@@ -168,7 +187,7 @@ class AnalyzeService:
             mapped["verdict_factory"] = verdicts["factory"]
             mapped["verdict_sample"] = verdicts["sample"]
 
-            # ---- 5. 写缓存（风险 #1 #14 L2） ----
+            # ---- 4. 写缓存（风险 #1 #14 L2） ----
             analysis_cache.set(offer_id, mapped)
 
             _tasks[task_id] = {"status": "done", "result": mapped, "created_at": time.time()}
@@ -189,7 +208,7 @@ class AnalyzeService:
         await self.repo.upsert(self._db_data(mapped, user_id, offer_id))
 
     def _db_data(self, mapped: dict[str, Any], user_id: int, offer_id: str) -> dict[str, Any]:
-        """提取 DB 写入所需字段（供 _save_to_db_upsert 使用）。"""
+        """提取 DB 写入字段。列字段仅供历史列表快速展示，完整数据在 result_json。"""
         return {
             "user_id": user_id,
             "offer_id": offer_id,
@@ -198,22 +217,8 @@ class AnalyzeService:
             "image_url": mapped.get("image"),
             "price_min": mapped.get("priceCNY", {}).get("low") if mapped.get("priceCNY") else None,  # type: ignore[reportUnknownMemberType]
             "price_max": mapped.get("priceCNY", {}).get("high") if mapped.get("priceCNY") else None,  # type: ignore[reportUnknownMemberType]
-            "moq": mapped.get("moq"),
-            "unit": mapped.get("unit"),
-            "shop_name": mapped.get("supplierName"),
-            "shop_years": mapped.get("shop_years"),
-            "shop_rate": mapped.get("shop_rate"),
-            "repurchase": mapped.get("repurchase"),
-            "sold": mapped.get("sold"),
-            "verdict_product": mapped.get("verdict_product"),
-            "verdict_factory": mapped.get("verdict_factory"),
-            "verdict_sample": mapped.get("verdict_sample"),
-            "specs": [{"spec_key": s.get("name", s.get("spec_key", "")), "spec_value": s.get("value", s.get("spec_value", ""))}
-                       for s in as_dict_list(mapped.get("specs"))],
-            "skus": [{"sku_name": s.get("name") or s.get("sku_name", ""),
-                       "sku_image": s.get("imgUrl") or s.get("sku_image", "")}
-                      for s in as_dict_list(mapped.get("skus"))],
-            "price_tiers": mapped.get("price_tiers", []) or [],
+            "apify_task_id": mapped.get("apify_task_id"),
+            "result_json": json.dumps(mapped, ensure_ascii=False, default=str),
         }
 
 

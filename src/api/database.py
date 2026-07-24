@@ -1,5 +1,6 @@
 """MySQL 异步连接池 — 仅连接池生命周期，DDL 见 db/schema.sql。"""
 
+import asyncio
 from typing import Any
 
 import aiomysql  # type: ignore[import-untyped]
@@ -19,29 +20,32 @@ class AsyncDatabaseConnection:
     """
 
     _pool = None
+    _pool_lock: asyncio.Lock = asyncio.Lock()
 
     @staticmethod
     async def get_pool() -> Any:
         if AsyncDatabaseConnection._pool is None:
-            try:
-                AsyncDatabaseConnection._pool = await aiomysql.create_pool(  # type: ignore[assignment]
-                    host=Config.DB_HOST,
-                    port=Config.DB_PORT,
-                    user=Config.DB_USER,
-                    password=Config.DB_PASSWORD,
-                    db=Config.DB_NAME,
-                    charset='utf8mb4',
-                    minsize=Config.DB_POOL_MIN,
-                    maxsize=Config.DB_POOL_MAX,
-                    autocommit=False,
-                )
-                logger.info(
-                    f"DATABASE_POOL_CREATED host={Config.DB_HOST} "
-                    f"port={Config.DB_PORT} db={Config.DB_NAME}"
-                )
-            except Exception as e:
-                logger.error(f"DATABASE_POOL_CREATE_ERROR error={str(e)}")
-                raise
+            async with AsyncDatabaseConnection._pool_lock:
+                if AsyncDatabaseConnection._pool is None:
+                    try:
+                        AsyncDatabaseConnection._pool = await aiomysql.create_pool(  # type: ignore[assignment]
+                            host=Config.DB_HOST,
+                            port=Config.DB_PORT,
+                            user=Config.DB_USER,
+                            password=Config.DB_PASSWORD,
+                            db=Config.DB_NAME,
+                            charset='utf8mb4',
+                            minsize=Config.DB_POOL_MIN,
+                            maxsize=Config.DB_POOL_MAX,
+                            autocommit=False,
+                        )
+                        logger.info(
+                            f"DATABASE_POOL_CREATED host={Config.DB_HOST} "
+                            f"port={Config.DB_PORT} db={Config.DB_NAME}"
+                        )
+                    except Exception as e:
+                        logger.error(f"DATABASE_POOL_CREATE_ERROR error={str(e)}")
+                        raise
         return AsyncDatabaseConnection._pool  # type: ignore[return-value]
 
     @staticmethod

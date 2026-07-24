@@ -24,12 +24,16 @@
   }
 
   if (searchBtn) {
+    searchBtn.disabled = true;
     searchBtn.addEventListener('click', function () {
       doSearch((searchInput && searchInput.value || '').trim());
     });
   }
 
   if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      if (searchBtn) searchBtn.disabled = !searchInput.value.trim();
+    });
     searchInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         doSearch(searchInput.value.trim());

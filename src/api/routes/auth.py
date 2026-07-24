@@ -1,7 +1,5 @@
 """认证 API — Google OAuth 登录。"""
 
-import json
-
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 
@@ -26,28 +24,37 @@ callback_router = APIRouter(tags=["auth-callback"])
 
 
 @auth_router.get("/google/login")
-async def google_login():
-    """跳转到 Google OAuth 授权页。"""
-    url = google_auth_adapter.get_auth_url()
+async def google_login(redirect: str = ""):
+    """跳转到 Google OAuth 授权页。
+
+    可选 redirect 参数指定登录完成后返回的页面路径（通过 Google state 参数透传）。
+    仅允许相对路径（以 / 开头且不含 ://），防止 Open Redirect 攻击（Bug #11）。
+    """
+    if redirect and (not redirect.startswith("/") or "://" in redirect):
+        logger.warning(f"Blocked open redirect attempt: {redirect}")
+        redirect = ""
+    url = google_auth_adapter.get_auth_url(state=redirect)
     return RedirectResponse(url=url, status_code=302)
 
 
 @callback_router.get("/google-callback")
-async def google_callback(code: str):
+async def google_callback(code: str, state: str = ""):
     """Google OAuth 回调。
 
     Google 授权后回调此端点，附带一次性 authorization code。
-    后端用 code 换 id_token → upsert user → 签发 JWT → 重定向到首页。
+    后端用 code 换 id_token → upsert user → 签发 JWT → 重定向。
+    若 state 参数非空（由 /api/auth/google/login?redirect=xxx 设置），
+    登录后重定向到 state 指定的路径而非首页。
     """
     try:
         result = await auth_service.login_with_google(code)
     except ExternalServiceError:
-        # 登录失败 → 重定向到首页，前端不显示登录态
-        return RedirectResponse(url="/", status_code=302)
+        # 登录失败 → 重定向（state 已含前导 /，如 /report.html?offerId=xxx）
+        fallback = state if state else "/"
+        return RedirectResponse(url=fallback, status_code=302)
 
-    # 登录成功 → token 通过 URL hash 传给前端
-    # 前端 checkAuth() 从 hash 读取并保存到 sessionStorage
     token = result["access_token"]
-    user_json = json.dumps(result["user"])
-    redirect_url = f"/?token={token}&user={user_json}"
+    base_url = state if state else "/"
+    sep = "&" if "?" in base_url else "?"
+    redirect_url = f"{base_url}{sep}token={token}"
     return RedirectResponse(url=redirect_url, status_code=302)

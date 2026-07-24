@@ -1,11 +1,13 @@
-"""analysis 表数据访问 — 分析记录 + 子表（spec/sku/price_tier）写入。
+"""analysis 表数据访问 — 分析记录 CRUD。
 
 覆盖风险清单：
   #12  查询历史存储 → 方案 B（存元数据），存 analysis 表
+  V1.2  specs/skus/price_tiers 子表已废弃，数据统一存 result_json 列
 """
 
 from typing import Any
 
+import json
 import aiomysql  # type: ignore[import-untyped]
 
 from database import AsyncDatabaseConnection
@@ -15,25 +17,19 @@ logger = get_logger(__name__)
 
 
 # ---- INSERT 列名（create / upsert 共用） ----
+# V1.3：列字段只保留历史列表展示所需 + 系统字段。完整数据在 result_json。
 _INSERT_COLS = (
     "user_id, offer_id, status, title, image_url, "
-    "price_min, price_max, moq, unit, "
-    "shop_name, shop_years, shop_rate, repurchase, sold, "
-    "verdict_product, verdict_factory, verdict_sample, apify_task_id"
+    "price_min, price_max, apify_task_id, result_json"
 )
-_INSERT_VALS = "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+_INSERT_VALS = "(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 
 class AnalysisRepository:
-    """analysis 表 + 子表 CRUD。事务由 service 层控制。"""
+    """analysis 表 CRUD。事务由 service 层控制。"""
 
     async def upsert(self, data: dict[str, Any]) -> int:
-        """INSERT 或 UPDATE 分析记录 + 子表（ON DUPLICATE KEY UPDATE）。
-
-        已存在 → UPDATE 主表 + DELETE 旧子表 + 重新 INSERT 子表。
-        不存在 → INSERT 主表 + INSERT 子表。
-        整个操作在一个事务内。
-        """
+        """INSERT 或 UPDATE 分析记录（ON DUPLICATE KEY UPDATE）。"""
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
@@ -43,51 +39,17 @@ class AnalysisRepository:
                        ON DUPLICATE KEY UPDATE
                         status=VALUES(status), title=VALUES(title), image_url=VALUES(image_url),
                         price_min=VALUES(price_min), price_max=VALUES(price_max),
-                        moq=VALUES(moq), unit=VALUES(unit),
-                        shop_name=VALUES(shop_name), shop_years=VALUES(shop_years),
-                        shop_rate=VALUES(shop_rate), repurchase=VALUES(repurchase),
-                        sold=VALUES(sold),
-                        verdict_product=VALUES(verdict_product),
-                        verdict_factory=VALUES(verdict_factory),
-                        verdict_sample=VALUES(verdict_sample),
+                        result_json=VALUES(result_json),
                         updated_at=NOW()""",
                     (
                         data["user_id"], data["offer_id"], data.get("status", "done"),
                         data.get("title"), data.get("image_url"),
                         data.get("price_min"), data.get("price_max"),
-                        data.get("moq"), data.get("unit"),
-                        data.get("shop_name"), data.get("shop_years"), data.get("shop_rate"),
-                        data.get("repurchase"), data.get("sold"),
-                        data.get("verdict_product"), data.get("verdict_factory"),
-                        data.get("verdict_sample"), data.get("apify_task_id"),
+                        data.get("apify_task_id"),
+                        data.get("result_json"),
                     ),
                 )
                 analysis_id = cur.lastrowid
-
-                # 子表：先删再插（幂等）
-                for table in ("analysis_spec", "analysis_sku", "analysis_price_tier"):
-                    await cur.execute(f"DELETE FROM {table} WHERE analysis_id=%s", (analysis_id,))
-
-                specs: list[dict[str, Any]] = data.get("specs", []) or []
-                for s in specs:
-                    await cur.execute(
-                        "INSERT INTO analysis_spec (analysis_id, spec_key, spec_value) VALUES (%s,%s,%s)",
-                        (analysis_id, s.get("spec_key"), s.get("spec_value")),
-                    )
-
-                skus: list[dict[str, Any]] = data.get("skus", []) or []
-                for sku in skus:
-                    await cur.execute(
-                        "INSERT INTO analysis_sku (analysis_id, sku_name, sku_image) VALUES (%s,%s,%s)",
-                        (analysis_id, sku.get("sku_name"), sku.get("sku_image")),
-                    )
-
-                tiers: list[dict[str, Any]] = data.get("price_tiers", []) or []
-                for t in tiers:
-                    await cur.execute(
-                        "INSERT INTO analysis_price_tier (analysis_id, qty_min, qty_max, unit_price) VALUES (%s,%s,%s,%s)",
-                        (analysis_id, t.get("qty_min"), t.get("qty_max"), t.get("unit_price")),
-                    )
 
                 await conn.commit()
                 return analysis_id  # type: ignore[return-value]
@@ -97,14 +59,82 @@ class AnalysisRepository:
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 
+    async def count_by_user(self, user_id: int) -> int:
+        """统计某用户的分析记录总数（仅 done 状态）。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT COUNT(*) AS cnt FROM analysis WHERE user_id=%s AND status='done'",
+                    (user_id,),
+                )
+                row = await cur.fetchone()
+                return row["cnt"] if row else 0  # type: ignore[return-value]
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def delete(self, analysis_id: int, user_id: int) -> bool:
+        """删除一条分析记录。校验 user_id 归属，删除成功返回 True。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "DELETE FROM analysis WHERE id=%s AND user_id=%s",
+                    (analysis_id, user_id),
+                )
+                await conn.commit()
+                return cur.rowcount > 0
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def get_by_offer_id(self, offer_id: str, user_id: int) -> dict[str, Any] | None:
+        """从 DB 加载已保存的分析报告（Bug #1：历史→report 查 DB 不调 Apify）。
+
+        读 result_json（完整），异常时回退到列字段拼凑最小结构。
+        """
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    """SELECT offer_id, title, image_url, price_min, price_max,
+                              result_json
+                       FROM analysis
+                       WHERE offer_id=%s AND user_id=%s AND status='done'
+                       LIMIT 1""",
+                    (offer_id, user_id),
+                )
+                row = await cur.fetchone()
+                if row is None:
+                    return None
+                if row.get("result_json"):
+                    try:
+                        return json.loads(row["result_json"])
+                    except (json.JSONDecodeError, TypeError):
+                        pass  # JSON 损坏，回退到列字段
+                # fallback：从列字段拼出最小可用结构
+                return {
+                    "title": row.get("title"),
+                    "image": row.get("image_url"),
+                    "offerId": row.get("offer_id"),
+                    "priceCNY": {
+                        "low": float(row["price_min"]) if row.get("price_min") else 0,
+                        "high": float(row["price_max"]) if row.get("price_max") else 0,
+                    },
+                }
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
     async def get_history(self, user_id: int, limit: int = 20) -> list[dict[str, Any]]:
         """查用户最近的分析记录。"""
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
-                    """SELECT id, offer_id, title, image_url, price_min, price_max, moq, unit,
-                              shop_name, verdict_product, created_at
+                    """SELECT id, offer_id, title, image_url, price_min, price_max,
+                              created_at
                        FROM analysis
                        WHERE user_id=%s AND status='done'
                        ORDER BY created_at DESC LIMIT %s""",

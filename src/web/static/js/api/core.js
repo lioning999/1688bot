@@ -18,20 +18,21 @@ var API = (function () {
     if (data.code === 403 && msg.indexOf('次数') !== -1) {
       if (typeof Toast !== 'undefined') {
         Toast.warning(
-          '今日免费分析次数不足<br>' +
-          '<a href="/api/auth/google/login" style="color:var(--brand);font-weight:600">登录后可获更多次数 →</a>'
+          '今日免费分析次数不足 — ' +
+          '<a href="/api/auth/google/login" style="color:var(--brand);font-weight:600">登录后可获更多次数 →</a>',
+          true
         );
       }
       return;
     }
     // 401 未登录
     if (data.code === 401 && typeof Toast !== 'undefined') {
-      Toast.info('请先登录后再操作');
+      Toast.info('请先登录后再操作', true);
       return;
     }
     // 5xx 服务器错误
     if (httpStatus >= 500 && typeof Toast !== 'undefined') {
-      Toast.error('服务器繁忙，请稍后重试');
+      Toast.error('服务器繁忙，请稍后重试', true);
     }
   }
 
@@ -75,11 +76,27 @@ var API = (function () {
       });
   }
 
+  function deleteHistory(id) {
+    return fetch('/api/history/' + id, {
+      method: 'DELETE',
+      headers: authHeaders()
+    }).then(function (r) {
+      return r.json();
+    });
+  }
+
+  function getReport(offerId) {
+    return fetch('/api/report/' + offerId, { headers: authHeaders() })
+      .then(function (r) { return r.json(); });
+  }
+
   return {
     authHeaders: authHeaders,
     analyze: analyze,
     getTask: getTask,
     saveReport: saveReport,
-    getHistory: getHistory
+    getHistory: getHistory,
+    deleteHistory: deleteHistory,
+    getReport: getReport
   };
 })();

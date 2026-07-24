@@ -538,7 +538,7 @@ body {
 
 /* ===== Toast Notifications ===== */
 .toast-container {
-  position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
   z-index: 9999; display: flex; flex-direction: column; gap: 8px;
   pointer-events: none; max-width: var(--max-w); width: calc(100% - 32px);
 }
@@ -557,20 +557,53 @@ body {
 .toast-icon  { flex-shrink: 0; font-size: 16px; line-height: 1.2; }
 .toast-msg   { flex: 1; word-break: break-word; }
 
-@keyframes toastIn  { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+/* sticky：重要消息不自动消失 */
+.toast--sticky {
+  padding-right: 44px; position: relative;
+}
+.toast-close {
+  position: absolute; top: 8px; right: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; font-size: 20px;
+  color: inherit; opacity: .6; cursor: pointer;
+  line-height: 1;
+}
+.toast-close:hover { opacity: 1; }
+
+@keyframes toastIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
+
 
 /* ===== History Page ===== */
 .history-list { padding: 0 var(--s4); }
 
 .history-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 0; border-bottom: 1px solid var(--line-soft);
-  text-decoration: none; color: inherit;
+  display: flex; align-items: center;
+  border-bottom: 1px solid var(--line-soft);
   min-height: 64px;
-  transition: background .15s;
 }
-.history-item:active { background: var(--line-soft); border-radius: 8px; padding-left: 8px; padding-right: 8px; }
+.hi-link {
+  display: flex; align-items: center; gap: 12px;
+  flex: 1; min-width: 0;
+  padding: 12px 0;
+  text-decoration: none; color: inherit;
+  transition: opacity .15s;
+}
+.hi-link:active { opacity: .6; }
+
+.hi-del {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border: none; background: none;
+  font-size: 22px; color: var(--ink-3);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .15s, background .15s;
+  line-height: 1;
+}
+.hi-del:hover { color: var(--red, #D6432F); background: var(--line-soft); }
 
 .hi-thumb {
   width: 48px; height: 48px; border-radius: 8px;

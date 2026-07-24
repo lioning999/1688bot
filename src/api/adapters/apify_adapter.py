@@ -41,10 +41,10 @@ class ApifyAdapter:
             url: 1688 商品详情页完整 URL
 
         Returns:
-            商品数据 dict（dataset 第一条），超时或失败返回 None
+            商品数据 dict（dataset 第一条），商品不存在时返回 None
 
         Raises:
-            ExternalServiceError: 所有 token 都不可用时
+            ExternalServiceError: 配额耗尽 (reason="quota_exhausted") 或 API 异常
         """
         offer_id = extract_offer_id(url)
         if not offer_id:
@@ -52,6 +52,7 @@ class ApifyAdapter:
             return None
 
         last_error: Exception | None = None
+        quota_exhausted = False
         tokens = self.tokens if self.tokens else [self.token]
 
         for i, token in enumerate(tokens):
@@ -69,15 +70,23 @@ class ApifyAdapter:
                     logger.warning(f"Apify run returned None: offer_id={offer_id}")
                     continue
 
+                # 检测 run 级别的配额耗尽（Apify 免费额度用完时 run 成功但 status_message 说明原因）
+                status_msg = (getattr(run, "status_message", "") or "").lower()
+                if "free runs" in status_msg or "all 25" in status_msg:
+                    logger.warning(f"Apify token {i+1}/{len(tokens)} 配额耗尽 (run status)")
+                    quota_exhausted = True
+                    continue
+
                 page = await client.dataset(run.default_dataset_id).list_items(limit=1)
                 items: list[dict[str, Any]] = page.items
                 if not items:
                     logger.warning(f"Apify dataset 为空: offer_id={offer_id}")
-                    return None
+                    return None  # 商品不存在或数据为空
 
-                # 检测配额耗尽：Apify 免费额度用完后返回 limit_reached 标记
+                # 检测 item 级别的配额耗尽标记
                 if len(items) == 1 and items[0].get("limit_reached"):
-                    logger.warning(f"Apify token {i+1}/{len(tokens)} 配额耗尽，切换下一个")
+                    logger.warning(f"Apify token {i+1}/{len(tokens)} 配额耗尽 (item flag)，切换下一个")
+                    quota_exhausted = True
                     continue
 
                 logger.info(f"Apify fetch done: offer_id={offer_id}  token_index={i+1}")
@@ -90,7 +99,12 @@ class ApifyAdapter:
 
         if last_error:
             raise ExternalServiceError(service_name="Apify", details={"offer_id": offer_id}) from last_error
-        logger.error(f"所有 Apify token 配额已耗尽: offer_id={offer_id}")
+        if quota_exhausted:
+            raise ExternalServiceError(
+                service_name="Apify",
+                details={"offer_id": offer_id, "reason": "quota_exhausted"},
+            )
+        logger.warning(f"Apify 无结果（可能已下架）: offer_id={offer_id}")
         return None
 
 

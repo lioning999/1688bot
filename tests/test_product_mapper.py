@@ -1,6 +1,6 @@
-"""product_mapper 单元测试 — map_raw() + as_dict_list() 纯函数。
+"""product_mapper 单元测试 — map_raw() + _safe_float() 纯函数。
 
-覆盖：正常映射、字段缺失容错、空输入、as_dict_list 类型收窄。
+覆盖：正常映射、字段缺失容错、空输入、Apify 数据容错。
 """
 
 import json
@@ -12,7 +12,7 @@ import pytest
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src" / "api"))
 
-from domain.product_mapper import map_raw, as_dict_list  # noqa: E402
+from domain.product_mapper import map_raw, _safe_float  # noqa: E402
 
 # ---- 测试夹具 ----
 FIXTURE_DIR = Path(__file__).resolve().parent
@@ -146,20 +146,47 @@ def test_map_raw_missing_price():
 
 
 # ====================================================================
-# as_dict_list — 类型收窄
+# _safe_float — Apify 字段容错（Bug #21 扩展）
 # ====================================================================
 
-def test_as_dict_list_with_list():
-    assert as_dict_list([{"a": 1}]) == [{"a": 1}]
+def test_safe_float_normal():
+    """正常数字字符串正确转换。"""
+    assert _safe_float("10.5") == 10.5
+    assert _safe_float(10.5) == 10.5
+    assert _safe_float(0) == 0
 
 
-def test_as_dict_list_with_none():
-    assert as_dict_list(None) == []
+def test_safe_float_none():
+    """None → 0。"""
+    assert _safe_float(None) == 0
 
 
-def test_as_dict_list_with_string():
-    assert as_dict_list("not a list") == []
+def test_safe_float_garbage():
+    """非数字字符串 → 0，不崩溃。"""
+    assert _safe_float("10.5元") == 0
+    assert _safe_float("N/A") == 0
+    assert _safe_float("") == 0
 
 
-def test_as_dict_list_with_int():
-    assert as_dict_list(42) == []
+def test_data_tier_non_numeric_shop_years():
+    """shop_years='6年' 不崩溃，fallback=0 → limited tier。"""
+    result = map_raw(
+        {"title": "test", "price": {"min": 10},
+         "supplier": {"tpYear": "6年", "flags": {}}},
+        "", "123",
+    )
+    assert result["dataTier"] == "limited"
+    assert "不足 1 年" in result["dataTierReason"]
+
+
+def test_map_raw_garbage_price():
+    """price.min 为非数字时 priceCNY fallback 为 0，priceLow/priceHigh=None。"""
+    result = map_raw(
+        {"title": "test", "price": {"min": "一百", "max": "二百"}},
+        "", "123",
+    )
+    assert result["priceCNY"] == {"low": 0, "high": 0}
+    # "一百" 是 truthy 字符串，_safe_float→0，0/rate=0.0 → round 后仍是 0.0
+    # 原始值 truthy → 进 if 分支 → priceLow=0.0（注意不是 None）
+    assert result["priceLow"] == 0.0
+    assert result["priceHigh"] == 0.0

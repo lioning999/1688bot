@@ -88,7 +88,7 @@ CORS（最外层，OPTIONS 放行）→ JWT（内层，Bearer token 校验）
 - MySQL 8.0，`utf8mb4`，InnoDB，aiomysql 连接池 5-20
 - 库名 `sourcely_DB`；**autocommit=False**；SQL 100% 参数化（`%s`）
 - **DictCursor 铁律：** `conn.cursor(aiomysql.DictCursor)` 返回 dict
-- 表结构以 `db/schema.sql` 为准（5 表：users / analysis / analysis_spec / analysis_sku / analysis_price_tier）
+- 表结构以 `db/schema.sql` 为准（2 表：users / analysis，子表已废弃见 V1.3）
 - `analysis.offer_id + user_id` 联合唯一；子表 `ON DELETE CASCADE`；status: `pending → running → done/failed`
 
 ## 六、Repository 层
