@@ -53,6 +53,11 @@ var I18N = (function() {
 
   // ----- Detect browser locale -----
   function detect() {
+    // Manual selection overrides auto-detection
+    if (localStorage.getItem('sourcely_lang_manual') === '1') {
+      var saved = localStorage.getItem('sourcely_lang');
+      if (saved) return saved;
+    }
     // Use shared LANG module if available
     if (typeof LANG !== 'undefined' && LANG.detect) return LANG.detect();
     // Fallback built-in detection
@@ -76,8 +81,12 @@ var I18N = (function() {
         messages = dict;
       })
       .catch(function () {
-        // Fallback to zh snapshot on network error
-        snapshotZh();
+        // Fallback: try English first, zh snapshot as last resort
+        if (lang === 'en') { snapshotZh(); return; }
+        return fetch('/lang/i18n/en.json')
+          .then(function (r) { return r.json(); })
+          .then(function (dict) { messages = dict; })
+          .catch(function () { snapshotZh(); });
       });
   }
 
@@ -114,6 +123,7 @@ var I18N = (function() {
   // ----- Manual switch -----
   function switchTo(lang) {
     localStorage.setItem('sourcely_lang', lang);
+    localStorage.setItem('sourcely_lang_manual', '1');
     location.reload();
   }
 

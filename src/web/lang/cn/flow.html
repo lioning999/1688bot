@@ -5,11 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
 <title>服务流程 — 源采 Sourcely</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="static/css/style.css">
-<link rel="stylesheet" href="static/css/home.css">
+<link rel="stylesheet" href="../../static/css/style.css">
+<link rel="stylesheet" href="../../static/css/home.css">
 <style>
   /* ===== 锚点目录 ===== */
   .flow-toc {
@@ -297,13 +294,14 @@
 
 </main>
 
-<script src="static/js/utils/lang-detect.js"></script>
+<script src="../../static/js/utils/lang-detect.js"></script>
 <script>
   var _l = LANG.detect();
   if (_l !== 'zh') location.replace('/lang/' + _l + '/flow.html');
 </script>
-<script src="static/js/utils/components.js"></script>
-<script>renderNav(null); renderFooter();</script>
+<script src="../../static/js/utils/i18n.js"></script>
+<script src="../../static/js/utils/components.js"></script>
+<script>(function(){var _m=location.pathname.match(/\/lang\/(\w+)\//);var _lc=_m?((_m[1]==="cn")?"zh":_m[1]):"zh";I18N.init(_lc).then(function(){renderNav(null);renderFooter();I18N.apply();});})();</script>
 
 </body>
 </html>

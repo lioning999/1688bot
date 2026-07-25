@@ -2,16 +2,16 @@
 // Injects nav and footer into placeholder elements.
 
 const NAV_LINKS = [
-  { href: 'index.html',  label: '首页', key: 'index' },
-  { href: 'history.html', label: '历史', key: 'history' },
+  { href: '/index.html',  label: '首页', key: 'index' },
+  { href: '/history.html', label: '历史', key: 'history' },
 ];
 
 var LANG_OPTS = [
-  { value: 'zh', label: '中文' },
-  { value: 'en', label: 'English' },
-  { value: 'vi', label: 'Tiếng Việt' },
-  { value: 'th', label: 'ภาษาไทย' },
-  { value: 'id', label: 'Bahasa Indonesia' },
+  { value: 'zh', label: '🇨🇳 ZH' },
+  { value: 'en', label: '🇺🇸 EN' },
+  { value: 'vi', label: '🇻🇳 VI' },
+  { value: 'th', label: '🇹🇭 TH' },
+  { value: 'id', label: '🇮🇩 ID' },
 ];
 
 // ===== Google Auth =====
@@ -181,21 +181,33 @@ function renderNav(active) {
 
   el.innerHTML =
     '<nav class="nav">\n' +
-    '  <a href="index.html" style="text-decoration:none;">\n' +
+    '  <a href="/index.html" style="text-decoration:none;">\n' +
     '    <div class="brand">\n' +
-    '      <span class="brand-cn">源采</span>\n' +
-    '      <span class="brand-en">SOURCELY</span>\n' +
+    '      <span class="brand-cn">SC</span>\n' +
     '    </div>\n' +
     '  </a>\n' +
     '  <div class="nav-links">\n        ' + linksHtml + '\n  </div>\n' +
     '  <select id="langSwitcher" class="lang-sw" aria-label="Language">\n          ' + langHtml + '\n  </select>\n' +
     '  ' + authHtml + '\n' +
     '</nav>';
+
+  // 静态页无 I18N 时，从 URL 路径设置语言切换器默认值
+  if (typeof I18N === 'undefined' || !I18N.getLocale) {
+    var m = window.location.pathname.match(/\/lang\/(\w+)\//);
+    if (m) {
+      var cur = (m[1] === 'cn') ? 'zh' : m[1];
+      var sw = document.getElementById('langSwitcher');
+      if (sw) sw.value = cur;
+    }
+  }
 }
 
 function renderFooter() {
   var el = document.getElementById('appFooter');
   if (!el) return;
+  var locale = (typeof I18N !== 'undefined' && I18N.getLocale) ? I18N.getLocale() :
+    ((window.location.pathname.match(/\/lang\/(\w+)\//) || [])[1] || 'zh');
+  var langPath = (locale === 'zh') ? 'cn' : locale;
   el.innerHTML =
     '<footer class="app-footer">\n' +
     '  <div class="app-footer-brand">\n' +
@@ -203,11 +215,11 @@ function renderFooter() {
     '    <span class="app-footer-desc" data-i18n="footer.tagline">1688 源头工厂提供样品代采服务· 不用会中文 · 验货拍照 · 不满意可退</span>\n' +
     '  </div>\n' +
     '  <div class="app-footer-links">\n' +
-    '    <a href="about.html" data-i18n="footer.about">关于我们</a>\n' +
-    '    <a href="privacy.html" data-i18n="footer.privacy">隐私政策</a>\n' +
-    '    <a href="terms.html" data-i18n="footer.terms">免责声明</a>\n' +
+    '    <a href="/lang/' + langPath + '/about.html" data-i18n="footer.about">关于我们</a>\n' +
+    '    <a href="/lang/' + langPath + '/privacy.html" data-i18n="footer.privacy">隐私政策</a>\n' +
+    '    <a href="/lang/' + langPath + '/terms.html" data-i18n="footer.terms">免责声明</a>\n' +
     '  </div>\n' +
-    '  <p class="app-footer-copy" data-i18n="footer.copyright">&copy; 2024 Sourcely  义乌 · 中国</p>\n' +
+    '  <p class="app-footer-copy" data-i18n="footer.copyright">&copy; Sourcely 义乌 · 中国</p>\n' +
     '</footer>\n' +
     '\n' +
     '<!-- WhatsApp Float -->\n' +
@@ -222,6 +234,14 @@ document.addEventListener('change', function (e) {
     var lang = e.target.value;
     if (typeof I18N !== 'undefined' && I18N.switchTo) {
       I18N.switchTo(lang);
+    } else {
+      // 静态页（无 i18n.js）：重定向到同页面的其他语言版本
+      var path = window.location.pathname;
+      var m = path.match(/\/lang\/\w+\/(.+)/);
+      if (m) {
+        var langDir = (lang === 'zh') ? 'cn' : lang;
+        window.location.href = '/lang/' + langDir + '/' + m[1];
+      }
     }
   }
 });

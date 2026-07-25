@@ -25,9 +25,9 @@
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px;
   --r-sm:6px; --r:12px; --r-lg:18px;
   --max-w:468px;
-  --font-display: 'Noto Serif SC', 'Songti SC', serif;
-  --font-body: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-display: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', Menlo, monospace;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -49,9 +49,8 @@ body {
   border-bottom: 1px solid var(--line);
   position: sticky; top: 0; z-index: 100;
 }
-.brand { display: flex; flex-direction: column; line-height: 1; }
+.brand { display: flex; align-items: center; line-height: 1; }
 .brand-cn { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--ink); letter-spacing: 1px; }
-.brand-en { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: 2.5px; margin-top: 3px; }
 .nav-links { display: flex; gap: 2px; margin-left: auto; }
 .lang-sw {
   font-size: 10px; font-family: var(--font-mono);
@@ -66,7 +65,7 @@ body {
   border-radius: 20px; font-family: var(--font-body); letter-spacing: .3px;
   transition: all .18s;
 }
-.nav-link.active { background: var(--brand-deep); color: #F7F5F0; }
+.nav-link.active { color: var(--brand-deep); border-bottom: 2px solid var(--brand-deep); border-radius: 0; background: none; }
 
 /* Nav Auth */
 .nav-login-btn {
@@ -526,7 +525,9 @@ body {
   .nav { padding: 10px var(--s2); gap: 4px; }
   .nav-links { gap: 0; }
   .nav-link { padding: 4px 9px; font-size: 10px; }
-  .lang-sw { display: none; }
+  .lang-sw { font-size: 9px; padding: 3px 4px; }
+  .nav-login-btn { padding: 5px 8px; min-width: 32px; justify-content: center; }
+  .nav-login-btn span { display: none; }
 }
 @media (min-width: 500px) {
   .view { max-width: 500px; }
