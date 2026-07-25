@@ -90,6 +90,11 @@ var API = (function () {
       .then(function (r) { return r.json(); });
   }
 
+  function getConfig() {
+    return fetch('/api/config')
+      .then(function (r) { return r.json(); });
+  }
+
   return {
     authHeaders: authHeaders,
     analyze: analyze,
@@ -97,6 +102,7 @@ var API = (function () {
     saveReport: saveReport,
     getHistory: getHistory,
     deleteHistory: deleteHistory,
-    getReport: getReport
+    getReport: getReport,
+    getConfig: getConfig
   };
 })();

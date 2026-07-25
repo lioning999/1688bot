@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>源采 Sourcely — 1688 源头工厂代采</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="static/css/style.css">
 <link rel="stylesheet" href="static/css/home.css">
 </head>
@@ -19,22 +19,22 @@
   <!-- ===== Hero ===== -->
   <section class="hero">
     <h1 class="hero-brand">SOURCELY</h1>
-    <p class="hero-tagline">1688 中国源头工厂货源，成本降低35-70%，拿样· 验货拍照</p>
+    <p class="hero-tagline" data-i18n="hero.tagline">1688 中国源头工厂货源，成本降低35-70%，拿样· 验货拍照</p>
   </section>
 
   <!-- ===== Search ===== -->
   <section class="home-search">
-    <p class="search-value-prop">粘贴 <a href="https://www.1688.com/" target="_blank" rel="noopener">1688 链接</a> → 10 秒看清进货价和工厂底细</p>
+    <p class="search-value-prop" data-i18n="search.valueProp">粘贴 <a href="https://www.1688.com/" target="_blank" rel="noopener">1688 链接</a> → 10 秒看清进货价和工厂底细</p>
     <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="粘贴 1688 商品链接...">
-      <button id="searchBtn">分析</button>
+      <input type="text" id="searchInput" data-i18n-placeholder="search.placeholder" placeholder="粘贴 1688 商品链接...">
+      <button id="searchBtn" data-i18n="search.button">分析</button>
     </div>
-    <p class="search-hint">每日免费 3 次 · 登陆后无限制</p>
+    <p class="search-hint" data-i18n="search.hint">每日免费 3 次 · 登陆后无限制</p>
   </section>
 
   <!-- ===== Example Cards ===== -->
   <section class="examples">
-    <p class="examples-label">以下为真实 1688 商品分析。<a href="help.html" class="examples-help-link">试试你的商品 → 看演示</a></p>
+    <p class="examples-label" data-i18n="section.examples">以下为真实 1688 商品分析。<a href="help.html" class="examples-help-link">试试你的商品 → 看演示</a></p>
     <div class="example-row">
       <a href="report.html?sample=muhezi" class="example-card">
         <img loading="lazy" class="example-img" src="static/img/pd3.jpg" alt="手链">
@@ -65,7 +65,7 @@
 
   <!-- ===== Seller Reviews ===== -->
   <section class="reviews">
-    <p class="reviews-label">他们已经在用了</p>
+    <p class="reviews-label" data-i18n="reviews.label">他们已经在用了</p>
     <div class="review-list">
       <div class="review-card">
         <div class="review-header">
@@ -174,8 +174,13 @@
 
 </main>
 
-<script src="static/js/components.js"></script>
-<script>renderNav('index'); renderFooter();</script>
+<script src="static/js/utils/lang-detect.js"></script>
+<script src="static/js/utils/i18n.js"></script>
+<script src="static/js/api/core.js"></script>
+<script src="static/js/utils/components.js"></script>
+<script>
+  I18N.init().then(function () { renderNav('index'); renderFooter(); I18N.apply(); });
+</script>
 <script src="static/js/pages/index.js"></script>
 
 </body>

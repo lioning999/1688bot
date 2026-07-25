@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>历史记录 — 源采 Sourcely</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
 
 <main class="view">
 
-  <p class="search-hint" id="pageHint">你的历史分析记录</p>
+  <p class="search-hint" id="pageHint" data-i18n="history.title">你的历史分析记录</p>
 
   <!-- History List -->
   <section id="historyList" class="history-list"></section>
@@ -23,15 +23,15 @@
   <!-- Empty State -->
   <section id="historyEmpty" class="history-empty" style="display:none;">
     <div class="history-empty-icon">📋</div>
-    <p class="history-empty-title">暂无分析记录</p>
-    <p class="history-empty-desc">分析过的商品会出现在这里，方便你随时回看</p>
+    <p class="history-empty-title" data-i18n="history.emptyTitle">暂无分析记录</p>
+    <p class="history-empty-desc" data-i18n="history.emptyDesc">分析过的商品会出现在这里，方便你随时回看</p>
   </section>
 
   <!-- Login Prompt (401) -->
   <section id="loginPrompt" class="history-empty" style="display:none;">
     <div class="history-empty-icon">🔐</div>
-    <p class="history-empty-title">请先登录</p>
-    <p class="history-empty-desc">登录后可查看你的历史分析记录</p>
+    <p class="history-empty-title" data-i18n="history.loginTitle">请先登录</p>
+    <p class="history-empty-desc" data-i18n="history.loginDesc">登录后可查看你的历史分析记录</p>
     <a href="/api/auth/google/login" class="nav-login-btn" style="display:inline-flex;margin-top:12px;font-size:15px;padding:8px 20px;">
       <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       <span>Google 登入</span>
@@ -42,9 +42,11 @@
 
 </main>
 
-<script src="static/js/components.js"></script>
-<script>renderNav('history'); renderFooter();</script>
+<script src="static/js/utils/lang-detect.js"></script>
+<script src="static/js/utils/i18n.js"></script>
 <script src="static/js/api/core.js"></script>
+<script src="static/js/utils/components.js"></script>
+<script>I18N.init().then(function () { renderNav('history'); renderFooter(); I18N.apply(); });</script>
 <script src="static/js/pages/history.js"></script>
 </body>
 </html>

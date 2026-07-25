@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>关于我们 — 源采 Sourcely</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="static/css/home.css">
+</head>
+<body>
+
+<div id="appNav"></div>
+
+<main class="view">
+
+  <section class="help-section">
+    <div class="help-hero">
+      <h1>关于 Sourcely</h1>
+      <p style="font-size:var(--fs-sm);color:var(--ink-2);margin-top:var(--s2);">帮你直连 1688 源头工厂，不讲中文也不怕</p>
+    </div>
+
+    <div class="help-step">
+      <div class="help-step-body">
+        <h3>我们是谁</h3>
+        <p>我们是一支常驻中国的代采团队。我们在 1688、义乌市场、广州批发市场积累了7年的采购和验货经验，已服务来自越南、印尼、泰国等国家3000+中小卖家。我们帮他们解决一个问题：<strong>"不会中文、没有 1688 账号，怎么从中国工厂直接拿货？"</strong></p>
+      </div>
+    </div>
+
+    <div class="help-step">
+      <div class="help-step-body">
+        <h3>我们帮你做什么</h3>
+        <p>
+          🔍 <strong>分析商品</strong> — 粘贴 1688 链接，10 秒看清进货价和工厂底细<br>
+          🏭 <strong>验厂验货</strong> — 货到我们仓库后拍照验货，你确认再发<br>
+          📦 <strong>代采代发</strong> — 我们帮你在 1688 下单，打包后发国际物流<br>
+          🌏 <strong>多语言沟通</strong> — 英语、越南语、印尼语、泰语、中文，沟通无障碍
+        </p>
+      </div>
+    </div>
+
+    <div class="help-step">
+      <div class="help-step-body">
+        <h3>为什么选择我们</h3>
+        <p>
+          ✅ 价格透明：商品成本 + 运费 + 固定服务费，没有任何隐藏费用<br>
+          ✅ 验货拍照：发货前拍照给你确认，降低货不对板的风险<br>
+          ✅ 全程通知：下单、收货、验货、发货，每一步 WhatsApp 通知<br>
+          ✅ 满意保障：样品阶段验货发现质量问题，我们承担中国退货运费；批量订单我们协助交涉
+        </p>
+      </div>
+    </div>
+
+    <div class="help-step">
+      <div class="help-step-body">
+        <h3>服务流程</h3>
+        <p>
+          1. 你在网站上搜索 1688 商品 → 查看分析报告<br>
+          2. 决定拿样或采购 → WhatsApp 联系我们<br>
+          3. 我们帮你下单 → 货到仓库 → 验货拍照发你<br>
+          4. 你确认 → 付国际运费 → 我们打包发货<br>
+          5. 你收到货 → 满意了下次再来 😊
+        </p>
+      </div>
+    </div>
+
+    <div class="help-step" id="contact">
+      <div class="help-step-body">
+        <h3>联系我们</h3>
+        <p>
+          💬 <strong>WhatsApp：</strong> <a href="https://wa.me/8618561525786" target="_blank" rel="noopener">+86 185 6152 5786</a>（建议，回复最快）<br>
+          📧 <strong>Email：</strong> hello@sourcely.cc<br>
+          🕐 <strong>工作时间：</strong> 北京时间 9:00 - 23:00，周一至周七<br>          
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div id="appFooter"></div>
+
+</main>
+
+<script src="static/js/utils/lang-detect.js"></script>
+<script>
+  var _l = LANG.detect();
+  if (_l !== 'zh') location.replace('/lang/' + _l + '/about.html');
+</script>
+<script src="static/js/utils/components.js"></script>
+<script>renderNav(null); renderFooter();</script>
+
+</body>
+</html>

@@ -68,6 +68,16 @@ class Config:
     CNY_USD_RATE: float = float(os.getenv("CNY_USD_RATE", "7.2"))
     TASK_TTL: int = int(os.getenv("TASK_TTL", "1800"))
 
+    # ---- 汇率（1 USD = X 本地货币） ----
+    FX_VND: float = float(os.getenv("FX_VND", "25450"))
+    FX_THB: float = float(os.getenv("FX_THB", "35.7"))
+    FX_IDR: float = float(os.getenv("FX_IDR", "16100"))
+    FX_MYR: float = float(os.getenv("FX_MYR", "4.65"))
+    FX_PHP: float = float(os.getenv("FX_PHP", "57.2"))
+
+    # ---- Sentry 错误监控 ----
+    SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")
+
     @classmethod
     def validate(cls):
         """启动时校验必填配置。缺失报错，防止带病启动。"""

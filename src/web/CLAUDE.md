@@ -62,9 +62,10 @@ api.submit(data).finally(() => { submitBtn.disabled = false; });
 
 ### 组件设计
 
-- 通用组件放 `static/js/components.js`，不分散在页面
+- 通用组件放 `static/js/utils/components.js`，不分散在页面
 - 页面逻辑放 `static/js/pages/{page}.js`
 - API 调用层放 `static/js/api/{service}.js`
+- 通用工具放 `static/js/utils/`（i18n, verdict, share, lang-detect 等）
 
 ### 样式
 
@@ -75,7 +76,7 @@ api.submit(data).finally(() => { submitBtn.disabled = false; });
 ## 目录约定
 
 - 页面入口：`src/web/{page}.html`
-- JS 分目录：`api/` 调用层、`pages/` 页面逻辑、`components.js` 通用组件
+- JS 分目录：`api/` 调用层、`pages/` 页面逻辑、`utils/` 通用工具
 - CSS 分页：`static/css/{page}.css`，不污染全局
 
 ## 禁止事项（铁律）

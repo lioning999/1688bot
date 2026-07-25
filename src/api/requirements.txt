@@ -12,6 +12,9 @@ google-auth>=2.30.0
 # ===== External APIs =====
 apify-client>=3.0.0
 
+# ===== Monitoring =====
+sentry-sdk>=2.0.0
+
 # ===== Utils =====
 pydantic>=2.7.0
 python-dotenv>=1.0.0

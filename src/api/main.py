@@ -23,6 +23,16 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# ---- Sentry 错误监控（必须在 app 创建之前初始化） ----
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn=Config.SENTRY_DSN if Config.SENTRY_DSN else None,
+    send_default_pii=True,
+    enable_logs=True,
+    traces_sample_rate=0.1,
+)
+
 
 # ---- 生命周期 ----
 @asynccontextmanager
@@ -98,6 +108,26 @@ async def health_check():
     return {
         "status": "ok" if db_ok else "degraded",
         "database": "connected" if db_ok else "disconnected",
+    }
+
+
+# ---- 公开配置（前端启动时取一次） ----
+@app.get("/api/config")
+async def public_config():
+    """返回前端需要的公开配置（不含敏感信息）。汇率从此一处配置。"""
+    return {
+        "code": 200,
+        "data": {
+            "cnyUsdRate": Config.CNY_USD_RATE,
+            "fxRates": {
+                "VND": Config.FX_VND,
+                "THB": Config.FX_THB,
+                "IDR": Config.FX_IDR,
+                "MYR": Config.FX_MYR,
+                "PHP": Config.FX_PHP,
+            },
+        },
+        "message": "ok",
     }
 
 

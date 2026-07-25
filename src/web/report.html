@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>源采 Sourcely — 1688 样品代采</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="static/css/style.css">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
@@ -23,10 +23,10 @@
 
   <!-- Search -->
   <div class="search-wrap">
-    <input type="text" id="searchInput" placeholder="粘贴 1688 商品链接...">
-    <button id="searchBtn">分析</button>
+    <input type="text" id="searchInput" data-i18n-placeholder="search.placeholder" placeholder="粘贴 1688 商品链接...">
+    <button id="searchBtn" data-i18n="search.button">分析</button>
   </div>
-  <p class="search-hint">每日免费 3 次 · 登陆后无限制</p>
+  <p class="search-hint" data-i18n="search.hint">每日免费 3 次 · 登陆后无限制</p>
 
   <!-- 骨架屏（分析启动时显示，API 返回后隐藏） -->
   <section class="skeleton-card" id="loadingSkeleton" style="display:none;">
@@ -58,7 +58,7 @@
 
     <h2 class="prod-title" title="">手摇扇</h2>
 
-    <p class="prod-price">¥7.5 – ¥7.8 <em>/ 把</em> <span class="price-moq"></span> <a href="https://detail.1688.com/offer/1038913113865.html" target="_blank" class="price-link">1688 原页 →</a></p>
+    <p class="prod-price">¥7.5 – ¥7.8 <em>/ 把</em> <span class="price-moq"></span> <a href="https://detail.1688.com/offer/1038913113865.html" target="_blank" class="price-link" data-i18n="report.1688Link">1688 原页 →</a></p>
 
     <div class="badge-row"></div>
 
@@ -70,17 +70,17 @@
     </div>
 
     <div class="save-bar" id="saveBar" style="display:none;">
-      <button class="save-btn" id="saveBtn">💾 保存</button>
-      <button class="save-btn share-action" id="shareBtnMain">📤 分享</button>
+      <button class="save-btn" id="saveBtn">💾 Save</button>
+      <button class="save-btn share-action" id="shareBtnMain">📤 Share</button>
     </div>
 
-    <p class="warn">该供应商不直发海外个人买家。我们帮你完成 1688 下单、国内收货、验货、国际发货全流程。</p>
+    <p class="warn" data-i18n="report.warn">该供应商不直发海外个人买家。我们帮你完成 1688 下单、国内收货、验货、国际发货全流程。</p>
 
     <!-- ============ Tabs ============ -->
     <div class="tabs">
-      <button class="tab active" data-tab="product">产品</button>
-      <button class="tab" data-tab="factory">工厂</button>
-      <button class="tab" data-tab="sample">拿样</button>
+      <button class="tab active" data-tab="product" data-i18n="report.tabProduct">产品</button>
+      <button class="tab" data-tab="factory" data-i18n="report.tabFactory">工厂</button>
+      <button class="tab" data-tab="sample" data-i18n="report.tabSample">拿样</button>
     </div>
 
     <!-- ============ 产品 Tab ============ -->
@@ -90,18 +90,18 @@
         <span>产品可卖 — 支持7天无理由，动销4,800+件，起批低至2件</span>
       </div>
 
-      <div class="sec">规格参数</div>
+      <div class="sec" data-i18n="report.specs">规格参数</div>
       <div class="prod-specs" style="margin-top:0;"></div>
-      <p style="font-size:var(--fs-xs);color:var(--ink-3);margin-top:var(--s3);">SKU 变体</p>
+      <p style="font-size:var(--fs-xs);color:var(--ink-3);margin-top:var(--s3);" data-i18n="report.skuVariants">SKU 变体</p>
       <div class="sku-imgs"></div>
 
-      <div class="sec">阶梯批发价</div>
+      <div class="sec" data-i18n="report.priceTiers">阶梯批发价</div>
       <table class="qp-table">
         <thead><tr><th>数量范围</th><th>起批</th><th>单价(CNY)</th></tr></thead>
         <tbody></tbody>
       </table>
 
-      <div class="sec">销售数据</div>
+      <div class="sec" data-i18n="report.salesData">销售数据</div>
       <div class="row">
         <span class="row-tag g">OK</span>
         <div class="row-body">
@@ -120,11 +120,11 @@
       </div>
 
       <!-- 🔆 高亮区：一眼判断工厂靠不靠谱 -->
-      <div class="sec">核心评估</div>
+      <div class="sec" data-i18n="report.coreEval">核心评估</div>
       <div class="row row-highlight" id="row-identity">
         <span class="row-tag g">OK</span>
         <div class="row-body">
-          <div class="row-label">商家身份</div>
+          <div class="row-label" data-i18n="report.sellerIdentity">商家身份</div>
           <div class="row-value" id="sellerVal">🏭 源头旗舰</div>
           <div class="row-explain" id="sellerExp">1688 官方认证的产业带源头工厂，比普通厂家多一道官方审核。</div>
         </div>
@@ -132,25 +132,25 @@
       <div class="row row-highlight" id="row-cert">
         <span class="row-tag g">OK</span>
         <div class="row-body">
-          <div class="row-label">认证类型</div>
+          <div class="row-label" data-i18n="report.certType">认证类型</div>
           <div class="row-value" id="certValue">
             <span class="cert-badge">🔖 深度认证·SGS</span>
           </div>
           <div class="row-explain">
             <span id="certExplain">SGS 国际第三方机构实地验厂认证。</span>
-            <a href="#" target="_blank" id="certReportLink">查看认证报告 →</a>
+            <a href="#" target="_blank" id="certReportLink" data-i18n="report.certReportLink">查看认证报告 →</a>
             <span id="certShopSep" style="display:none;"> | </span>
-            <a href="#" target="_blank" id="certShopLink" style="display:none;">查看 1688 店铺 →</a>
+            <a href="#" target="_blank" id="certShopLink" style="display:none;" data-i18n="report.shopLink">查看 1688 店铺 →</a>
           </div>
         </div>
       </div>
 
       <!-- 📊 次要区：辅助判断 -->
-      <div class="sec">辅助参考</div>
+      <div class="sec" data-i18n="report.auxRef">辅助参考</div>
       <div class="row" id="row-flags">
         <span class="row-tag g">OK</span>
         <div class="row-body">
-          <div class="row-label">工厂实力</div>
+          <div class="row-label" data-i18n="report.factoryStrength">工厂实力</div>
           <div class="row-value" id="flagsValue"><span style="font-size:var(--fs-xs);color:var(--ink-3);">生产厂家（无第三方验厂认证）</span></div>
           <div class="row-explain" id="flagsExplain">该店自称为工厂，但未获得 1688 实力工厂或超级工厂认证。</div>
         </div>
@@ -158,19 +158,19 @@
       <div class="row" id="row-rank">
         <span class="row-tag g">OK</span>
         <div class="row-body">
-          <div class="row-label">品类排名</div>
+          <div class="row-label" data-i18n="report.categoryRank">品类排名</div>
           <div class="row-value"></div>
           <div class="row-explain"></div>
         </div>
       </div>
 
       <!-- 📁 详情区：默认折叠，需要时展开 -->
-      <button class="detail-toggle" id="factoryDetailToggle">📋 查看公司信息 ▾</button>
+      <button class="detail-toggle" id="factoryDetailToggle" data-i18n="report.companyInfo">📋 查看公司信息 ▾</button>
       <div class="detail-collapse" id="factoryDetail" style="display:none">
         <div class="row" id="row-name">
           <span class="row-tag g">OK</span>
           <div class="row-body">
-            <div class="row-label">公司名称</div>
+            <div class="row-label" data-i18n="report.companyName">公司名称</div>
             <div class="row-value">义乌市雨灏贸易有限公司</div>
             <div class="row-explain">政府注册全名，可在企业信用系统查询验证。</div>
           </div>
@@ -178,7 +178,7 @@
         <div class="row" id="row-addr">
           <span class="row-tag g">OK</span>
           <div class="row-body">
-            <div class="row-label">地址</div>
+            <div class="row-label" data-i18n="report.address">地址</div>
             <div class="row-value">浙江省金华市义乌市苏溪镇学苑小区4排25号</div>
             <div class="row-explain">义乌 — 中国最大小商品集散地。源头产地，价格有优势。</div>
           </div>
@@ -196,7 +196,7 @@
       <!-- 费用 -->
       <div class="cost-form">
         <div class="cf-field">
-          <label>数量</label>
+          <label data-i18n="report.qty">数量</label>
           <div class="qty-ctl">
             <button id="qtyMinus">−</button>
             <span id="qtyVal">2</span>
@@ -204,7 +204,7 @@
           </div>
         </div>
         <div class="cf-field">
-          <label>目的国</label>
+          <label data-i18n="report.destCountry">目的国</label>
           <select id="destSel">
             <option value="VN">越南 🇻🇳</option>
             <option value="TH">泰国 🇹🇭</option>
@@ -215,37 +215,37 @@
         </div>
       </div>
 
-      <div class="cost-phase">① 定金 — 先付</div>
-      <div class="cs-row"><span>商品</span><span id="productFee">¥15.00 ≈ $2.08</span></div>
-      <div class="cs-row"><span>国内运费</span><span id="domesticFee">¥10.00 ≈ $1.39</span></div>
-      <div class="cs-row phase-sub"><span>小计</span><span id="depositTotal">¥25.00 ≈ $3.47</span></div>
+      <div class="cost-phase" data-i18n="report.phaseDeposit">① 定金 — 先付</div>
+      <div class="cs-row"><span data-i18n="report.productCost">商品</span><span id="productFee">¥15.00 ≈ $2.08</span></div>
+      <div class="cs-row"><span data-i18n="report.domesticFreight">国内运费</span><span id="domesticFee">¥10.00 ≈ $1.39</span></div>
+      <div class="cs-row phase-sub"><span data-i18n="report.subtotal">小计</span><span id="depositTotal">¥25.00 ≈ $3.47</span></div>
 
-      <div class="cost-phase">② 尾款 — 验货确认后付</div>
-      <div class="cs-row"><span>国际运费</span><span id="shipFeeVal">$3 – $5</span><span class="ship-meta" id="shipMeta">🚛陆运4-7天,按实重/体积计算</span></div>
-      <div class="cs-row"><span>服务费</span><span>$10.00</span></div>
-      <div class="cs-row phase-sub"><span>小计</span><span id="balanceTotal">$13 – $15</span></div>
+      <div class="cost-phase" data-i18n="report.phaseBalance">② 尾款 — 验货确认后付</div>
+      <div class="cs-row"><span data-i18n="report.intlFreight">国际运费</span><span id="shipFeeVal">$3 – $5</span><span class="ship-meta" id="shipMeta">🚛陆运4-7天,按实重/体积计算</span></div>
+      <div class="cs-row"><span data-i18n="report.serviceFee">服务费</span><span>$10.00</span></div>
+      <div class="cs-row phase-sub"><span data-i18n="report.subtotal">小计</span><span id="balanceTotal">$13 – $15</span></div>
 
-      <div class="cs-row total"><span>预估总价</span><span id="totalFee">$16 – $18</span></div>
+      <div class="cs-row total"><span data-i18n="report.totalEstimate">预估总价</span><span id="totalFee">$16 – $18</span></div>
 
       <!-- 服务 -->
-      <div class="sec">服务</div>
-      <p class="sample-promise">✅ 1688下单 · 收货 · 验货<button class="info-btn" id="inspectToggle" aria-label="查看验货详情">?</button> · 打包 · 国际物流</p>
+      <div class="sec" data-i18n="report.serviceTitle">服务</div>
+      <p class="sample-promise" data-i18n="report.serviceDesc">✅ 1688下单 · 收货 · 验货<button class="info-btn" id="inspectToggle" aria-label="查看验货详情">?</button> · 打包 · 国际物流</p>
       <div class="steps-detail" id="inspectDetail" style="display:none">
-        <p class="steps-detail-title">收到货后我们检查以下项目：</p>
+        <p class="steps-detail-title" data-i18n="report.inspectTitle">收到货后我们检查以下项目：</p>
         <ul class="steps-detail-list">
-          <li>颜色是否与商品图一致</li>
-          <li>尺寸是否符合规格参数</li>
-          <li>外观是否有破损、瑕疵</li>
-          <li>数量是否正确</li>
-          <li>拍照 3-5 张发你 WhatsApp 确认</li>
+          <li data-i18n="report.inspectItem1">颜色是否与商品图一致</li>
+          <li data-i18n="report.inspectItem2">尺寸是否符合规格参数</li>
+          <li data-i18n="report.inspectItem3">外观是否有破损、瑕疵</li>
+          <li data-i18n="report.inspectItem4">数量是否正确</li>
+          <li data-i18n="report.inspectItem5">拍照 3-5 张发你 WhatsApp 确认</li>
         </ul>
-        <p class="steps-detail-note">⚠ 发现质量问题 → 通知你 → 你决定退款或换货 → 我们执行。服务费不退，但会全力帮你协调。</p>
+        <p class="steps-detail-note" data-i18n="report.inspectNote">⚠ 发现质量问题 → 通知你 → 你决定退款或换货 → 我们执行。服务费不退，但会全力帮你协调。</p>
       </div>
-      <p class="sample-promise">✅ 验货不满意 → 退全部定金</p>
-      <p class="sample-promise">✅ 缺货/不发货 → 全额退定金，帮找同款</p>
-      <p class="sample-promise">✅ $10 服务费含代下单+验货拍照+打包+送物流仓，验货后不退</p>
+      <p class="sample-promise" data-i18n="report.serviceRefund">✅ 验货不满意 → 退全部定金</p>
+      <p class="sample-promise" data-i18n="report.serviceOOS">✅ 缺货/不发货 → 全额退定金，帮找同款</p>
+      <p class="sample-promise" data-i18n="report.serviceFeeNote">✅ $10 服务费含代下单+验货拍照+打包+送物流仓，验货后不退</p>
 
-      <a href="https://wa.me/8618561525786" class="btn" target="_blank" id="orderBtn">💬 Chat on WhatsApp</a>
+      <a href="https://wa.me/8618561525786" class="btn" target="_blank" id="orderBtn" data-i18n="report.orderBtn">💬 Chat on WhatsApp</a>
     </div>
 
   </section>
@@ -270,12 +270,13 @@
 
 </main>
 
-<script src="static/js/components.js"></script>
-<script>renderNav('report'); renderFooter();</script>
-<script src="static/js/i18n.js"></script>
+<script src="static/js/utils/lang-detect.js"></script>
+<script src="static/js/utils/i18n.js"></script>
 <script src="static/js/api/core.js"></script>
-<script src="static/js/verdict.js"></script>
-<script src="static/js/share.js"></script>
+<script src="static/js/utils/components.js"></script>
+<script>I18N.init().then(function () { renderNav('report'); renderFooter(); I18N.apply(); });</script>
+<script src="static/js/utils/verdict.js"></script>
+<script src="static/js/utils/share.js"></script>
 <script src="static/js/pages/report.js"></script>
 </body>
 </html>

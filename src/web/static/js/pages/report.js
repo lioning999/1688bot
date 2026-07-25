@@ -1,7 +1,12 @@
 // ===== report.js — 1688 商品分析报告页 =====
-// 依赖：api/core.js, verdict.js, share.js, i18n.js, components.js
+// 依赖：api/core.js, utils/verdict.js, utils/share.js, utils/i18n.js, utils/components.js
 (function () {
   'use strict';
+
+  // i18n helper — returns translation or fallback
+  function t(key, fallback) {
+    return (typeof I18N !== 'undefined' && I18N.t) ? (I18N.t(key) || fallback) : fallback;
+  }
 
   // ===== DOM 引用 =====
   var searchBtn = document.getElementById('searchBtn');
@@ -25,8 +30,8 @@
     isSearching = true;
     showSkeleton();
     searchBtn.disabled = true;
-    searchBtn.textContent = '分析中...';
-    searchHint.textContent = '正在获取 1688 商品数据，预计 20-40 秒...';
+    searchBtn.textContent = t('search.analyzing', '分析中...');
+    searchHint.textContent = t('report.fetchingData', '正在获取 1688 商品数据，预计 20-40 秒...');
 
     startAnalysis(url);
   });
@@ -41,12 +46,12 @@
           // 这里只更新页面状态，不重复弹 Toast
           hideSkeleton();
           resetSearchButton();
-          searchHint.textContent = data.message || '分析启动失败';
+          searchHint.textContent = data.message || t('report.startFailed', '分析启动失败');
           searchHint.style.color = 'var(--seal)';
           // 清理 URL 参数，防止刷新页面重复触发分析
           window.history.replaceState({}, document.title, window.location.pathname);
           setTimeout(function () {
-            searchHint.textContent = '每日免费 3 次 · WhatsApp 登记后不限次数';
+            searchHint.textContent = t('search.hint', '每日免费 3 次 · WhatsApp 登记后不限次数');
             searchHint.style.color = '';
           }, 5000);
           return;
@@ -60,7 +65,7 @@
         window.history.replaceState({}, document.title, window.location.pathname);
         hideSkeleton();
         resetSearchButton();
-        showError('网络错误，请检查网络后重试');
+        showError(t('report.networkError', '网络错误，请检查网络后重试'));
         console.warn('Analyze start failed:', err);
       });
   }
@@ -71,7 +76,7 @@
       resetSearchButton();
       sessionStorage.removeItem('lastTaskId');
       window.history.replaceState({}, document.title, window.location.pathname);
-      showError('分析超时，请稍后重试');
+      showError(t('report.timeout', '分析超时，请稍后重试'));
       return;
     }
 
@@ -83,13 +88,13 @@
           resetSearchButton();
           sessionStorage.removeItem('lastTaskId');
           window.history.replaceState({}, document.title, window.location.pathname);
-          showError('任务不存在或已过期');
+          showError(t('report.taskExpired', '任务不存在或已过期'));
           return;
         }
 
         if (task.status === 'done') {
           resetSearchButton();
-          searchHint.textContent = '每日免费 3 次 · WhatsApp 登记后不限次数';
+          searchHint.textContent = t('search.hint', '每日免费 3 次 · WhatsApp 登记后不限次数');
           sessionStorage.removeItem('lastTaskId');
           renderResult(task.result);
           if (task.result && task.result.offerId) {
@@ -101,11 +106,11 @@
           resetSearchButton();
           sessionStorage.removeItem('lastTaskId');
           window.history.replaceState({}, document.title, window.location.pathname);
-          showError(task.error || '分析失败，请稍后重试');
+          showError(task.error || t('report.analysisFailed', '分析失败，请稍后重试'));
         } else {
           var elapsed = attempt * 2;
           if (elapsed >= 10) {
-            searchHint.textContent = '正在获取商品数据，预计还需 ' + Math.max(5, 30 - elapsed) + ' 秒...';
+          searchHint.textContent = t('report.fetchingPoll', '正在获取商品数据，预计还需 ') + Math.max(5, 30 - elapsed) + t('report.seconds', ' 秒...');
           }
           _pollTimer = setTimeout(function () { pollTask(taskId, attempt + 1); }, 2000);
         }
@@ -113,7 +118,7 @@
       .catch(function (err) {
         hideSkeleton();
         resetSearchButton();
-        showError('网络错误，请检查网络后重试');
+        showError(t('report.networkError', '网络错误，请检查网络后重试'));
         console.warn('Poll failed:', err);
         sessionStorage.removeItem('lastTaskId');
       });
@@ -122,7 +127,7 @@
   function resetSearchButton() {
     isSearching = false;
     searchBtn.disabled = !searchInput.value.trim();
-    searchBtn.textContent = '分析';
+    searchBtn.textContent = t('search.button', '分析');
   }
 
   function showSkeleton() {
@@ -164,7 +169,7 @@
     if (!user) {
       saveBar.style.display = 'flex';
       saveBar.className = 'save-bar login-hint';
-      saveBtn.textContent = '💾 保存';
+      saveBtn.textContent = '💾 Save';
       saveBtn.disabled = false;
       saveBtn.classList.remove('saved');
       saveBtn.onclick = function () {
@@ -182,7 +187,7 @@
 
     saveBar.style.display = 'flex';
     saveBar.className = 'save-bar';
-    saveBtn.textContent = '💾 保存';
+    saveBtn.textContent = '💾 Save';
     saveBtn.disabled = false;
     saveBtn.classList.remove('saved');
     saveBtn.onclick = function () { doSave(); };
@@ -191,7 +196,7 @@
   function showSaved() {
     saveBar.style.display = 'flex';
     saveBar.className = 'save-bar';
-    saveBtn.textContent = '✓ 已保存';
+    saveBtn.textContent = '✓ Saved';
     saveBtn.disabled = true;
     saveBtn.classList.add('saved');
     saveBtn.onclick = null;
@@ -200,7 +205,7 @@
   function doSave() {
     if (!currentOfferId) return;
     saveBtn.disabled = true;
-    saveBtn.textContent = '保存中...';
+    saveBtn.textContent = 'Saving...';
 
     API.saveReport(currentOfferId)
       .then(function (data) {
@@ -208,31 +213,31 @@
           sessionStorage.setItem('saved_' + currentOfferId, '1');
           showSaved();
           if (typeof Toast !== 'undefined') {
-            Toast.success('保存成功！<br><small style="color:var(--ink-3)">可在历史记录中查看</small>');
+            Toast.success(t('report.saveSuccess', '保存成功！<br><small style="color:var(--ink-3)">可在历史记录中查看</small>'));
           }
         } else if (data.code === 409) {
           // 已达 20 条上限
-          saveBtn.textContent = '💾 保存';
+          saveBtn.textContent = '💾 Save';
           saveBtn.disabled = false;
           if (typeof Toast !== 'undefined') {
             Toast.warning(
-              '已达 20 条保存上限<br><small style="color:var(--ink-3)">请前往<a href="history.html" style="color:var(--brand);font-weight:600">历史记录</a>删除旧记录后再保存</small>',
+              t('report.saveLimit', '已达 20 条保存上限<br><small style="color:var(--ink-3)">请前往<a href="history.html" style="color:var(--brand);font-weight:600">历史记录</a>删除旧记录后再保存</small>'),
               true
             );
           }
         } else if (data.code === 410) {
-          saveBtn.textContent = '⚠ 已过期';
+          saveBtn.textContent = '⚠ Expired';
           saveBtn.disabled = true;
         } else if (data.code === 401) {
-          saveBtn.textContent = '💾 保存';
+          saveBtn.textContent = '💾 Save';
           saveBtn.disabled = false;
         } else {
-          saveBtn.textContent = '💾 保存';
+          saveBtn.textContent = '💾 Save';
           saveBtn.disabled = false;
         }
       })
       .catch(function () {
-        saveBtn.textContent = '💾 保存';
+        saveBtn.textContent = '💾 Save';
         saveBtn.disabled = false;
       });
   }
@@ -546,7 +551,7 @@
         searchInput.value = data.itemUrl || '';
         isSearching = false;
         searchBtn.disabled = false;
-        searchBtn.textContent = '分析';
+        searchBtn.textContent = t('search.button', '分析');
         if (data.offerId) showSaveBar(data.offerId);
       })
       .catch(function (err) {
@@ -555,7 +560,7 @@
         searchHint.textContent = '样例加载失败，请粘贴链接搜索';
         isSearching = false;
         searchBtn.disabled = false;
-        searchBtn.textContent = '分析';
+        searchBtn.textContent = t('search.button', '分析');
       });
   })();
 
@@ -587,9 +592,9 @@
           renderResult(cached);
           updateCost();
           searchInput.value = cached.itemUrl || (offerId ? 'https://detail.1688.com/offer/' + offerId + '.html' : decodeURIComponent(urlParam));
-          searchHint.textContent = '已恢复之前的数据 — 每日免费 3 次';
+          searchHint.textContent = t('report.restored', '已恢复之前的数据 — 每日免费 3 次');
           searchBtn.disabled = false;
-          searchBtn.textContent = '分析';
+          searchBtn.textContent = t('search.button', '分析');
           return;
         } catch (e) { /* JSON 损坏，走正常流程 */ }
       }
@@ -656,9 +661,19 @@
     PH: { eco: [10, 16], label: '✈️ 空运', days: '7-10天', exp: null, expLabel: null, expDays: null }
   };
 
-  var USD_RATE = 7.2;
+  var USD_RATE = 7.2;  // 默认值，页面加载后从 /api/config 更新
   var SERVICE_FEE = 10;
   var DOMESTIC_FREIGHT = 10;
+
+  // 从后端取汇率（独立于 i18n.js，不依赖语言检测功能）
+  if (typeof API !== 'undefined' && API.getConfig) {
+    API.getConfig().then(function (res) {
+      if (res && res.data && res.data.cnyUsdRate) {
+        USD_RATE = res.data.cnyUsdRate;
+        updateCost();
+      }
+    }).catch(function () { /* 保持默认值 */ });
+  }
 
   var qtyVal = document.getElementById('qtyVal');
   var qtyMinus = document.getElementById('qtyMinus');
