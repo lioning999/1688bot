@@ -14,9 +14,9 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel, field_validator
 
 from config import Config
-from domain import rate_limiter
+from domain import cache as analysis_cache, rate_limiter
 from domain.urls import extract_offer_id, is_valid_1688_url
-from services.analyze_svc import analyze_service
+from services.analyze_svc import _build_result_with_display, analyze_service
 from utils.exceptions import ValidationError, InsufficientQuotaError, ResourceNotFoundError
 from utils.logger import get_logger
 
@@ -30,6 +30,7 @@ _daily_counter: dict[str, tuple[int, float]] = {}
 
 class AnalyzeRequest(BaseModel):
     url: str
+    lang: str = ""  # 目标语言（en/vi/th/id），空字符串 = 不翻译（V1 路径）
 
     @field_validator("url")
     @classmethod
@@ -65,19 +66,32 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
             details={"retry_after": "60秒"},
         )
 
-    # ---- 3. 未登录用户每日配额 ----
-    user_id = getattr(request.state, "user_id", 0) or 0
-    if not user_id:
-        ip = request.client.host if request.client else "unknown"
-        if not _check_quota(ip):
-            raise InsufficientQuotaError(
-                resource_type="今日免费分析次数",
-                details={"daily_limit": Config.APIFY_DAILY_FREE_LIMIT, "tip": "登录后可获得更多次数"},
-            )
+    # ---- 3. 每日配额（未登录按 IP 3 次/天，登录按 user_id 10 次/天） ----
+    user_id: int = getattr(request.state, "user_id", 0) or 0
+    if user_id:
+        daily_limit: int = Config.APIFY_DAILY_LOGIN_LIMIT
+        quota_key: str = f"user:{user_id}"
+    else:
+        daily_limit = Config.APIFY_DAILY_FREE_LIMIT
+        quota_key = request.client.host if request.client else "unknown"
+
+    if not _check_quota(quota_key, daily_limit):
+        tip: str = "登录后可获得 10 次/天" if not user_id else "请明天再试或联系 WhatsApp"
+        raise InsufficientQuotaError(
+            resource_type="今日分析次数",
+            details={"daily_limit": daily_limit, "tip": tip},
+        )
+
+    # ---- 3.5. 缓存前置：命中直接返回，不创建 task，不调 Apify/Qwen ----
+    cached: dict[str, Any] | None = analysis_cache.get(offer_id)
+    if cached:
+        logger.info(f"Cache hit at route: offer_id={offer_id}")
+        result: dict[str, Any] = await _build_result_with_display(cached, offer_id, body.lang)
+        return {"code": 200, "data": {"status": "done", "result": result}, "message": "ok"}
 
     # ---- 4. 启动后台分析 ----
-    task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url)
-    logger.info(f"Analysis started: offer_id={offer_id} task_id={task_id} user_id={user_id}")
+    task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url, lang=body.lang, quota_key=quota_key)
+    logger.info(f"Analysis started: offer_id={offer_id} task_id={task_id} user_id={user_id} lang={body.lang}")
 
     return {
         "code": 200,
@@ -146,7 +160,7 @@ async def save_report(body: SaveReportRequest, request: Request) -> dict[str, An
         }
 
     # 检查是否已达 20 条上限（result 带 limit_exceeded 标记时）
-    if isinstance(result, dict) and result.get("limit_exceeded"):
+    if result.get("limit_exceeded"):
         return {
             "code": 409,
             "data": {"count": result.get("count", 20)},
@@ -165,19 +179,26 @@ async def save_report(body: SaveReportRequest, request: Request) -> dict[str, An
 # 配额工具
 # ====================================================================
 
-def _check_quota(ip: str) -> bool:
+def _check_quota(key: str, limit: int) -> bool:
     now = time.time()
-    # 每 10 次调用清理过期 IP 条目（48h+ 未活跃），防止内存泄漏（Bug #8）
+    # 每 10 次调用清理过期条目（48h+ 未活跃），防止内存泄漏（Bug #8）
     if len(_daily_counter) % 10 == 0:
         expired = [k for k, v in _daily_counter.items() if (now - v[1]) > 172800]
         for k in expired:
             del _daily_counter[k]
-    entry = _daily_counter.get(ip)
+    entry = _daily_counter.get(key)
     if entry is None or (now - entry[1]) > 86400:
-        _daily_counter[ip] = (1, now)
+        _daily_counter[key] = (1, now)
         return True
     count, first_ts = entry
-    if count >= Config.APIFY_DAILY_FREE_LIMIT:
+    if count >= limit:
         return False
-    _daily_counter[ip] = (count + 1, first_ts)
+    _daily_counter[key] = (count + 1, first_ts)
     return True
+
+
+def _quota_refund(key: str) -> None:
+    """Apify 失败时退还配额（成功扣、失败不扣）。"""
+    entry = _daily_counter.get(key)
+    if entry and entry[0] > 0:
+        _daily_counter[key] = (entry[0] - 1, entry[1])

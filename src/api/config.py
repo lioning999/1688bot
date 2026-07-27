@@ -61,7 +61,8 @@ class Config:
     APIFY_TOKEN: str = _APIFY_TOKENS[0] if _APIFY_TOKENS else ""  # 向后兼容
     APIFY_ACTOR_ID: str = os.getenv("APIFY_ACTOR_ID", "zen-studio~1688-wholesale-scraper")
     APIFY_WAIT_SECONDS: int = int(os.getenv("APIFY_WAIT_SECONDS", "90"))
-    APIFY_DAILY_FREE_LIMIT: int = int(os.getenv("APIFY_DAILY_FREE_LIMIT", "3"))
+    APIFY_DAILY_FREE_LIMIT: int = int(os.getenv("DAILY_FREE_LIMIT", "3"))
+    APIFY_DAILY_LOGIN_LIMIT: int = int(os.getenv("DAILY_LOGIN_LIMIT", "10"))
     URL_1688_DETAIL: str = "https://detail.1688.com/offer/{offer_id}.html"
 
     # ---- 业务常量 ----
@@ -74,6 +75,11 @@ class Config:
     FX_IDR: float = float(os.getenv("FX_IDR", "16100"))
     FX_MYR: float = float(os.getenv("FX_MYR", "4.65"))
     FX_PHP: float = float(os.getenv("FX_PHP", "57.2"))
+
+    # ---- Qwen3 翻译（新加坡节点，OpenAI 兼容接口） ----
+    QWEN_API_KEY: str = os.getenv("QWEN_API_KEY", "")
+    QWEN_MODEL: str = os.getenv("QWEN_MODEL", "qwen-flash")
+    QWEN_API_BASE: str = os.getenv("QWEN_API_BASE", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
 
     # ---- Sentry 错误监控 ----
     SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")
