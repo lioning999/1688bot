@@ -8,6 +8,7 @@ aiomysql>=0.2.0
 # ===== Auth =====
 pyjwt>=2.8.0
 google-auth>=2.30.0
+requests>=2.0.0   # google-auth transport 需要，本地 venv 有但新环境装不进来
 
 # ===== External APIs =====
 apify-client>=3.0.0
