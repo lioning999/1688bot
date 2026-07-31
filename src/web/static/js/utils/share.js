@@ -90,7 +90,7 @@ var Share = (function () {
     }).catch(function (err) {
       console.warn('html2canvas render error:', err);
       if (typeof Toast !== 'undefined') {
-        Toast.error('图片生成失败，请重试。如持续失败请截图分享。', true);
+        Messages.error('IMAGE_GEN_FAILED', '图片生成失败，请重试。如持续失败请截图分享。');
       }
     });
   }
@@ -125,7 +125,7 @@ var Share = (function () {
     var pageUrl = window.location.href;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(pageUrl).then(function () {
-        if (typeof Toast !== 'undefined') Toast.success('链接已复制！<br><small style="color:var(--ink-3)">可粘贴到微信/WhatsApp/聊天</small>');
+        Messages.success('LINK_COPIED', '链接已复制！<br><small style="color:var(--ink-3)">可粘贴到微信/WhatsApp/聊天</small>');
       }).catch(function () {
         prompt('复制此链接分享：', pageUrl);
       });

@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1QBL5DMPKE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1QBL5DMPKE');
+</script>
 <title>源采 Sourcely — 1688 样品代采</title>
 <link rel="stylesheet" href="static/css/style.css">
 
@@ -22,14 +30,15 @@
     <input type="text" id="searchInput" data-i18n-placeholder="search.placeholder" placeholder="粘贴 1688 商品链接...">
     <button id="searchBtn" data-i18n="search.button">分析</button>
   </div>
-  <p class="search-hint" data-i18n="search.hint">每日免费 3 次 · 登陆后无限制</p>
+  <p class="search-hint" data-i18n="search.hint">每日免费 3 次 · 登陆后每日10次</p>
 
-  <!-- 骨架屏（分析启动时显示，API 返回后隐藏） -->
-  <section class="skeleton-card" id="loadingSkeleton" style="display:none;">
-    <div class="skel-img"></div>
-    <div class="skel-line skel-title"></div>
-    <div class="skel-line skel-price"></div>
-    <div class="skel-line skel-info"></div>
+  <!-- 进度指示器 — 微信风格：绿进度条 + 状态文案轮播 -->
+  <section class="progress-card" id="progressCard" style="display:none;">
+    <div class="progress-ring" id="progressRing"></div>
+    <p class="progress-status" id="progressStatus"></p>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+    <p class="progress-title" data-i18n="report.progressTitle">正在生成 1688 商品报告...</p>
+    <p class="progress-hint" id="progressHint"></p>
   </section>
 
   <!-- Card（API 返回前隐藏，避免模板数据闪现） -->
@@ -93,7 +102,7 @@
 
       <div class="sec" data-i18n="report.priceTiers">阶梯批发价</div>
       <table class="qp-table">
-        <thead><tr><th>数量范围</th><th>起批</th><th>单价(CNY)</th></tr></thead>
+        <thead><tr><th data-i18n="report.qtyRange">数量范围</th><th data-i18n="report.moqHeader">起批</th><th data-i18n="report.unitPrice">单价(CNY)</th></tr></thead>
         <tbody></tbody>
       </table>
 
@@ -101,7 +110,7 @@
       <div class="row">
         <span class="row-tag g">OK</span>
         <div class="row-body">
-          <div class="row-label">累计销量</div>
+          <div class="row-label" data-i18n="report.totalSales">累计销量</div>
           <div class="row-value">4,883 件</div>
           <div class="row-explain">累计销量高说明市场验证通过，该品类有持续需求。</div>
         </div>
@@ -199,16 +208,6 @@
             <button id="qtyPlus">+</button>
           </div>
         </div>
-        <div class="cf-field">
-          <label data-i18n="report.destCountry">目的国</label>
-          <select id="destSel">
-            <option value="VN">越南 🇻🇳</option>
-            <option value="TH">泰国 🇹🇭</option>
-            <option value="ID">印尼 🇮🇩</option>
-            <option value="MY">马来西亚 🇲🇾</option>
-            <option value="PH">菲律宾 🇵🇭</option>
-          </select>
-        </div>
       </div>
 
       <div class="cost-phase" data-i18n="report.phaseDeposit">① 定金 — 先付</div>
@@ -217,7 +216,7 @@
       <div class="cs-row phase-sub"><span data-i18n="report.subtotal">小计</span><span id="depositTotal">¥25.00 ≈ $3.47</span></div>
 
       <div class="cost-phase" data-i18n="report.phaseBalance">② 尾款 — 验货确认后付</div>
-      <div class="cs-row"><span data-i18n="report.intlFreight">国际运费</span><span id="shipFeeVal">$3 – $5</span><span class="ship-meta" id="shipMeta">🚛陆运4-7天,按实重/体积计算</span></div>
+      <div class="cs-row"><span data-i18n="report.intlFreight">国际运费</span><span id="shipFeeVal">$3 – $5</span><span class="ship-meta" id="shipMeta" style="display:none"></span></div>
       <div class="cs-row"><span data-i18n="report.serviceFee">服务费</span><span>$10.00</span></div>
       <div class="cs-row phase-sub"><span data-i18n="report.subtotal">小计</span><span id="balanceTotal">$13 – $15</span></div>
 
@@ -271,7 +270,7 @@
 <script src="static/js/api/core.js"></script>
 <script src="static/js/utils/components.js"></script>
 <script>I18N.init().then(function () { renderNav('report'); renderFooter(); I18N.apply(); });</script>
-<script src="static/js/utils/verdict.js"></script>
+<script src="static/js/utils/messages.js"></script>
 <script src="static/js/utils/share.js"></script>
 <script src="static/js/pages/report.js"></script>
 </body>

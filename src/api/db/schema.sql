@@ -46,6 +46,7 @@ CREATE TABLE analysis (
 
   -- 完整数据
   result_json     TEXT COMMENT '完整分析结果 JSON',
+  display_i18n    TEXT COMMENT '翻译后 display JSON。按需单语言存储 {lang: display}，回看其他语言时懒加载追加',
 
   -- 时间戳
   created_at      DATETIME DEFAULT NOW(),

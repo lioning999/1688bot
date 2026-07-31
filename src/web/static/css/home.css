@@ -93,22 +93,31 @@
   color: var(--seal); margin-top: 2px;
 }
 
-/* ===== Seller Reviews (vertical stack) ===== */
+/* ===== Seller Reviews (horizontal scroll + snap) ===== */
 .reviews {
-  padding: 0 var(--s4) var(--s6);
+  padding: 0 0 var(--s6);
 }
 .reviews-label {
   font-family: var(--font-body);
   font-size: var(--fs-sm); font-weight: 700;
   color: var(--ink);
   margin-bottom: var(--s3);
-  max-width: 420px; margin-left: auto; margin-right: auto;
+  width: 400px;
+  margin-left: auto; margin-right: auto;
+  padding: 0;
 }
 .review-list {
-  display: flex; flex-direction: column; gap: var(--s2);
-  max-width: 420px; margin: 0 auto;
+  width: 400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.review-track {
+  display: flex; flex-wrap: nowrap; gap: var(--s3);
+  transition: transform 0.5s ease;
 }
 .review-card {
+  flex: 0 0 400px;
+  min-width: 400px;
   background: var(--paper-2);
   border: 1px solid var(--line);
   border-radius: var(--r);
@@ -126,12 +135,6 @@
 .reviewer-meta {
   display: flex; flex-direction: column; gap: 2px;
   padding-top: 3px;
-}
-.reviewer-country {
-  font-size: var(--fs-sm); font-weight: 600; color: var(--ink);
-}
-.reviewer-platform {
-  font-size: var(--fs-xs); font-weight: 500; color: var(--ink-3);
 }
 .review-body {
   font-family: var(--font-body);

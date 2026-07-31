@@ -17,12 +17,12 @@ logger = get_logger(__name__)
 
 
 # ---- INSERT 列名（create / upsert 共用） ----
-# V1.3：列字段只保留历史列表展示所需 + 系统字段。完整数据在 result_json。
+# V1.3：列字段只保留历史列表展示所需 + 系统字段。完整数据在 result_json + display_i18n。
 _INSERT_COLS = (
     "user_id, offer_id, status, title, image_url, "
-    "price_min, price_max, apify_task_id, result_json"
+    "price_min, price_max, apify_task_id, result_json, display_i18n"
 )
-_INSERT_VALS = "(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+_INSERT_VALS = "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 
 class AnalysisRepository:
@@ -39,7 +39,7 @@ class AnalysisRepository:
                        ON DUPLICATE KEY UPDATE
                         status=VALUES(status), title=VALUES(title), image_url=VALUES(image_url),
                         price_min=VALUES(price_min), price_max=VALUES(price_max),
-                        result_json=VALUES(result_json),
+                        result_json=VALUES(result_json), display_i18n=VALUES(display_i18n),
                         updated_at=NOW()""",
                     (
                         data["user_id"], data["offer_id"], data.get("status", "done"),
@@ -47,6 +47,7 @@ class AnalysisRepository:
                         data.get("price_min"), data.get("price_max"),
                         data.get("apify_task_id"),
                         data.get("result_json"),
+                        data.get("display_i18n"),
                     ),
                 )
                 analysis_id = cur.lastrowid
@@ -127,6 +128,39 @@ class AnalysisRepository:
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 
+    async def get_display_i18n(self, offer_id: str, user_id: int) -> str | None:
+        """读 display_i18n 列（原始 JSON 字符串）。不存在返回 None。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT display_i18n FROM analysis WHERE offer_id=%s AND user_id=%s AND status='done' LIMIT 1",
+                    (offer_id, user_id),
+                )
+                row = await cur.fetchone()
+                if row and row.get("display_i18n"):
+                    return row["display_i18n"]  # type: ignore[return-value]
+                return None
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def update_display_i18n(self, offer_id: str, user_id: int, display_i18n_json: str) -> bool:
+        """更新 display_i18n 列。返回 True 表示更新成功。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "UPDATE analysis SET display_i18n=%s WHERE offer_id=%s AND user_id=%s",
+                    (display_i18n_json, offer_id, user_id),
+                )
+                await conn.commit()
+                return cur.rowcount > 0
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
     async def get_history(self, user_id: int, limit: int = 20) -> list[dict[str, Any]]:
         """查用户最近的分析记录。"""
         conn = await AsyncDatabaseConnection.get_connection()
@@ -134,7 +168,7 @@ class AnalysisRepository:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
                     """SELECT id, offer_id, title, image_url, price_min, price_max,
-                              created_at
+                              created_at, display_i18n
                        FROM analysis
                        WHERE user_id=%s AND status='done'
                        ORDER BY created_at DESC LIMIT %s""",

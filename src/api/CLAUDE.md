@@ -52,13 +52,39 @@
 
 ## 三、响应格式
 
-**唯一标准：** `{code: 200, data: ..., message: "ok"}` — code = HTTP 状态码
+**唯一标准：** `{code: 200, data: ..., message: "ok", msg_code: "..."}` — code = HTTP 状态码
 
 | 场景 | 格式 |
 |------|------|
-| 正常 | `{code: 200, data: {...}, message: "ok"}` |
-| 错误 | `{code: 4xx/5xx, data: null, message: "错误描述"}` |
+| 正常 | `{code: 200, data: {...}, message: "ok", msg_code: "..."}` |
+| 错误 | `{code: 4xx/5xx, data: null, message: "错误描述", msg_code: "..."}` |
 | 登录回调 | `RedirectResponse`（302 → 首页带 token） |
+
+### msg_code 铁律（V2 新增）
+
+**每一条可能展示给用户的响应都 MUST 带 `msg_code`。** 它是对前端 `messages.js`（唯一消息出口）的契约字段。
+
+| 规则 | 说明 |
+|------|------|
+| 所有错误 MUST 走 `raise AppError` | 禁止 `return {code:4xx}` / `raise HTTPException` / catch-all 硬编码 |
+| `AppError` 子类 MUST 带 `msg_code` | 在 `utils/exceptions.py` 子类构造函数中设默认值 |
+| 成功返回 MUST 带 `msg_code` | routes 中 `return {code:200}` 手动加 |
+| 中间件 401 必须加 `msg_code` | `JSONResponse` content dict 中手动加 |
+| `services/analyze_svc.py` task dict 的 error/warning 加在 dict 里 | 不是抛异常，是写入 `_tasks`，route 读出后返回前端 |
+| `message` 字段保留 | 前端无 `msg_code` 对应翻译时降级显示 `message` |
+| 后端禁止翻译 `msg_code` | 翻译在前端 `messages.js` 通过 i18n 完成 |
+
+**能返回用户消息的 7 个文件（铁律清单）：**
+```
+utils/exceptions.py    — AppError + msg_code 定义
+main.py                — 422/500 handler
+routes/analyze.py      — 启动/轮询/保存
+routes/history.py      — 历史 CRUD
+routes/proxy.py        — 图片代理
+middleware.py          — JWT 401
+services/analyze_svc.py — task dict error/warning
+```
+**新增/修改路由如果产生用户可见消息 → 必须同步更新此清单 + 前端 i18n JSON。**
 
 ## 四、认证中间件
 
@@ -107,6 +133,7 @@ CORS（最外层，OPTIONS 放行）→ JWT（内层，Bearer token 校验）
 |------|------|---------|
 | `adapters/google_auth.py` | Google OAuth 2.0 | 模块级单例 `google_auth_adapter` |
 | `adapters/apify_adapter.py` | Apify 1688 Scraper | `ApifyClientAsync` SDK，v3.x 无 `async with`，模块级单例 `apify_adapter` |
+| `adapters/qwen_adapter.py` | Qwen3-Flash API | HTTP 调用封装，模块级单例 `qwen_adapter` |
 
 ## 八、Domain 层
 
@@ -114,12 +141,15 @@ CORS（最外层，OPTIONS 放行）→ JWT（内层，Bearer token 校验）
 
 ```
 domain/
-├── cache.py                # 内存缓存（TTL 30min，LRU 淘汰，上限 500 条）
-├── product_mapper.py       # Apify 原始 JSON → 标准化数据映射（纯函数，字段级容错）
-├── rate_limiter.py         # 滑动窗口全局限流（30 次/分钟）
-├── urls.py                 # 1688 URL 解析（extract_offer_id / is_valid_1688_url）
-├── verdict_engine.py       # V1 规则引擎（L1+L2+L3 三层判词）
-└── verdict_templates.json  # 判词文案模板（新增品类改配置不动代码）
+├── cache.py                  # 内存缓存（TTL 30min，LRU 淘汰，上限 500 条）
+├── display_builder.py        # Display JSON 构建器：全部走 term_glossary.json 查表，4 语言预翻译
+├── product_mapper.py         # Apify 原始 JSON → 标准化数据映射（输出 glossary KEY，纯函数）
+├── rate_limiter.py           # 滑动窗口全局限流（30 次/分钟）
+├── term_glossary.json        # 术语/模板/解释/判词/产业带 字典 — 唯一翻译数据源（~100 条 × 4 语言）
+├── translator.py             # Qwen 翻译：仅翻译 1688 原始数据（title/supplierName/shippingLocation 等 6 字段）
+├── translator_prompts.json   # 翻译 prompt 模板（system + template + forbidden）
+├── urls.py                   # 1688 URL 解析（extract_offer_id / is_valid_1688_url）
+└── verdict_engine.py         # 规则引擎：输出 {key, params}，判词文案从 glossary 查表
 ```
 
 ## 九、异常体系
@@ -144,9 +174,9 @@ domain/
 - **超时：** 90 秒（`APIFY_WAIT_SECONDS`）；**降级：** 超时/失败 → 过期缓存兜底 → 无缓存则拒绝
 - **成本控制：** offer_id 缓存 30min TTL + 全局限流 30 次/分钟
 
-## 十一、V1 零 AI（铁律）
+## 十一、V1 AI 使用限制
 
-**V1 不使用任何大语言模型。** 判词用纯规则引擎，翻译用手动模板。禁止引入 `openai` / `anthropic` / 任何 LLM SDK。
+**V1 判词仍用纯规则引擎，不引入 LLM。** 动态内容翻译可使用 Qwen3-Flash（OpenAI 兼容接口）将中文字段翻译为目标语言（en/vi/th/id）。翻译用于 display JSON 的 Path 3 字段，不属于业务逻辑。翻译失败降级回中文原文，不影响主流程。
 
 ## 十二、并发控制 + 资源清理
 

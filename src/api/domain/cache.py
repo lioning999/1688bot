@@ -13,7 +13,7 @@ from typing import Any
 # {offer_id: (timestamp, data)}
 cache: OrderedDict[str, tuple[float, dict[str, Any]]] = OrderedDict()
 MAX_SIZE = 500
-TTL = 1800  # 30 分钟
+TTL = 43200  # 12 小时
 
 
 def get(offer_id: str) -> dict[str, Any] | None:
@@ -27,6 +27,17 @@ def get(offer_id: str) -> dict[str, Any] | None:
         return data
     # 过期清理
     del cache[offer_id]
+    return None
+
+
+def get_expired(offer_id: str) -> dict[str, Any] | None:
+    """读过期缓存（用于降级兜底）。不清理条目，留给调用方决定是否使用。"""
+    entry = cache.get(offer_id)
+    if entry is None:
+        return None
+    ts, data = entry
+    if time.time() - ts >= TTL:
+        return data
     return None
 
 

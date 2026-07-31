@@ -1,14 +1,18 @@
 """日志工具 — 文件轮转 + 控制台双输出，支持脱敏配置。"""
 
 import logging
+import os
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+# 默认日志目录：src/api/logs/（从 logger.py 的 __file__ 推导）
+_DEFAULT_LOG_DIR = str(Path(__file__).resolve().parent.parent / "logs")
+
 
 def get_logger(
     name: str,
-    log_dir: str = "logs",
+    log_dir: str = "",
     level: int = logging.INFO,
     max_bytes: int = 10 * 1024 * 1024,
     backup_count: int = 5,
@@ -43,8 +47,9 @@ def get_logger(
     console.setFormatter(formatter)
     logger.addHandler(console)
 
-    # 文件轮转
-    log_path = Path(log_dir)
+    # 文件轮转：LOG_DIR 环境变量 > 代码传入 > 默认 src/api/logs/
+    resolved_dir = log_dir or os.getenv("LOG_DIR", _DEFAULT_LOG_DIR)
+    log_path = Path(resolved_dir)
     log_path.mkdir(parents=True, exist_ok=True)
     file_handler = RotatingFileHandler(
         log_path / f"{name.split('.')[-1] or 'app'}.log",

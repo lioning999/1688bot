@@ -48,8 +48,9 @@ async def google_callback(code: str, state: str = ""):
     """
     try:
         result = await auth_service.login_with_google(code)
-    except ExternalServiceError:
-        # 登录失败 → 重定向（state 已含前导 /，如 /report.html?offerId=xxx）
+        logger.info(f"[Auth] Google 回调成功 user_id={result['user']['id']} email={result['user']['email']} state={state}")
+    except ExternalServiceError as e:
+        logger.warning(f"[Auth] Google 回调失败: {e} state={state}")
         fallback = state if state else "/"
         return RedirectResponse(url=fallback, status_code=302)
 

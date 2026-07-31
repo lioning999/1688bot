@@ -2,6 +2,7 @@
 
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -80,7 +81,8 @@ async def app_error_handler(request: Request, exc: AppError):
 async def validation_error_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=422,
-        content={"code": 422, "data": None, "message": "输入验证失败"},
+        content=AppError(message="输入验证失败", code="REQUEST_VALIDATION_ERROR",
+                         msg_code="REQUEST_VALIDATION_ERROR", http_status=422).to_dict(),
     )
 
 
@@ -90,7 +92,8 @@ async def catch_all_handler(request: Request, exc: Exception):
     logger.exception(f"Unhandled exception: {request.url.path}")
     return JSONResponse(
         status_code=500,
-        content={"code": 500, "data": None, "message": "服务器内部错误，请稍后重试"},
+        content=AppError(message="服务器内部错误，请稍后重试", code="INTERNAL_ERROR",
+                         msg_code="INTERNAL_ERROR", http_status=500).to_dict(),
     )
 
 
@@ -113,7 +116,7 @@ async def health_check():
 
 # ---- 公开配置（前端启动时取一次） ----
 @app.get("/api/config")
-async def public_config():
+async def public_config() -> dict[str, Any]:
     """返回前端需要的公开配置（不含敏感信息）。汇率从此一处配置。"""
     return {
         "code": 200,

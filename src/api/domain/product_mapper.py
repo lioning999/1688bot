@@ -1,13 +1,22 @@
 """1688 商品数据映射 — Apify 原始 JSON → 标准化数据。
 
-纯函数，零外部 API/DB 依赖。仅依赖 config.CNY_USD_RATE（汇率常量）。
+纯函数，零外部 API/DB 依赖。
 覆盖风险清单：
   #8  字段级容错 — 所有字段取值前检查存在性，缺字段不崩溃
 """
 
 from typing import Any, cast
 
-from config import Config
+# ---- tier + industry KEY 映射（term_glossary.json 中对应条目） ----
+
+# tier → glossary key 映射
+_TIER_KEY: dict[str, str] = {
+    "sufficient_2y":  "tier_sufficient_2y",
+    "advanced_lt2y":  "tier_advanced_lt2y",
+    "factory_1y":     "tier_factory_1y",
+    "no_cert_1y":     "tier_no_cert_1y",
+    "insufficient":   "tier_insufficient",
+}
 
 
 # ====================================================================
@@ -30,7 +39,7 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
     location: str = cast(str, shipping.get("location")) or ""
 
     # SKU 变体（Apify 键名: skuImages，字段: name/imgUrl）
-    _raw_skus: Any = raw.get("skuImages") or raw.get("skuList") or raw.get("skus")
+    _raw_skus: Any = raw.get("skuImages")
     sku_list: list[dict[str, Any]] = _raw_skus if isinstance(_raw_skus, list) else []  # type: ignore[reportUnnecessaryIsInstance]
 
     # 阶梯价格
@@ -44,11 +53,10 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "title": raw.get("title", ""),
         "image": (raw.get("images") or [""])[0] if raw.get("images") else "",
         "images": (raw.get("images") or [])[:5],
-        "priceLow": round(_safe_float(price_low_cny) / Config.CNY_USD_RATE, 2) if price_low_cny else None,
-        "priceHigh": round(_safe_float(price_high_cny) / Config.CNY_USD_RATE, 2) if price_high_cny else None,
         "priceCNY": {"low": _safe_float(price_low_cny), "high": _safe_float(price_high_cny)},
         "moq": raw.get("minOrderQuantity"),
         "itemUrl": original_url or raw.get("detailUrl", ""),
+        "videoUrl": _extract_video_url(raw),
         "specs": _filter_specs(raw.get("specs", []) or []),
         "unit": raw.get("unit", ""),
         "offerId": offer_id,
@@ -57,7 +65,6 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "return7day": "OK" if _has_tag(raw.get("serviceLabels", []) or [], "7天")
                             or _has_tag(raw.get("serviceLabels", []) or [], "退货") else "NO",
         "sold": raw.get("saledCount"),
-        "wantBuyCount": raw.get("wantBuyCount", 0),
 
         # 产品标签（Badge 行）
         "badgeLabels": _build_badge_labels(
@@ -67,26 +74,13 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
 
         # 工厂信息
         "supplierName": supplier.get("companyName", ""),
-        "shop_rate": _parse_pct(
-            stats.get("positiveReviewRate")
-            or _raw_card_value(stats, "goodRate")
-            or supplier.get("positiveReviewRate")
-        ),
         "shop_years": supplier.get("tpYear"),
-        "repurchase": _parse_pct(
-            stats.get("repeatRate")
-            or _raw_card_value(stats, "byrRepeatRate")
-            or _factory_tag_value(supplier, "回头率")
-            or supplier.get("repeatRate")
-        ),
+        "repurchase": _parse_pct(stats.get("repeatRate")),
         "shippingLocation": location,
         "industryCluster": _industry_cluster(location),
-        "deliveryDays": shipping.get("deliveryDays"),
-        "freeSample": _has_tag(raw.get("serviceLabels", []) or [], "免费拿样"),
 
         # 工厂身份 + 认证 + 排名
         "sellerType": supplier.get("sellerType", ""),
-        "sellerTypeLabel": _SELLER_TYPE_MAP.get(supplier.get("sellerType", ""), ""),
         "factoryFlags": _build_factory_flags(flags),
         "certType": _safe_cert_type(supplier.get("certification")),
         "certReportUrl": _safe_cert_url(supplier.get("certification")),
@@ -98,10 +92,6 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "dataTier": _tier,
         "dataTierReason": _tier_reason,
 
-        # 回头客 / 跨境买家
-        "repeatBuyers": stats.get("repeatBuyers") or _raw_card_value(stats, "byrRepeatCustomer") or "",
-        "crossBorderBuyers": stats.get("crossBorderBuyers") or _raw_card_value(stats, "kjByrNum90D") or "",
-
         # SKU + 阶梯价（供前端渲染）
         "skus": sku_list[:6] if sku_list else [],
         "price_tiers": price_tiers,
@@ -109,20 +99,8 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
 
 
 # ====================================================================
-# 工具函数（供 analyze_svc 使用）
-# ====================================================================
-
-# ====================================================================
 # 标签映射常量
 # ====================================================================
-
-_SELLER_TYPE_MAP: dict[str, str] = {
-    "yuantou_flagship": "源头旗舰",
-    "shili_factory": "实力工厂",
-    "super_factory": "超级工厂",
-    "tp_factory": "通品工厂",
-    "normal": "普通商家",
-}
 
 _FACTORY_FLAG_MAP: dict[str, str] = {
     "isFactory": "生产厂家",
@@ -196,18 +174,18 @@ def _data_tier(flags: dict[str, Any], shop_years: Any) -> tuple[str, str]:
         try:
             years = float(shop_years)
         except (ValueError, TypeError):
-            years = 0
+            pass  # years 已是默认值 0
 
     if has_advanced_cert and years >= 2:
-        return 'sufficient', '平台验厂认证 + 经营 2 年以上 · 拿样风险低'
+        return 'sufficient', _TIER_KEY["sufficient_2y"]
     elif has_advanced_cert:
-        return 'partial', '有平台验厂认证，经营不足 2 年 · 建议验货'
+        return 'partial', _TIER_KEY["advanced_lt2y"]
     elif is_factory and years >= 1:
-        return 'partial', '生产厂家，经营 1 年以上 · 建议拿样验证'
+        return 'partial', _TIER_KEY["factory_1y"]
     elif years >= 1:
-        return 'partial', '无工厂认证，经营 1 年以上 · 建议拿样验证'
+        return 'partial', _TIER_KEY["no_cert_1y"]
     else:
-        return 'limited', '无官方认证，经营不足 1 年 · 建议人工核实'
+        return 'limited', _TIER_KEY["insufficient"]
 
 
 def _build_factory_flags(flags: dict[str, Any]) -> str:
@@ -240,17 +218,24 @@ def _safe_cert_url(cert: Any) -> str:
 
 
 def _extract_price_tiers(raw: dict[str, Any]) -> list[dict[str, Any]]:
-    """提取阶梯价格。Apify 返回格式：[{quantityMin, quantityMax, price}, ...]"""
-    _raw_tiers: Any = raw.get("quantityPrices") or raw.get("priceRanges") or raw.get("priceRange")
-    tiers: list[dict[str, Any]] = _raw_tiers if isinstance(_raw_tiers, list) else []  # type: ignore[reportUnnecessaryIsInstance]
+    """提取阶梯价格。Apify 键名：quantityPrices，格式：[{quantityMin, quantityMax, price}, ...]"""
+    _raw_tiers = raw.get("quantityPrices")
+    if not isinstance(_raw_tiers, list):
+        return []
     result: list[dict[str, Any]] = []
-    for t in tiers:
+    for t in cast(list[dict[str, Any]], _raw_tiers):
         result.append({
-            "qty_min": t.get("quantityMin") or t.get("begin") or t.get("qty_min"),
-            "qty_max": t.get("quantityMax") or t.get("end") or t.get("qty_max"),
-            "unit_price": t.get("price") or t.get("unit_price"),
+            "qty_min": t.get("quantityMin"),
+            "qty_max": t.get("quantityMax"),
+            "unit_price": t.get("price"),
         })
     return result
+
+
+def _extract_video_url(raw: dict[str, Any]) -> str:
+    """从 Apify 原始数据提取视频 URL。字段名: videoUrl（字符串，根层级）。"""
+    vu = raw.get("videoUrl")
+    return str(vu) if isinstance(vu, str) and vu else ""
 
 
 def _filter_specs(specs: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -293,40 +278,24 @@ def _parse_pct(val: Any) -> float | None:
         return None
 
 
-def _raw_card_value(stats: dict[str, Any], code: str) -> Any:
-    """从 stats.rawCardDetail 数组中按 code 取值。"""
-    for item in (stats.get('rawCardDetail') or []):  # type: ignore[reportUnknownMemberType]
-        if isinstance(item, dict):  # type: ignore[reportUnnecessaryIsInstance]
-            item_dict: dict[str, Any] = cast(dict[str, Any], item)
-            if item_dict.get('code') == code:
-                return item_dict.get('value')
-    return None
-
-
-def _factory_tag_value(supplier: dict[str, Any], keyword: str) -> Any:
-    """从 supplier.factoryTags 数组中按 text 关键词模糊匹配取值。"""
-    for item in (supplier.get('factoryTags') or []):  # type: ignore[reportUnknownMemberType]
-        if isinstance(item, dict):  # type: ignore[reportUnnecessaryIsInstance]
-            item_dict: dict[str, Any] = cast(dict[str, Any], item)
-            if keyword in str(item_dict.get('text', '')):
-                return item_dict.get('value')
-    return None
+_INDUSTRY_KEY: dict[str, str] = {
+    "义乌": "industry_yiwu", "金华": "industry_yiwu",
+    "广州": "industry_guangzhou",
+    "深圳": "industry_shenzhen", "晋江": "industry_jinjiang",
+    "南通": "industry_nantong", "泉州": "industry_quanzhou",
+    "东莞": "industry_dongguan", "佛山": "industry_foshan",
+    "杭州": "industry_hangzhou", "温州": "industry_wenzhou",
+    "宁波": "industry_ningbo", "绍兴": "industry_shaoxing",
+    "澄海": "industry_chenghai", "永康": "industry_yongkang",
+    "诸暨": "industry_zhuji", "潮州": "industry_chaozhou",
+}
 
 
 def _industry_cluster(location: str) -> str:
+    """根据发货地址匹配产业带 → 返回 glossary KEY。"""
     if not location:
         return ""
-    MAP = {
-        "义乌": "中国小商品集散中心", "广州": "服装/箱包/皮具产业带",
-        "深圳": "3C 电子/跨境电商货源地", "晋江": "运动鞋服产业带",
-        "南通": "家纺产业带", "泉州": "鞋服箱包产业带",
-        "东莞": "电子/玩具/模具产业带", "佛山": "家具/陶瓷产业带",
-        "杭州": "女装/电商供应链中心", "温州": "鞋革/五金/眼镜产业带",
-        "宁波": "小家电/文具产业带", "绍兴": "纺织面料产业带",
-        "澄海": "玩具产业带", "永康": "五金/杯壶产业带",
-        "诸暨": "袜子/珍珠产业带", "潮州": "陶瓷/卫浴产业带",
-    }
-    for key, desc in MAP.items():
-        if key in location:
-            return desc
-    return ""
+    for city, key in _INDUSTRY_KEY.items():
+        if city in location:
+            return key
+    return "industry_fallback"  # 未匹配城市兜底

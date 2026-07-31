@@ -41,8 +41,6 @@ def test_map_raw_basic_fields(apify_raw):
     assert result["title"], "title 不应为空"
     assert result["offerId"] == "1038913113865"
     assert result["priceCNY"] == {"low": 7.5, "high": 7.8}
-    assert result["priceLow"] == pytest.approx(1.04, abs=0.1)   # 7.5 / 7.2
-    assert result["priceHigh"] == pytest.approx(1.08, abs=0.1)  # 7.8 / 7.2
     assert result["moq"] == 2
     assert result["unit"] != ""
     assert result["sold"] == 4944
@@ -56,7 +54,6 @@ def test_map_raw_supplier_fields(apify_raw):
     assert result["supplierName"], "公司名称不应为空"
     assert result["shop_years"] == 6
     assert result["sellerType"] == "yuantou_flagship"
-    assert result["sellerTypeLabel"] == "源头旗舰"
     assert result["certType"], "认证类型不应为空"
     assert result["certReportUrl"], "认证报告 URL 不应为空"
     assert result["sellerTierLabel"] in ("源头工厂", "贸易商")
@@ -111,12 +108,10 @@ def test_map_raw_empty_input():
 
     assert result["title"] == ""
     assert result["priceCNY"] == {"low": 0, "high": 0}
-    assert result["priceLow"] is None
     assert result["sold"] is None
     assert result["moq"] is None
     assert result["supplierName"] == ""
     assert result["sellerType"] == ""
-    assert result["sellerTypeLabel"] == ""
     assert result["certType"] == ""
     assert result["images"] == []
     assert result["specs"] == []
@@ -176,7 +171,7 @@ def test_data_tier_non_numeric_shop_years():
         "", "123",
     )
     assert result["dataTier"] == "limited"
-    assert "不足 1 年" in result["dataTierReason"]
+    assert result["dataTierReason"] == "tier_insufficient"
 
 
 def test_map_raw_garbage_price():
@@ -186,7 +181,3 @@ def test_map_raw_garbage_price():
         "", "123",
     )
     assert result["priceCNY"] == {"low": 0, "high": 0}
-    # "一百" 是 truthy 字符串，_safe_float→0，0/rate=0.0 → round 后仍是 0.0
-    # 原始值 truthy → 进 if 分支 → priceLow=0.0（注意不是 None）
-    assert result["priceLow"] == 0.0
-    assert result["priceHigh"] == 0.0

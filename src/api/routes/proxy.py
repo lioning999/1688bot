@@ -3,9 +3,10 @@
 from urllib.parse import urlparse
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import Response
 
+from utils.exceptions import AppError, ExternalServiceError
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -35,7 +36,8 @@ async def proxy_image(url: str = Query(..., description="需要代理的图片�
     """代理获取远程图片，返回二进制流。用于 html2canvas 截图时绕过 CORS 限制。"""
     host = urlparse(url).hostname or ""
     if host not in ALLOWED_HOSTS and not any(host.endswith(s) for s in _ALLOWED_SUFFIXES):
-        raise HTTPException(status_code=403, detail=f"不允许代理该域名: {host}")
+        raise AppError(message=f"不允许代理该域名: {host}", code="PROXY_HOST_DENIED",
+                       msg_code="PROXY_HOST_DENIED", http_status=403)
 
     try:
         async with httpx.AsyncClient(timeout=15, headers=PROXY_HEADERS, http2=False) as client:
@@ -43,7 +45,7 @@ async def proxy_image(url: str = Query(..., description="需要代理的图片�
             resp.raise_for_status()
     except httpx.HTTPError as e:
         logger.warning(f"图片代理失败: {url[:80]} — {e}")
-        raise HTTPException(status_code=502, detail="图片获取失败")
+        raise ExternalServiceError(service_name="图片代理", msg_code="PROXY_FETCH_FAILED")
 
     content_type = resp.headers.get("content-type", "image/jpeg")
     return Response(content=resp.content, media_type=content_type)

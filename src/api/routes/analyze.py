@@ -7,7 +7,6 @@
   #14  L1 前端按钮防重（后端配合：同 offer_id 未完成任务返回已有 task_id）
 """
 
-import time
 from typing import Any
 
 from fastapi import APIRouter, Request
@@ -15,17 +14,15 @@ from pydantic import BaseModel, field_validator
 
 from config import Config
 from domain import cache as analysis_cache, rate_limiter
+from domain.quota import check_quota
 from domain.urls import extract_offer_id, is_valid_1688_url
-from services.analyze_svc import _build_result_with_display, analyze_service
-from utils.exceptions import ValidationError, InsufficientQuotaError, ResourceNotFoundError
+from services.analyze_svc import build_result_with_display, analyze_service
+from utils.exceptions import ValidationError, InsufficientQuotaError, ResourceNotFoundError, AppError
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 router = APIRouter()
-
-# 简单内存计数器（按 IP，V1 未登录用户限制）
-_daily_counter: dict[str, tuple[int, float]] = {}
 
 
 class AnalyzeRequest(BaseModel):
@@ -54,19 +51,28 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
     # ---- 1. 提取 offerId ----
     offer_id = extract_offer_id(body.url)
     if not offer_id or not offer_id.isdigit():
-        raise ValidationError(message="无法从链接中提取有效的商品 ID")
+        raise ValidationError(message="无法从链接中提取有效的商品 ID", msg_code="OFFER_ID_NOT_FOUND")
     if len(offer_id) < 8:
-        raise ValidationError(message="商品 ID 格式不正确")
+        raise ValidationError(message="商品 ID 格式不正确", msg_code="OFFER_ID_INVALID")
 
     # ---- 2. 全局限流（风险 #14 L3） ----
     if not await rate_limiter.check():
         logger.warning(f"Global rate limit hit from IP={request.client.host if request.client else '?'}")
         raise InsufficientQuotaError(
             resource_type="系统繁忙",
+            msg_code="GLOBAL_RATE_LIMIT",
             details={"retry_after": "60秒"},
         )
 
-    # ---- 3. 每日配额（未登录按 IP 3 次/天，登录按 user_id 10 次/天） ----
+    # ---- 3. 缓存前置：命中直接返回 task_id，不扣配额 ----
+    cached: dict[str, Any] | None = analysis_cache.get(offer_id)
+    if cached:
+        logger.info(f"[汇总] offer_id={offer_id} 缓存命中 | 配额0 Apify✗ Qwen✗")
+        result: dict[str, Any] = await build_result_with_display(cached, offer_id, body.lang)
+        task_id: str = analyze_service.create_done_task(result)
+        return {"code": 200, "msg_code": "OK", "data": {"task_id": task_id, "status": "pending"}, "message": "ok"}
+
+    # ---- 4. 每日配额（未登录按 IP 3 次/天，登录按 user_id 10 次/天） ----
     user_id: int = getattr(request.state, "user_id", 0) or 0
     if user_id:
         daily_limit: int = Config.APIFY_DAILY_LOGIN_LIMIT
@@ -75,26 +81,21 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
         daily_limit = Config.APIFY_DAILY_FREE_LIMIT
         quota_key = request.client.host if request.client else "unknown"
 
-    if not _check_quota(quota_key, daily_limit):
+    if not check_quota(quota_key, daily_limit):
         tip: str = "登录后可获得 10 次/天" if not user_id else "请明天再试或联系 WhatsApp"
         raise InsufficientQuotaError(
             resource_type="今日分析次数",
+            msg_code="DAILY_QUOTA_EXCEEDED",
             details={"daily_limit": daily_limit, "tip": tip},
         )
 
-    # ---- 3.5. 缓存前置：命中直接返回，不创建 task，不调 Apify/Qwen ----
-    cached: dict[str, Any] | None = analysis_cache.get(offer_id)
-    if cached:
-        logger.info(f"Cache hit at route: offer_id={offer_id}")
-        result: dict[str, Any] = await _build_result_with_display(cached, offer_id, body.lang)
-        return {"code": 200, "data": {"status": "done", "result": result}, "message": "ok"}
-
-    # ---- 4. 启动后台分析 ----
+    # ---- 5. 启动后台分析 ----
     task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url, lang=body.lang, quota_key=quota_key)
-    logger.info(f"Analysis started: offer_id={offer_id} task_id={task_id} user_id={user_id} lang={body.lang}")
+    logger.info(f"[汇总] offer_id={offer_id} task_id={task_id} 启动Apify | lang={body.lang or 'zh'}")
 
     return {
         "code": 200,
+        "msg_code": "OK",
         "data": {"task_id": task_id, "status": "pending"},
         "message": "ok",
     }
@@ -115,10 +116,20 @@ async def analyze_status(task_id: str) -> dict[str, Any]:
     """
     task = analyze_service.get_task(task_id)
     if task is None:
-        raise ResourceNotFoundError(resource_type="任务", resource_id=task_id)
+        raise ResourceNotFoundError(resource_type="任务", resource_id=task_id, msg_code="TASK_NOT_FOUND")
+
+    # 任务失败 → 返回 200（保持轮询契约），msg_code 嵌入 task 数据
+    if task.get("status") == "failed":
+        return {
+            "code": 200,
+            "msg_code": task.get("error_msg_code", "INTERNAL_ERROR"),
+            "data": task,
+            "message": task.get("error", "分析失败"),
+        }
 
     return {
         "code": 200,
+        "msg_code": "OK",
         "data": task,
         "message": "ok",
     }
@@ -148,57 +159,27 @@ async def save_report(body: SaveReportRequest, request: Request) -> dict[str, An
     """
     user_id: int = getattr(request.state, "user_id", 0) or 0
     if not user_id:
-        return {"code": 401, "data": None, "message": "请先登录"}
+        raise AppError(message="请先登录", code="LOGIN_REQUIRED", msg_code="LOGIN_REQUIRED",
+                       http_status=401)
 
     result = await analyze_service.save_report(user_id=user_id, offer_id=body.offer_id)
     if result is None:
         # 缓存已过期
-        return {
-            "code": 410,
-            "data": None,
-            "message": "分析已过期，请重新搜索该商品",
-        }
+        logger.warning(f"[Save] 缓存过期 offer_id={body.offer_id} user_id={user_id}")
+        raise AppError(message="分析已过期，请重新搜索该商品", code="ANALYSIS_EXPIRED",
+                       msg_code="ANALYSIS_EXPIRED", http_status=410)
 
     # 检查是否已达 20 条上限（result 带 limit_exceeded 标记时）
     if result.get("limit_exceeded"):
-        return {
-            "code": 409,
-            "data": {"count": result.get("count", 20)},
-            "message": "已达 20 条保存上限，请先在历史记录中删除旧记录后再保存",
-        }
+        logger.warning(f"[Save] 保存上限 offer_id={body.offer_id} user_id={user_id}")
+        raise AppError(message="已达 20 条保存上限，请先在历史记录中删除旧记录后再保存",
+                       code="SAVE_LIMIT_EXCEEDED", msg_code="SAVE_LIMIT_EXCEEDED",
+                       http_status=409)
 
-    logger.info(f"Report saved: offer_id={body.offer_id} user_id={user_id}")
+    logger.info(f"[Save] 保存成功 offer_id={body.offer_id} user_id={user_id}")
     return {
         "code": 200,
+        "msg_code": "SAVE_OK",
         "data": {"saved": True},
         "message": "已保存到我的分析",
     }
-
-
-# ====================================================================
-# 配额工具
-# ====================================================================
-
-def _check_quota(key: str, limit: int) -> bool:
-    now = time.time()
-    # 每 10 次调用清理过期条目（48h+ 未活跃），防止内存泄漏（Bug #8）
-    if len(_daily_counter) % 10 == 0:
-        expired = [k for k, v in _daily_counter.items() if (now - v[1]) > 172800]
-        for k in expired:
-            del _daily_counter[k]
-    entry = _daily_counter.get(key)
-    if entry is None or (now - entry[1]) > 86400:
-        _daily_counter[key] = (1, now)
-        return True
-    count, first_ts = entry
-    if count >= limit:
-        return False
-    _daily_counter[key] = (count + 1, first_ts)
-    return True
-
-
-def _quota_refund(key: str) -> None:
-    """Apify 失败时退还配额（成功扣、失败不扣）。"""
-    entry = _daily_counter.get(key)
-    if entry and entry[0] > 0:
-        _daily_counter[key] = (entry[0] - 1, entry[1])

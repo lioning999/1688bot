@@ -81,6 +81,9 @@ class Config:
     QWEN_MODEL: str = os.getenv("QWEN_MODEL", "qwen-flash")
     QWEN_API_BASE: str = os.getenv("QWEN_API_BASE", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
 
+    # ---- 日志 ----
+    LOG_DIR: str = os.getenv("LOG_DIR", "")
+
     # ---- Sentry 错误监控 ----
     SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")
 

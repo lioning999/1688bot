@@ -47,14 +47,16 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             if not token:
                 return JSONResponse(
                     status_code=401,
-                    content={"code": 401, "data": None, "message": "缺少认证信息"},
+                    content={"code": 401, "data": None, "message": "缺少认证信息",
+                             "msg_code": "MISSING_AUTH"},
                 )
             try:
                 payload = decode_token(token)
             except Exception:
                 return JSONResponse(
                     status_code=401,
-                    content={"code": 401, "data": None, "message": "token无效或已过期"},
+                    content={"code": 401, "data": None, "message": "token无效或已过期",
+                             "msg_code": "TOKEN_INVALID"},
                 )
             request.state.user_id = payload.get("user_id")
         elif token:
