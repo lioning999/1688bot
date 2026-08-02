@@ -99,7 +99,7 @@
 
       var timeAgo = formatTimeAgo(item.created_at);
       var imgHtml = item.image_url
-        ? '<img class="hi-thumb" src="' + escapeAttr(item.image_url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+        ? '<img class="hi-thumb" src="' + escapeAttr(item.image_url) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">'
         : '<div class="hi-thumb hi-thumb-empty"></div>';
 
       html +=

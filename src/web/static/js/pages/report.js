@@ -286,7 +286,7 @@
       skuEl.innerHTML = skus.length ? skus.slice(0, 6).map(function (s) {
         var imgUrl = s.imgUrl || '';
         var name = s.name || '';
-        return '<img src="' + imgUrl + '" alt="' + name + '" title="' + name + '">';
+        return '<img src="' + imgUrl + '" alt="' + name + '" title="' + name + '" referrerpolicy="no-referrer">';
       }).join('') : '';
     }
 

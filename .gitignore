@@ -10,3 +10,4 @@ client_secret_*.json
 *~
 src/web/static/uploads/
 src/web/temp/
+.vscode/
