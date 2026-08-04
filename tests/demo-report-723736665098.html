@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sourcely — Kính râm nam · Phân tích</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a1a;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 10px 12px 100px;
+    line-height: 1.5;
+  }
+
+  /* ===== 顶部导航 ===== */
+  .topnav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0 12px;
+  }
+  .topnav .logo {
+    font-weight: 700;
+    font-size: 18px;
+    color: #1a56db;
+  }
+  .topnav .right {
+    font-size: 12px;
+    color: #888;
+  }
+
+  /* ===== 卡片容器 ===== */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ===== ① 商品确认 ===== */
+  .product-block {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .product-block .img-main {
+    width: 88px;
+    height: 88px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #eee;
+  }
+  .product-block .img-thumbs {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .product-block .img-thumbs img {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid #eee;
+  }
+  .product-block .info {
+    flex: 1;
+  }
+  .product-block .title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .product-block .meta {
+    font-size: 12px;
+    color: #555;
+    margin-top: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+  .product-block .meta strong {
+    color: #1a1a1a;
+  }
+
+  /* ===== ② 综合结论 ===== */
+  .verdict {
+    text-align: center;
+    padding: 16px;
+    border-radius: 12px;
+    background: #ecfdf5;
+    border: 2px solid #10b981;
+  }
+  .verdict.warn {
+    background: #fffbeb;
+    border-color: #f59e0b;
+  }
+  .verdict .tag {
+    font-size: 20px;
+    font-weight: 800;
+    color: #065f46;
+  }
+  .verdict.warn .tag {
+    color: #92400e;
+  }
+  .verdict .summary {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* ===== ③ 分项论据 ===== */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 10px;
+  }
+
+  /* 每个维度一行 */
+  .dim-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    gap: 8px;
+  }
+  .dim-row:last-child {
+    border-bottom: none;
+  }
+  .dim-row .status {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+  }
+  .dim-row .label {
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+    width: 80px;
+  }
+  .dim-row .data {
+    font-size: 12px;
+    color: #555;
+    flex: 1;
+  }
+  .dim-row .data strong {
+    color: #1a1a1a;
+  }
+  .dim-row .data .highlight {
+    color: #10b981;
+    font-weight: 600;
+  }
+  .dim-row .data .bad {
+    color: #ef4444;
+    font-weight: 600;
+  }
+
+  /* 没有数据的叉叉行 */
+  .dim-row .data .no-data {
+    color: #aaa;
+  }
+
+  /* ===== ④ 拿样与发货 ===== */
+  .sample-cost {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px;
+    background: #fef3c7;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .sample-steps {
+    display: flex;
+    gap: 4px;
+    font-size: 10px;
+    text-align: center;
+  }
+  .sample-steps .step {
+    flex: 1;
+    padding: 8px 2px;
+    background: #f9fafb;
+    border-radius: 6px;
+  }
+  .sample-steps .step .num {
+    font-weight: 700;
+    font-size: 12px;
+    display: block;
+  }
+  .sample-promise {
+    font-size: 11px;
+    color: #555;
+    margin-top: 8px;
+    display: flex;
+    gap: 4px 12px;
+    flex-wrap: wrap;
+  }
+
+  /* ===== ⑤ 行动按钮 ===== */
+  .action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 10px 16px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20;
+  }
+  .action-bar .cost {
+    font-size: 11px;
+    color: #888;
+    flex-shrink: 0;
+  }
+  .action-bar .cost strong {
+    font-size: 16px;
+    color: #e03131;
+    display: block;
+  }
+  .action-bar .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    background: #10b981;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: #ccc;
+    padding: 14px 0 6px;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 375px) {
+    .dim-row .label {
+      width: 60px;
+      font-size: 12px;
+    }
+    .dim-row .data {
+      font-size: 11px;
+    }
+    .sample-steps {
+      font-size: 9px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<div class="topnav">
+  <span class="logo">🔍 Sourcely</span>
+  <span class="right">🇻🇳 VI · 今日 3/3</span>
+</div>
+
+<!-- ===== ① 商品确认 ===== -->
+<div class="card">
+  <div class="product-block">
+    <div>
+      <img class="img-main" src="https://cbu01.alicdn.com/img/ibank/O1CN019mnXCT1NyFba3mSQk_!!2215924081638-0-cib.jpg" alt="Kính râm" referrerpolicy="no-referrer" loading="lazy">
+      <div class="img-thumbs">
+        <img src="https://cbu01.alicdn.com/img/ibank/O1CN019mnXCT1NyFba3mSQk_!!2215924081638-0-cib.jpg" alt="" referrerpolicy="no-referrer" loading="lazy">
+        <img src="https://cbu01.alicdn.com/img/ibank/O1CN01rr4xUS1NyFbUeFhQy_!!2215924081638-0-cib.jpg" alt="" referrerpolicy="no-referrer" loading="lazy">
+        <img src="https://cbu01.alicdn.com/img/ibank/O1CN01Pylahk1NyFbUeGuIj_!!2215924081638-0-cib.jpg" alt="" referrerpolicy="no-referrer" loading="lazy">
+      </div>
+    </div>
+    <div class="info">
+      <div class="title">Kính râm nam chống UV</div>
+      <div class="meta">
+        <span>💰 <strong>¥2.00</strong>–¥38.00</span>
+        <span>📦 <strong>2</strong> cái tối thiểu</span>
+        <span>📊 <strong>8.900+</strong> đã bán</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ② 综合结论 ===== -->
+<div class="card" style="padding:0;">
+  <div class="verdict warn">
+    <div class="tag">🧐 Cân nhắc lấy mẫu</div>
+    <div class="summary">Thương nhân · TUV xác minh · TOP3 bán chạy — nên kiểm tra mẫu</div>
+  </div>
+</div>
+
+<!-- ===== ③ 分项论据 ===== -->
+<div class="card">
+  <div class="section-title">📋 Tại sao kết luận này?</div>
+
+  <!-- 维度1：利润空间 -->
+  <div class="dim-row">
+    <span class="status">✅</span>
+    <span class="label">Lợi nhuận</span>
+    <span class="data">~42% <strong>tỷ suất lợi nhuận</strong> · lãi ~¥13/cái</span>
+  </div>
+
+  <!-- 维度2：工厂身份 -->
+  <div class="dim-row">
+    <span class="status">⚠️</span>
+    <span class="label">Nhà cung cấp</span>
+    <span class="data"><strong>Thương nhân</strong> (không phải nhà máy) · xác minh TUV</span>
+  </div>
+
+  <!-- 维度3：品质认证 -->
+  <div class="dim-row">
+    <span class="status">✅</span>
+    <span class="label">Chứng nhận</span>
+    <span class="data"><strong>TUV</strong> · Kiểm toán nhà máy chuyên sâu</span>
+  </div>
+
+  <!-- 维度4：市场验证 -->
+  <div class="dim-row">
+    <span class="status">✅</span>
+    <span class="label">Thị trường</span>
+    <span class="data"><strong>TOP3</strong> bán chạy · <strong>99.6%</strong> hài lòng · <strong>67.5%</strong> mua lại</span>
+  </div>
+
+  <!-- 维度5：合作门槛 -->
+  <div class="dim-row">
+    <span class="status">✅</span>
+    <span class="label">Điều kiện</span>
+    <span class="data">MOQ <strong>2 cái</strong> · hỗ trợ <strong>lấy mẫu miễn phí</strong></span>
+  </div>
+
+  <!-- 维度6：风险信号 -->
+  <div class="dim-row">
+    <span class="status">⚠️</span>
+    <span class="label">Rủi ro</span>
+    <span class="data"><strong>Thương nhân</strong> · <strong>3 năm</strong> (chưa đủ dài) · phản hồi <strong>80.4%</strong></span>
+  </div>
+
+</div>
+
+<!-- ===== ④ 拿样与发货 ===== -->
+<div class="card">
+  <div class="sample-cost">💰 Tổng chi phí lấy mẫu: <strong>~¥15</strong></div>
+  <div class="sample-steps">
+    <div class="step"><span class="num">①</span>Đặt cọc</div>
+    <div class="step"><span class="num">②</span>Chọn SKU</div>
+    <div class="step"><span class="num">③</span>Chụp ảnh</div>
+    <div class="step"><span class="num">④</span>Thanh toán</div>
+    <div class="step"><span class="num">⑤</span>Gửi hàng</div>
+  </div>
+  <div class="sample-promise">
+    <span>✅ 7 ngày đổi trả</span>
+    <span>✅ Xác nhận ảnh</span>
+    <span>✅ Bồi thường giao trễ</span>
+  </div>
+</div>
+
+<!-- ===== 底部 ===== -->
+<div class="footer">Nguồn: 1688.com · Phân tích: 03/08/2026</div>
+
+<!-- ===== ⑤ 行动按钮 ===== -->
+<div class="action-bar">
+  <div class="cost">Mẫu<br><strong>~¥15</strong></div>
+  <a href="#" class="btn">📩 Tư vấn lấy mẫu</a>
+</div>
+
+</body>
+</html>

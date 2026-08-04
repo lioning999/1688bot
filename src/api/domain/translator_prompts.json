@@ -10,7 +10,7 @@
     },
     "vi": {
       "name": "Vietnamese",
-      "forbidden": "FORBIDDEN WORDS — không sử dụng:\n- \"cao cấp\", \"sang trọng\", \"độc quyền\", \"hàng đầu\"\n- \"tuyệt vời\", \"đáng kinh ngạc\", \"xuất sắc\"\n- \"bán chạy nhất\", \"không thể bỏ qua\"\n- \"đảm bảo\", \"100%\", \"hoàn hảo\"\n- Ngôn ngữ tiếp thị hoặc quảng cáo không có trong bản gốc tiếng Trung"
+      "forbidden": "FORBIDDEN WORDS — không sử dụng:\n- \"cao cấp\", \"sang trọng\", \"độc quyền\", \"hàng đầu\"\n- \"tuyệt vời\", \"đáng kinh ngạc\", \"xuất sắc\"\n- \"bán chạy nhất\", \"không thể bỏ qua\"\n- \"đảm bảo\", \"100%\", \"hoàn hảo\"\n- \"chất lượng cao\", \"uy tín\", \"giá rẻ\", \"tốt nhất\", \"chuyên nghiệp\"\n- Ngôn ngữ tiếp thị hoặc quảng cáo không có trong bản gốc tiếng Trung"
     },
     "th": {
       "name": "Thai",

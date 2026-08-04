@@ -17,6 +17,10 @@
     "moq": 1,
     "unit": "副"
   },
+  "inventory": {
+    "status": "ok",
+    "text": "高销量品，库存充足"
+  },
   "trustBar": {
     "label": "源头工厂",
     "sold": "已售 204k+",
@@ -26,54 +30,24 @@
     "tierReason": "生产厂家，经营 1 年以上，建议拿样验证"
   },
   "badges": [
-    {
-      "text": "7天无理由退货",
-      "html": "<span class=\"badge-sm green\">7天无理由退货</span>"
-    },
-    {
-      "text": "支持混批",
-      "html": "<span class=\"badge-sm green\">支持混批</span>"
-    }
+    {"text": "7天无理由退货", "html": "<span class=\"badge-sm green\">7天无理由退货</span>"},
+    {"text": "支持混批", "html": "<span class=\"badge-sm green\">支持混批</span>"}
   ],
   "specs": [
-    {
-      "name": "品牌",
-      "value": "SCREW"
-    },
-    {
-      "name": "货号",
-      "value": "2635"
-    }
+    {"name": "品牌", "value": "SCREW"},
+    {"name": "货号", "value": "2635"}
   ],
   "sales": {
     "sold": "已售 204k",
     "explain": "高销量表明市场已验证 — 该品类有持续需求。"
   },
   "skus": [
-    {
-      "name": "弹性黑/灰片（绿)",
-      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01h0onVU1jH83GTgY8Q_!!2200737474522-0-cib.jpg"
-    },
-    {
-      "name": "弹性黑/灰片（银）",
-      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01SDk7hM1jH83Hk5IoO_!!2200737474522-0-cib.jpg"
-    },
-    {
-      "name": "弹性蓝框/灰片",
-      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01LTmr0X1jH83IcSw6W_!!2200737474522-0-cib.jpg"
-    },
-    {
-      "name": "弹性蓝框/冰蓝片",
-      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01SLhWSy1jH83O4F0pR_!!2200737474522-0-cib.jpg"
-    },
-    {
-      "name": "弹性红框/红水银",
-      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01I7zOpC1jH83N3zyRl_!!2200737474522-0-cib.jpg"
-    },
-    {
-      "name": "弹性红框/灰片",
-      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN014bdo421jH83HhLqtB_!!2200737474522-0-cib.jpg"
-    }
+    {"name": "弹性黑/灰片（绿)", "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01h0onVU1jH83GTgY8Q_!!2200737474522-0-cib.jpg"},
+    {"name": "弹性黑/灰片（银）", "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01SDk7hM1jH83Hk5IoO_!!2200737474522-0-cib.jpg"},
+    {"name": "弹性蓝框/灰片", "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01LTmr0X1jH83IcSw6W_!!2200737474522-0-cib.jpg"},
+    {"name": "弹性蓝框/冰蓝片", "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01SLhWSy1jH83O4F0pR_!!2200737474522-0-cib.jpg"},
+    {"name": "弹性红框/红水银", "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01I7zOpC1jH83N3zyRl_!!2200737474522-0-cib.jpg"},
+    {"name": "弹性红框/灰片", "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN014bdo421jH83HhLqtB_!!2200737474522-0-cib.jpg"}
   ],
   "verdictProduct": "⚠️ 缺乏认证 — 销量 204k+ 但无验厂认证，¥11 拿样核实品质",
   "verdictFactory": "⚠️ 自称为工厂 — 无第三方验厂，先拿样验证，别信嘴上说的",
@@ -96,20 +70,41 @@
     "industryCluster": "台州 — 眼镜/模具/塑料制品产业带。源头产地，价格有竞争力。"
   },
   "priceTiers": [
+    {"qty_min": 1, "qty_max": 99, "unit_price": 1.1},
+    {"qty_min": 100, "qty_max": 499, "unit_price": 0.9},
+    {"qty_min": 500, "qty_max": null, "unit_price": 0.7}
+  ],
+
+  "productEval": {
+    "score": 6,
+    "labels": ["🔥热销品", "💰低门槛"],
+    "data_rows": [
+      {"label": "销量", "value": "月销 204k+", "tier": "🟢", "ref": "标杆 >1,000"},
+      {"label": "复购", "value": "数据不足", "tier": "⬜", "ref": ""},
+      {"label": "门槛", "value": "¥1.1/件 · 起订 1 件", "tier": "🟢", "ref": "低门槛 <¥20"},
+      {"label": "口碑", "value": "数据不足", "tier": "⬜", "ref": ""}
+    ],
+    "human": "市场验证较好，数据整体不错，建议拿样进一步确认品质。"
+  },
+
+  "supplierEval": {
+    "score": 6,
+    "grade": "⚠️ 可合作",
+    "labels": ["🏭工厂直供", "📅老店"],
+    "data_rows": [
+      {"label": "身份", "value": "工厂直供", "tier": "🟡", "ref": ""},
+      {"label": "认证", "value": "暂无认证", "tier": "🔴", "ref": ""},
+      {"label": "年限", "value": "经营 8 年", "tier": "🟢", "ref": ""}
+    ],
+    "human": "工厂直供，经营 8 年。资质尚可，拿样确认品质后可以合作。"
+  },
+
+  "cautions": [
     {
-      "qty_min": 1,
-      "qty_max": 99,
-      "unit_price": 1.1
-    },
-    {
-      "qty_min": 100,
-      "qty_max": 499,
-      "unit_price": 0.9
-    },
-    {
-      "qty_min": 500,
-      "qty_max": null,
-      "unit_price": 0.7
+      "text": "认证缺失",
+      "detail": "该供应商无第三方验厂认证。1688 上自称工厂但无认证背书是常态——拿样是你验证品质最直接的方式。拿 2 件样品成本仅 ¥12.2，试错成本极低。"
     }
-  ]
+  ],
+
+  "summaryLine": "可以拿样进一步了解。拿样能验证数据看不到的——材质、做工、包装、实际利润空间。"
 }

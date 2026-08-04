@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>源采 Sourcely — 1688 验货报告</title>
+<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="static/css/inspect.css">
+</head>
+<body>
+
+<div id="appNav"></div>
+
+<main class="view" id="inspectView">
+
+  <!-- ===== ① + ② 商品确认 & 综合结论 ===== -->
+  <section class="card">
+    <div class="p01">
+      <img class="p01-img"
+           src="https://cbu01.alicdn.com/img/ibank/O1CN019mnXCT1NyFba3mSQk_!!2215924081638-0-cib.jpg"
+           alt="商品主图"
+           referrerpolicy="no-referrer"
+           loading="lazy">
+      <div class="p01-info">
+        <div class="p01-title">新款男士太阳镜高清变色偏光眼镜框防紫外线驾驶钓鱼墨镜厂家批发</div>
+        <div class="p01-price-hero"><span class="p01-currency">¥</span><b>2.00</b><span class="p01-unit">/件</span></div>
+        <div class="p01-meta">
+          <span>📦 起订 <b>2</b> 件</span>
+          <span>📊 月销 <b>8,900+</b></span>
+          <span>⭐ <b>99.6%</b> 好评</span>
+          <span>🏆 热销榜 TOP3</span>
+        </div>
+        <a class="p01-url" href="https://detail.1688.com/offer/723736665098.html" target="_blank">1688 产品 →</a>
+      </div>
+    </div>
+
+    <hr class="card-divider">
+
+    <div class="sec-label">📋 综合结论</div>
+
+    <div class="s2-headline go">🟢 值得拿样</div>
+    <div class="s2-reason">品好、厂稳、门槛低——三样全占，少见。</div>
+
+    <div class="s2-caution">⚠️ 认证缺失 — 该供应商无第三方验厂认证，拿样是验证品质最直接的方式。</div>
+
+    <div class="s2-meta">📦 货品 12 分 · 🏭 认证工厂</div>
+  </section>
+
+  <!-- ===== ③ 分项论据 ===== -->
+  <section class="card">
+
+    <!-- 📦 货品验证 — 默认展开 -->
+    <div class="eval-group open">
+      <div class="eval-group-header" onclick="toggleGroup(this)">
+        <div class="eval-group-top">
+          <span class="eval-group-title">📦 产品验证</span>
+          <span class="eval-group-score go">12/12 分</span>
+          <span class="eval-group-chevron">▼</span>
+        </div>
+        <div class="eval-group-desc">销量、复购、口碑、门槛四项全绿</div>
+      </div>
+      <div class="eval-group-body">
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">🔥 热销品</span>
+          <span class="eval-dim-data">月销 8,900+</span>
+          <span class="eval-dim-ref">标杆 >1,000</span>
+        </div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">🔄 高复购</span>
+          <span class="eval-dim-data">复购率 67.5%</span>
+          <span class="eval-dim-ref">标杆 >30%</span>
+        </div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">⭐ 口碑好</span>
+          <span class="eval-dim-data">好评率 99.6%</span>
+          <span class="eval-dim-ref">标杆 ≥98%</span>
+        </div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">💰 低门槛</span>
+          <span class="eval-dim-data">¥2/件 · 起订 2 件</span>
+          <span class="eval-dim-ref"></span>
+        </div>
+
+        <div class="eval-extra">🏆 上榜防护眼镜热销榜TOP3</div>
+        <div class="eval-extra">📦 库存充足 ✅</div>
+
+        <div class="eval-human go">
+          💬 六个指标全部过关，销量、复购、口碑同时在线——这类品拿样出问题的概率很低。
+        </div>
+      </div>
+    </div>
+
+    <!-- 🏭 供应商资质 — 默认展开 -->
+    <div class="eval-group open">
+      <div class="eval-group-header" onclick="toggleGroup(this)">
+        <div class="eval-group-top">
+          <span class="eval-group-title">🏭 供应商验证</span>
+          <span class="eval-group-score go">9/9 分</span>
+          <span class="eval-group-chevron">▼</span>
+        </div>
+        <div class="eval-group-desc">认证工厂 · TUV 验厂 · 经营 4 年</div>
+      </div>
+      <div class="eval-group-body">
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">🏭 认证工厂</span>
+          <span class="eval-dim-data">实力商家 <span class="eval-help" onclick="toggleHelp(this)">？</span></span>
+          <span class="eval-dim-ref"></span>
+        </div>
+        <div class="eval-help-text">1688官方认证：年销售额达标、信誉良好的优质商家，享受平台流量扶持。</div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">📋 深度验厂</span>
+          <span class="eval-dim-data">TUV Rheinland 认证 <span class="eval-help" onclick="toggleHelp(this)">？</span></span>
+          <span class="eval-dim-ref"></span>
+        </div>
+        <div class="eval-help-text">第三方机构(TUV Rheinland)实地审核工厂，确认生产资质、品控能力、产能规模真实可靠。TUV Rheinland(德国莱茵)：国际权威的第三方技术检验与认证机构，在全球范围内被广泛认可。</div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">📅 老店</span>
+          <span class="eval-dim-data">经营 4 年</span>
+          <span class="eval-dim-ref">标杆 ≥3年</span>
+        </div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">🏢 公司名称</span>
+          <span class="eval-dim-data">台州市博奇眼镜有限公司 <span class="eval-help" onclick="toggleHelp(this)">？</span></span>
+          <span class="eval-dim-ref"></span>
+        </div>
+        <div class="eval-help-text">政府注册的法定名称，可在企业信用系统中核实。</div>
+
+        <div class="eval-dim">
+          <span class="eval-dim-label">📍 产业带</span>
+          <span class="eval-dim-data">台州 — 眼镜/模具/塑料制品产业带 <span class="eval-help" onclick="toggleHelp(this)">？</span></span>
+          <span class="eval-dim-ref"></span>
+        </div>
+        <div class="eval-help-text">源头产地，价格有竞争力。</div>
+
+        <div class="eval-human go">
+          💬 1688认证工厂，TUV实地验过，经营4年老店。这种厂最大的好处是稳定——你今天拿的样和三个月后返单的货，同一品质。
+        </div>
+      </div>
+    </div>
+
+    <!-- ⚠️ 风险提示 — 默认折叠 -->
+    <div class="eval-group">
+      <div class="eval-group-header" onclick="toggleGroup(this)">
+        <div class="eval-group-top">
+          <span class="eval-group-title">⚠️ 风险提示</span>
+          <span class="eval-group-score ok">1 项</span>
+          <span class="eval-group-chevron">▼</span>
+        </div>
+        <div class="eval-group-desc">认证缺失，拿样是验证品质最直接的方式</div>
+      </div>
+      <div class="eval-group-body">
+
+        <div class="risk-item">
+          <div class="risk-label">📋 认证缺失</div>
+          该供应商无第三方验厂认证。1688 上自称工厂但无认证背书是常态——拿样是你验证品质最直接的方式。
+          <div class="risk-detail">
+            <strong>试错成本极低：</strong>拿 2 件样品成本仅 ¥12.2，¥1.1/件 × 2 + ¥10 国内运费。
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 💰 利润空间 — 默认展开 -->
+    <div class="eval-group open">
+      <div class="eval-group-header" onclick="toggleGroup(this)">
+        <div class="eval-group-top">
+          <span class="eval-group-title">💰 利润空间</span>
+          <span class="eval-group-chevron">▼</span>
+        </div>
+        <div class="eval-group-desc">毛利率 73% · 单件约 ¥10.90</div>
+      </div>
+      <div class="eval-group-body">
+
+        <table class="qp-table">
+          <thead><tr>
+            <th>起订量</th><th>单价</th><th>小计</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>1 – 99 件</td><td>¥1.10 /件</td><td>¥1.10 起</td></tr>
+            <tr><td>100 – 499 件</td><td>¥0.90 /件</td><td>¥90.00 起</td></tr>
+            <tr><td>≥ 500 件</td><td>¥0.70 /件</td><td>¥350.00 起</td></tr>
+          </tbody>
+        </table>
+
+        <div class="currency-bar">
+          💱 币种：
+          <select id="currency" onchange="calcProfit()">
+            <option value="USD">USD $</option>
+            <option value="CNY">CNY ¥</option>
+            <option value="VND">VND ₫</option>
+            <option value="IDR">IDR Rp</option>
+            <option value="THB">THB ฿</option>
+          </select>
+          <span class="rate-hint" id="rateHint">1 CNY ≈ $0.14</span>
+        </div>
+
+        <div class="profit-inputs">
+          <div class="profit-field">
+            <label>💰 预估当地售价（¥）</label>
+            <input type="number" placeholder="如 15" value="15" id="sellPrice" oninput="calcProfit()">
+          </div>
+          <div class="profit-field">
+            <label>🚚 预估国际运费（¥/件）</label>
+            <input type="number" placeholder="如 3" value="3" id="shipping" oninput="calcProfit()">
+          </div>
+        </div>
+
+        <div class="profit-result" id="profitResult">
+          <span style="font-size:var(--fs-xs);">按 MOQ 1 件计算 —</span><br>
+          毛利率 <span class="big" id="marginRate">73%</span><br>
+          单件利润 <span id="perProfit">$1.53</span> · 首批利润 <span id="batchProfit">$1.53</span>
+          <div id="profitCny" style="font-size:10px;color:var(--ink-2);margin-top:2px;">≈ ¥10.90 · ¥10.90</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== ④ 拿样发货 + ⑤ 行动按钮 ===== -->
+  <section class="card">
+    <div class="sec">📦 拿样发货</div>
+
+    <!-- 流程条 -->
+    <div class="sample-flow">
+      <span class="sample-flow-step">① 付定金</span>
+      <span class="sample-flow-arrow">→</span>
+      <span class="sample-flow-step">② 验货拍照</span>
+      <span class="sample-flow-arrow">→</span>
+      <span class="sample-flow-step">③ 付尾款</span>
+      <span class="sample-flow-arrow">→</span>
+      <span class="sample-flow-step">④ 国际发货</span>
+    </div>
+
+    <!-- 验货清单 — 可折叠 -->
+    <div class="checklist-toggle" onclick="this.classList.toggle('open')">
+      <span>📋 验什么、拍什么？</span><span class="checklist-chevron">▼</span>
+    </div>
+    <div class="checklist-body">
+      <div class="checklist-col">
+        <div class="checklist-label">📸 拍照（6-8 张）</div>
+        <div>正面全景 · 侧面细节 · 背面标签 · 瑕疵特写 · 包装外观 · SKU 色卡对比</div>
+      </div>
+      <div class="checklist-col">
+        <div class="checklist-label">🔍 检查</div>
+        <div>颜色是否对版 · 做工有无明显缺陷 · 数量是否准确 · 标签吊牌是否一致</div>
+      </div>
+      <div class="checklist-note">✅ 不满意 → 全额退定金，不用付尾款</div>
+    </div>
+
+    <!-- 数量 -->
+    <div style="display:flex;align-items:center;margin-bottom:var(--s3);">
+      <span style="font-size:var(--fs-sm);font-weight:600;color:var(--ink);margin-right:var(--s2);">数量</span>
+      <div class="qty-ctl">
+        <button id="qtyMinus" onclick="changeQty(-1)">−</button>
+        <span id="qtyVal">2</span>
+        <button id="qtyPlus" onclick="changeQty(1)">+</button>
+      </div>
+      <span style="font-size:var(--fs-xs);color:var(--ink-3);margin-left:var(--s2);">起订 1 件</span>
+    </div>
+
+    <!-- 费用 -->
+    <div class="fee-box">
+      <div class="cost-phase">① 定金 — 先付</div>
+      <div class="cs-row"><span>商品 ¥1.10 × <b id="feeQty">2</b> 件</span><span id="productFee">¥2.20</span></div>
+      <div class="cs-row"><span>国内运费（预估）</span><span>¥10.00</span></div>
+      <div class="cs-row phase-sub"><span>小计</span><span id="depositTotal">¥12.20</span></div>
+
+      <div class="cost-phase">② 尾款 — 验货确认后付</div>
+      <div class="cs-row"><span>国际运费（预估）</span><span>$3 – $5</span></div>
+      <div class="cs-row"><span>服务费</span><span>$10.00</span></div>
+      <div class="cs-row phase-sub"><span>小计</span><span>$13 – $15</span></div>
+
+      <div class="cs-row total"><span>预估总价</span><span id="totalFee">$15 – $17</span></div>
+    </div>
+
+    <!-- 服务保障 -->
+    <div style="font-size:var(--fs-xs);color:var(--ink-2);line-height:2;padding-top:var(--s2);border-top:1px solid var(--line);">
+      <div>✅ 1688下单 · 收货 · 验货拍照 · 打包 · 国际物流</div>
+      <div>✅ 验货不满意 → 退全部定金</div>
+      <div>✅ 缺货/不发货 → 全额退款，帮找同款</div>
+      <div>✅ $10 服务费含代下单+验货+打包+送物流仓</div>
+    </div>
+
+    <!-- ⑤ CTA -->
+    <div class="cta-bar">
+      <a href="https://wa.me/8618561525786" class="btn" target="_blank">💬 Chat on WhatsApp 拿样</a>
+    </div>
+  </section>
+
+  <div id="appFooter"></div>
+
+</main>
+
+<!-- load report's shared components -->
+<script src="static/js/utils/lang-detect.js"></script>
+<script src="static/js/utils/i18n.js"></script>
+<script src="static/js/utils/components.js"></script>
+<script>I18N.init().then(function () { renderNav('inspect'); renderFooter(); I18N.apply(); });</script>
+
+<!-- inline page logic -->
+<script>
+// —— ③ 折叠组 ——
+function toggleGroup(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function toggleHelp(el) {
+  var dim = el.closest('.eval-dim');
+  var text = dim.nextElementSibling;
+  if (text && text.classList.contains('eval-help-text')) {
+    text.classList.toggle('open');
+  }
+}
+
+// —— ④ 数量选择 ——
+var SAMPLE_PRICE = 1.10;
+var SAMPLE_MOQ = 1;
+var sampleQty = 2;
+var USD_RATE = 7.14;
+
+function changeQty(delta) {
+  var n = sampleQty + delta;
+  if (n < SAMPLE_MOQ || n > 50) return;
+  sampleQty = n;
+  updateSampleCost();
+}
+
+function updateSampleCost() {
+  document.getElementById('qtyVal').textContent = sampleQty;
+  document.getElementById('qtyMinus').disabled = (sampleQty <= SAMPLE_MOQ);
+
+  var productCny = SAMPLE_PRICE * sampleQty;
+  var depositCny = productCny + 10;
+  var shipLow = 3, shipHigh = 5;
+  var totalLow = depositCny / USD_RATE + shipLow + 10;
+  var totalHigh = depositCny / USD_RATE + shipHigh + 10;
+
+  document.getElementById('feeQty').textContent = sampleQty;
+  document.getElementById('productFee').textContent = '¥' + productCny.toFixed(2);
+  document.getElementById('depositTotal').textContent = '¥' + depositCny.toFixed(2) + ' ≈ $' + (depositCny / USD_RATE).toFixed(2);
+  document.getElementById('totalFee').textContent = '$' + Math.round(totalLow) + ' – $' + Math.round(totalHigh);
+}
+
+// init
+updateSampleCost();
+document.getElementById('qtyMinus').disabled = (sampleQty <= SAMPLE_MOQ);
+
+// —— 💰 利润计算 ——
+var RATES = { CNY: 1, USD: 0.14, VND: 3500, IDR: 2200, THB: 5.0 };
+var SYMBOLS = { CNY: '¥', USD: '$', VND: '₫', IDR: 'Rp', THB: '฿' };
+
+function calcProfit() {
+  var sellPriceCny = parseFloat(document.getElementById('sellPrice').value) || 0;
+  var shippingCny = parseFloat(document.getElementById('shipping').value) || 0;
+  var costPrice = SAMPLE_PRICE;
+  var moq = SAMPLE_MOQ;
+
+  var perProfitCny = sellPriceCny - costPrice - shippingCny;
+  var margin = sellPriceCny > 0 ? ((perProfitCny / sellPriceCny) * 100) : 0;
+  var batchProfitCny = perProfitCny * moq;
+
+  var cur = document.getElementById('currency').value;
+  var rate = RATES[cur];
+  var sym = SYMBOLS[cur];
+
+  document.getElementById('marginRate').textContent = Math.round(margin) + '%';
+  document.getElementById('rateHint').textContent = '1 CNY ≈ ' + sym + rate;
+
+  if (cur === 'CNY') {
+    document.getElementById('perProfit').textContent = '¥' + perProfitCny.toFixed(2);
+    document.getElementById('batchProfit').textContent = '¥' + batchProfitCny.toFixed(2);
+    document.getElementById('profitCny').style.display = 'none';
+  } else {
+    var per = perProfitCny * rate;
+    var batch = batchProfitCny * rate;
+    var dec = (cur === 'VND' || cur === 'IDR') ? 0 : 2;
+    document.getElementById('perProfit').textContent = sym + per.toFixed(dec);
+    document.getElementById('batchProfit').textContent = sym + batch.toFixed(dec);
+    document.getElementById('profitCny').textContent = '≈ ¥' + perProfitCny.toFixed(2) + ' · ¥' + batchProfitCny.toFixed(2);
+    document.getElementById('profitCny').style.display = '';
+  }
+}
+</script>
+
+</body>
+</html>
