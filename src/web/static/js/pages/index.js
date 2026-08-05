@@ -10,12 +10,12 @@
     // 提取 offerId
     var m = input.match(/offer(?:Id)?[=/](\d+)/i);
     if (m) {
-      window.location.href = 'report.html?offerId=' + m[1];
+      window.location.href = 'inspect.html?offerId=' + m[1];
       return;
     }
     // 完整 1688 URL
     if (input.indexOf('detail.1688.com') !== -1) {
-      window.location.href = 'report.html?url=' + encodeURIComponent(input);
+      window.location.href = 'inspect.html?url=' + encodeURIComponent(input);
       return;
     }
     Messages.warning('INVALID_URL', '请粘贴有效的 1688 商品链接<br><small style="color:var(--ink-3)">示例：https://detail.1688.com/offer/xxxxx.html</small>');

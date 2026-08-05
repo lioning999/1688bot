@@ -104,7 +104,7 @@
 
       html +=
         '<div class="history-item" data-id="' + item.id + '">' +
-          '<a href="report.html?offerId=' + escapeAttr(item.offer_id) + '" class="hi-link">' +
+          '<a href="inspect.html?offerId=' + escapeAttr(item.offer_id) + '" class="hi-link">' +
             imgHtml +
             '<div class="hi-body">' +
               '<div class="hi-title">' + escapeHTML(item.title || t('history.untitled', '(无标题)')) + '</div>' +
