@@ -75,7 +75,7 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         # 工厂信息
         "supplierName": supplier.get("companyName", ""),
         "shop_years": supplier.get("tpYear"),
-        "repurchase": _parse_pct(stats.get("repeatRate")),
+        "repurchase": _parse_repurchase(raw, supplier, stats),
         "shippingLocation": location,
         "industryCluster": _industry_cluster(location),
 
@@ -87,6 +87,9 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "shopUrl": supplier.get("shopUrl", ""),
         "rankText": (cast(dict[str, Any], supplier.get("rank")) or {}).get("text", ""),  # type: ignore[reportUnknownMemberType]
         "sellerTierLabel": _trust_bar_label(flags),
+        "stock": raw.get("stock"),
+        "positive_rate": _parse_positive_rate(supplier, stats),
+        "has_service_labels": bool(raw.get("serviceLabels")),
 
         # 数据完整度信号（三层金字塔）
         "dataTier": _tier,
@@ -243,6 +246,8 @@ def _filter_specs(specs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     KEYS = {"材质", "品牌", "颜色", "规格", "尺寸", "风格", "货号", "重量", "包装", "工艺", "类别", "骨架"}
     result: list[dict[str, str]] = []
     for s in specs:
+        if not isinstance(s, dict):
+            continue  # 非 dict 格式跳过（Apify 偶尔返回纯字符串）
         name = str(s.get("name", "")).strip()
         value = str(s.get("value", "")).strip()
         if name in KEYS and value and value != "咨询客服" and len(value) < 30:
@@ -276,6 +281,31 @@ def _parse_pct(val: Any) -> float | None:
         return round(v * 100 if v < 1 else v, 1)
     except (ValueError, TypeError):
         return None
+
+
+def _parse_repurchase(raw: dict[str, Any], supplier: dict[str, Any], stats: dict[str, Any]) -> float | None:
+    """复购率 — 三路 fallback：stats.repeatRate → root.repurchaseRate → factoryTags 回头率。"""
+    # 路径 1：supplier.stats.repeatRate
+    result = _parse_pct(stats.get("repeatRate"))
+    if result is not None:
+        return result
+    # 路径 2：root.repurchaseRate（部分商品复购率在根层级）
+    result = _parse_pct(raw.get("repurchaseRate"))
+    if result is not None:
+        return result
+    # 路径 3：supplier.factoryTags 中的 "回头率"
+    factory_tags: list[dict[str, Any]] = supplier.get("factoryTags") or []
+    for tag in factory_tags:
+        if isinstance(tag, dict) and "回头率" in str(tag.get("text", "")):
+            result = _parse_pct(tag.get("value"))
+            if result is not None:
+                return result
+    return None
+
+
+def _parse_positive_rate(supplier: dict[str, Any], stats: dict[str, Any]) -> float | None:
+    """好评率 — supplier.stats.positiveReviewRate。大部分商品为 null，正常。"""
+    return _parse_pct(stats.get("positiveReviewRate"))
 
 
 _INDUSTRY_KEY: dict[str, str] = {

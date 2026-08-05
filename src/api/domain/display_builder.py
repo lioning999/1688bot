@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
+from domain.evaluator import evaluate_product, evaluate_supplier, evaluate_summary
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -45,6 +46,7 @@ _EXPECTED_KEYS: set[str] = {
     "title", "titleOrig", "images", "videoUrl", "itemUrl", "offerId",
     "price", "trustBar", "badges", "specs", "sales",
     "skus", "priceTiers", "verdictProduct", "verdictFactory", "verdictSample", "factory",
+    "productEval", "supplierEval", "summaryLine",
 }
 
 
@@ -61,6 +63,10 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
     """
     # 兜底 lang（不支持的语言默认英文）
     safe_lang: str = lang if lang in ("en", "vi", "th", "id", "zh") else "en"
+
+    # 验货报告评判（domain 内部组合：evaluator → display）
+    product_raw: dict[str, Any] = evaluate_product(mapped)
+    supplier_raw: dict[str, Any] = evaluate_supplier(mapped)
 
     try:
         d: dict[str, Any] = {
@@ -100,6 +106,11 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
 
             # ---- 工厂信息（Path 2 + Path 3） ----
             "factory": _build_factory(mapped, safe_lang),
+
+            # ---- 验货报告评判（evaluator → 前端 display） ----
+            "productEval": _build_product_eval(product_raw, mapped, safe_lang),
+            "supplierEval": _build_supplier_eval(supplier_raw, mapped, safe_lang),
+            "summaryLine": _build_summary_line(product_raw, supplier_raw, safe_lang),
         }
 
         # ---- 缺 key 告警 ----
@@ -124,6 +135,9 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
             "verdictSample": "",
             "priceTiers": [],
             "factory": {},
+            "productEval": {},
+            "supplierEval": {},
+            "summaryLine": {},
         }
 
 
@@ -314,8 +328,223 @@ def _build_factory(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
             "supplierName": _s(mapped.get("supplierName")),
             "shippingLocation": location,
             "industryCluster": industry_explain,
+            "industryExplain": _glossary("explain_industry_cluster", lang),
         }
     except Exception:
+        return {}
+
+
+# ====================================================================
+# 验货报告 builder（新产品 + 供应商 evaluator → inspect.html）
+# ====================================================================
+
+
+def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lang: str) -> dict[str, Any]:
+    """产品验证卡片：evaluate_product() 输出 → 前端 display JSON。
+
+    翻译维度 name/label/data/ref + summary + stockLevel，全部走 glossary。
+    """
+    try:
+        dims_out: list[dict[str, Any]] = []
+        for dim in product_raw.get("dimensions") or []:
+            if not isinstance(dim, dict):
+                continue
+            d_out: dict[str, Any] = {
+                "key": dim.get("key", ""),
+                "score": dim.get("score", 0),
+                "icon": dim.get("icon", ""),
+            }
+
+            # name
+            name_key: str = str(dim.get("name_key", ""))
+            d_out["name"] = _glossary(name_key, lang) if name_key else ""
+
+            # label（空则前端降级到 icon+name）
+            label_key: str = str(dim.get("label_key", ""))
+            d_out["label"] = _glossary(label_key, lang) if label_key else ""
+
+            # data：优先 static key（D5），其次 format string（D1-D4）
+            data_key: str = str(dim.get("data_key", ""))
+            if data_key:
+                d_out["data"] = _glossary(data_key, lang)
+            else:
+                data_fmt: str = str(dim.get("data_fmt", ""))
+                if data_fmt and dim.get("data_params"):
+                    # D3：{price}/{moq}/{unit} 多参数
+                    params: dict[str, Any] = dict(dim["data_params"])
+                    if "unit" in params:
+                        unit_cn: str = str(params["unit"])
+                        params["unit"] = _glossary(f"unit_{unit_cn}", lang, unit_cn)
+                    if "price" in params and isinstance(params["price"], (int, float)):
+                        params["price"] = f"{params['price']:.2f}"
+                    d_out["data"] = _glossary(data_fmt, lang).format(**params)
+                elif data_fmt and dim.get("data_num") is not None:
+                    # D1/D2/D4：{n} 格式
+                    d_out["data"] = _glossary(data_fmt, lang).format(
+                        n=_fmt_dim_num(dim["data_num"])
+                    )
+                else:
+                    d_out["data"] = ""
+
+            # ref
+            ref_fmt: str = str(dim.get("ref_fmt", ""))
+            if ref_fmt and dim.get("ref_num") is not None:
+                d_out["ref"] = _glossary(ref_fmt, lang).format(
+                    n=_fmt_dim_num(dim["ref_num"])
+                )
+            else:
+                d_out["ref"] = ""
+
+            dims_out.append(d_out)
+
+        # 库存档位（商业判断，glossary 翻译）
+        stock_level: dict[str, str] | None = None
+        stock_raw: Any = mapped.get("stock")
+        if stock_raw is not None:
+            try:
+                stock_num: int = int(float(stock_raw))
+                if stock_num > 100:
+                    stock_level = {"level": "ok", "text": _glossary("stock_level_ok", lang)}
+                elif stock_num > 0:
+                    stock_level = {"level": "low", "text": _glossary("stock_level_low", lang)}
+                else:
+                    stock_level = {"level": "unknown", "text": _glossary("stock_level_unknown", lang)}
+            except (ValueError, TypeError):
+                pass
+
+        result: dict[str, Any] = {
+            "score": product_raw.get("score", 0),
+            "max_score": product_raw.get("max_score", 15),
+            "grade": product_raw.get("grade", ""),
+            "summary": _format_verdict(product_raw.get("summary"), lang),
+            "verdict": _format_verdict(product_raw.get("verdict"), lang),
+            "dimensions": dims_out,
+        }
+        if stock_level:
+            result["stockLevel"] = stock_level
+        return result
+    except Exception:
+        logger.exception("_build_product_eval failed")
+        return {}
+
+
+def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], lang: str) -> dict[str, Any]:
+    """供应商验证卡片：evaluate_supplier() 输出 + mapped 附加信息 → 前端 display JSON。
+
+    翻译维度 name/label/data/ref + grade + summary，全部走 glossary。
+    """
+    try:
+        # 产业带描述（复用 _build_factory 的 glossary 查表逻辑）
+        industry_key: str = _s(mapped.get("industryCluster"))
+        location: str = _s(mapped.get("shippingLocation"))
+        industry_desc: str = _glossary(industry_key, lang) if industry_key else ""
+        industry_explain: str = ""
+        if industry_key:
+            industry_explain = _glossary("explain_industry_fmt", lang).format(industry=industry_desc)
+
+        # 翻译维度
+        dims_out: list[dict[str, Any]] = []
+        for dim in supplier_raw.get("dimensions") or []:
+            if not isinstance(dim, dict):
+                continue
+            d_out: dict[str, Any] = {
+                "key": dim.get("key", ""),
+                "score": dim.get("score", 0),
+                "icon": dim.get("icon", ""),
+            }
+
+            # name
+            name_key: str = str(dim.get("name_key", ""))
+            d_out["name"] = _glossary(name_key, lang) if name_key else ""
+
+            # label（空则前端降级到 icon+name）
+            label_key: str = str(dim.get("label_key", ""))
+            d_out["label"] = _glossary(label_key, lang) if label_key else ""
+
+            # data：优先 static key，其次 format string，最后 data_text（ASCII 透传）
+            data_key: str = str(dim.get("data_key", ""))
+            if data_key:
+                d_out["data"] = _glossary(data_key, lang)
+                # 保留 data_key 供前端 JS 逻辑判断
+                d_out["data_key"] = data_key
+            else:
+                data_fmt: str = str(dim.get("data_fmt", ""))
+                if data_fmt and dim.get("data_num") is not None:
+                    d_out["data"] = _glossary(data_fmt, lang).format(
+                        n=_fmt_dim_num(dim["data_num"])
+                    )
+                elif dim.get("data_text"):
+                    # ASCII 认证类型（SGS/TUV）→ 原样透传
+                    d_out["data"] = str(dim["data_text"])
+                else:
+                    d_out["data"] = ""
+
+            # ref：format string + num
+            ref_fmt: str = str(dim.get("ref_fmt", ""))
+            if ref_fmt and dim.get("ref_num") is not None:
+                d_out["ref"] = _glossary(ref_fmt, lang).format(
+                    n=_fmt_dim_num(dim["ref_num"])
+                )
+            else:
+                d_out["ref"] = ""
+
+            dims_out.append(d_out)
+
+        # ---- 帮助文本（条件产出，前端按 data_key 判断显隐） ----
+        help_texts: dict[str, str] = {}
+        for dim in dims_out:
+            dk: str = str(dim.get("data_key", ""))
+            if dk == "实力商家":
+                help_texts["verified"] = _glossary("supp_help_verified", lang)
+            elif dk == "supp_dim_d2_data_no_cert":
+                help_texts["noCert"] = _glossary("supp_help_no_cert", lang)
+                help_texts["riskNoCert"] = _glossary("supp_risk_no_cert", lang)
+
+        # 翻译 summary（_verdict 格式，identity_key 特殊处理）
+        summary_raw: Any = supplier_raw.get("summary")
+        summary_text: str = ""
+        if summary_raw and isinstance(summary_raw, dict):
+            sk: str = str(summary_raw.get("key", ""))
+            sp: dict[str, Any] = dict(summary_raw.get("params", {}))
+            if "identity_key" in sp:
+                sp["identity"] = _glossary(str(sp.pop("identity_key")), lang)
+            template: str = _glossary(sk, lang)
+            try:
+                summary_text = template.format(**sp)
+            except (KeyError, ValueError):
+                summary_text = template
+
+        return {
+            "score": supplier_raw.get("score", 0),
+            "max_score": supplier_raw.get("max_score", 9),
+            "grade": supplier_raw.get("grade", ""),           # CSS class: go/ok/bad/none
+            "gradeText": _glossary(str(supplier_raw.get("grade_key", "")), lang),
+            "summary": summary_text,
+            "verdict": _format_verdict(supplier_raw.get("verdict"), lang),
+            "dimensions": dims_out,
+            "companyName": _s(mapped.get("supplierName")),
+            "industryCluster": industry_explain,
+            "shippingLocation": location,
+            "helpTexts": help_texts,
+        }
+    except Exception:
+        logger.exception("_build_supplier_eval failed")
+        return {}
+
+
+def _build_summary_line(product_raw: dict[str, Any], supplier_raw: dict[str, Any], lang: str) -> dict[str, Any]:
+    """综合结论：产品 + 供应商 → 拿样建议（inspect.html Card ①）。"""
+    try:
+        summary: dict[str, Any] = evaluate_summary(product_raw, supplier_raw)
+        return {
+            "headline": _format_verdict(summary.get("headline"), lang),
+            "reason": _format_verdict(summary.get("reason"), lang),
+            "verdict": _format_verdict(summary.get("verdict"), lang),
+            "product_score": summary.get("product_score", ""),
+            "supplier_score": summary.get("supplier_score", ""),
+        }
+    except Exception:
+        logger.exception("_build_summary_line failed")
         return {}
 
 
@@ -338,6 +567,30 @@ def _format_verdict(v: Any, lang: str) -> str:
     if not template:
         return ""
     params: dict[str, Any] = dict(d.get("params", {}))
+
+    # 翻译 desc_key（供应商年限描述，可能含 {n} 占位符）
+    if "desc_key" in params:
+        desc_tpl: str = _glossary(str(params.pop("desc_key")), lang)
+        years_n: str = str(params.pop("years_n", ""))
+        if "{n}" in desc_tpl and years_n:
+            params["desc"] = desc_tpl.format(n=years_n)
+        else:
+            params["desc"] = desc_tpl
+
+    # 翻译 cert_key（供应商认证类型 key → 各语言文本）
+    if "cert_key" in params:
+        params["cert"] = _glossary(str(params.pop("cert_key")), lang)
+
+    # 翻译 reason_keys（list of key → 各语言文本 → 拼接）
+    if "reason_keys" in params:
+        rks: list[str] = params.pop("reason_keys")
+        if isinstance(rks, list) and rks:
+            sep: str = _glossary("supp_reason_sep", lang, "、")
+            translated: list[str] = [_glossary(str(rk), lang, rk) for rk in rks]
+            reason_str: str = sep.join(translated)
+            params["reason"] = reason_str
+            params["reasons"] = reason_str
+
     # 翻译参数中的中文单位（verdict_engine 传入 1688 原始中文 unit）
     if "unit" in params:
         unit_cn: str = str(params["unit"])
@@ -361,6 +614,20 @@ def _s(val: Any) -> str:
     if val is None:
         return ""
     return str(val)
+
+
+def _fmt_dim_num(n: Any) -> str:
+    """维度数字格式化：8900 → '8,900'，67.5 → '67.5'。千分位 + 保留小数。"""
+    if n is None:
+        return "0"
+    try:
+        v: float = float(n)
+        if v == int(v):
+            return f"{int(v):,}"
+        s: str = f"{v:,.1f}"
+        return s.rstrip("0").rstrip(".") if "." in s else s
+    except (ValueError, TypeError):
+        return str(n)
 
 
 def _fmt_num(n: Any) -> str:

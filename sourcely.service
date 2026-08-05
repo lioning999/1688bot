@@ -1,0 +1,19 @@
+[Unit]
+Description=Sourcely API Server
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/sourcely/src/api
+Environment="PYTHONIOENCODING=utf-8"
+Environment="PATH=/opt/sourcely/src/api/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/opt/sourcely/src/api/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8008 --workers 2
+Restart=always
+RestartSec=5
+StandardOutput=append:/opt/sourcely/src/api/logs/stdout.log
+StandardError=append:/opt/sourcely/src/api/logs/stderr.log
+
+[Install]
+WantedBy=multi-user.target
