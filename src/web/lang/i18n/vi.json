@@ -29,6 +29,9 @@
   "report.saveBtn": "💾 Save",
   "report.savedBtn": "✓ Saved",
   "report.savingBtn": "Saving...",
+  "report.startFailed": "Không thể bắt đầu phân tích",
+  "report.sampleLoading": "Đang tải dữ liệu mẫu...",
+  "report.sampleFailed": "Tải mẫu thất bại, dán liên kết để tìm kiếm",
   "ship.landLabel": "🚛 Đường Bộ",
   "ship.airLabel": "✈️ Hàng Không",
   "ship.weightNote": "Tính theo trọng lượng/thể tích",
@@ -144,5 +147,9 @@
   "inspect.unit": "cái",
   "inspect.moq": "MOQ",
   "inspect.companyName": "Tên công ty",
-  "inspect.industryCluster": "Cụm công nghiệp"
+  "inspect.industryCluster": "Cụm công nghiệp",
+  "report.resuming": "Đang tiếp tục phân tích dang dở...",
+  "report.dbLoadingHint": "Đang tải phân tích đã lưu...",
+  "report.dbLoadedHint": "Dữ liệu phân tích đã lưu",
+  "report.expiredBtn": "⚠ Hết hạn"
 }

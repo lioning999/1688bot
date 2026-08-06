@@ -29,6 +29,9 @@
   "report.saveBtn": "💾 Save",
   "report.savedBtn": "✓ Saved",
   "report.savingBtn": "Saving...",
+  "report.startFailed": "เริ่มวิเคราะห์ไม่สำเร็จ",
+  "report.sampleLoading": "กำลังโหลดข้อมูลตัวอย่าง...",
+  "report.sampleFailed": "โหลดตัวอย่างล้มเหลว วางลิงก์เพื่อค้นหา",
   "ship.landLabel": "🚛 ทางบก",
   "ship.airLabel": "✈️ ทางอากาศ",
   "ship.weightNote": "คำนวณตามน้ำหนัก/ปริมาตร",
@@ -144,5 +147,9 @@
   "inspect.unit": "ชิ้น",
   "inspect.moq": "MOQ",
   "inspect.companyName": "ชื่อบริษัท",
-  "inspect.industryCluster": "คลัสเตอร์อุตสาหกรรม"
+  "inspect.industryCluster": "คลัสเตอร์อุตสาหกรรม",
+  "report.resuming": "กำลังดำเนินการวิเคราะห์ต่อ...",
+  "report.dbLoadingHint": "กำลังโหลดการวิเคราะห์ที่บันทึกไว้...",
+  "report.dbLoadedHint": "ข้อมูลการวิเคราะห์ที่บันทึกไว้",
+  "report.expiredBtn": "⚠ หมดอายุ"
 }

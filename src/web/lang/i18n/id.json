@@ -29,6 +29,9 @@
   "report.saveBtn": "💾 Save",
   "report.savedBtn": "✓ Saved",
   "report.savingBtn": "Saving...",
+  "report.startFailed": "Gagal memulai analisis",
+  "report.sampleLoading": "Memuat data sampel...",
+  "report.sampleFailed": "Gagal memuat sampel, tempel tautan untuk mencari",
   "ship.landLabel": "🚛 Darat",
   "ship.airLabel": "✈️ Udara",
   "ship.weightNote": "Berdasarkan berat/volume",
@@ -144,5 +147,9 @@
   "inspect.unit": "pcs",
   "inspect.moq": "MOQ",
   "inspect.companyName": "Nama Perusahaan",
-  "inspect.industryCluster": "Klaster Industri"
+  "inspect.industryCluster": "Klaster Industri",
+  "report.resuming": "Melanjutkan analisis yang belum selesai...",
+  "report.dbLoadingHint": "Memuat analisis tersimpan...",
+  "report.dbLoadedHint": "Data analisis tersimpan",
+  "report.expiredBtn": "⚠ Kedaluwarsa"
 }

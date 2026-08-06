@@ -47,13 +47,15 @@
     </section>
   </div>
 
+  <!-- Search -->
+  <div class="search-wrap">
+    <input type="text" id="searchInput" data-i18n-placeholder="search.placeholder" placeholder="粘贴 1688 商品链接...">
+    <button id="searchBtn" data-i18n="search.button">分析</button>
+  </div>
+  <p class="search-hint" data-i18n="search.hint" style="margin-bottom:var(--s3);">每日免费 3 次 · 登陆后10次/日</p>
+
   <!-- ===== 内容区（数据加载完成后显示） ===== -->
   <div id="inspectContent" style="display:none;">
-
-    <div class="save-bar" id="saveBar" style="display:none;">
-      <button class="save-btn" id="saveBtn">💾 Save</button>
-      <button class="save-btn share-action" id="shareBtnMain">📤 Share</button>
-    </div>
 
   <!-- ===== ① 商品确认 + 综合结论 ===== -->
   <section class="card">
@@ -85,6 +87,14 @@
     <div class="sec-label" data-i18n="inspect.summaryLabel">📋 综合结论</div>
     <div class="s2-headline go">—</div>
     <div class="s2-reason"></div>
+  </section>
+
+  <!-- Save + Share -->
+  <section class="card" id="saveBarCard" style="display:none;padding:var(--s3) var(--s4);">
+    <div class="save-bar" id="saveBar">
+      <button class="save-btn" id="saveBtn">💾 Save</button>
+      <button class="save-btn share-action" id="shareBtnMain">📤 Share</button>
+    </div>
   </section>
 
   <!-- ===== ② 工厂验证 ===== -->
@@ -193,9 +203,19 @@
 
     <!-- 费用明细 -->
     <div class="fee-box">
-      <div class="cs-row"><span data-i18n="inspect.deposit">定金</span> <b id="depositTotal">¥—</b> — <span data-i18n="inspect.productLabel">商品</span> ¥<b id="feeQtySmall">—</b> × <b id="feeQty">2</b> <span data-i18n="inspect.piecesUnit">件</span> + <span data-i18n="inspect.domesticFreight">国内运费</span> ¥10.00</div>
-      <div class="cs-row"><span data-i18n="inspect.balance">尾款</span> <b>$13 – $15</b> — <span data-i18n="inspect.balanceNote">验货确认后付（国际运费 + 服务费）</span></div>
-      <div class="cs-row total"><span data-i18n="inspect.totalEstimate">合计约</span> <b id="totalFee">$15 – $17</b></div>
+      <!-- 定金 -->
+      <div class="fee-block">
+        <div class="fee-head"><span data-i18n="inspect.deposit">定金</span> <b id="depositTotal">¥—</b></div>
+        <div class="fee-item"><span class="fee-dot" data-i18n="inspect.productLabel">商品</span> ¥<b id="feeQtySmall">—</b> × <b id="feeQty">2</b> <span data-i18n="inspect.piecesUnit">件</span></div>
+        <div class="fee-item"><span class="fee-dot" data-i18n="inspect.domesticFreight">国内运费</span> ¥10.00</div>
+      </div>
+      <!-- 尾款 -->
+      <div class="fee-block">
+        <div class="fee-head"><span data-i18n="inspect.balance">尾款</span> <b id="balanceTotal">$13 – $15</b></div>
+        <div class="fee-item fee-note" data-i18n="inspect.balanceNote">验货确认后付（国际运费 + 服务费）</div>
+      </div>
+      <!-- 合计 -->
+      <div class="fee-total"><span data-i18n="inspect.totalEstimate">合计约</span> <b id="totalFee">$15 – $17</b></div>
     </div>
 
     <!-- 服务保障 -->

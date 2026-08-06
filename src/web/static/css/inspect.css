@@ -227,9 +227,9 @@
 /* 维度行 */
 .eval-dim {
   display: grid;
-  grid-template-columns: 80px 1fr 140px;
+  grid-template-columns: auto 1fr auto;
   align-items: baseline;
-  gap: var(--s2);
+  gap: var(--s3);
   padding: var(--s2) 0;
   border-bottom: 1px dotted var(--line);
 }
@@ -239,22 +239,20 @@
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--ink);
-  white-space: nowrap;
 }
 .eval-dim-data {
   font-size: var(--fs-sm);
   color: var(--ink-2);
-  white-space: nowrap;
-}
-.eval-dim-tier {
-  font-size: var(--fs-sm);
-  flex-shrink: 0;
-  width: 20px; text-align: center;
+  line-height: 1.5;
 }
 .eval-dim-ref {
   font-size: var(--fs-xs);
   color: var(--ink-3);
-  white-space: nowrap;
+  text-align: right;
+}
+.eval-dim-data.is-na {
+  color: var(--ink-3);
+  font-style: italic;
 }
 
 /* 补充信息行 */
@@ -325,15 +323,17 @@
    ③ 拿样验货
    ================================================================ */
 .sample-flow {
-  display: flex; align-items: center; gap: 0;
+  display: flex; align-items: center; gap: 2px; flex-wrap: wrap;
   margin-bottom: var(--s4);
 }
 .sample-flow-step {
-  font-size: var(--fs-xs); font-weight: 600;
+  font-size: var(--fs-sm); font-weight: 600;
   padding: var(--s1) var(--s3);
   background: var(--ok-bg);
   color: var(--ok);
   border-radius: 20px;
+  white-space: nowrap;
+}
   white-space: nowrap;
 }
 .sample-flow-arrow {
@@ -414,7 +414,7 @@
   font-weight: 500;
 }
 
-/* 费用明细 */
+/* 费用明细 — 垂直堆叠，多语言不换行 */
 .fee-box {
   background: var(--paper);
   border: 1px solid var(--line);
@@ -422,19 +422,37 @@
   padding: var(--s3) var(--s4);
   margin: var(--s3) 0;
 }
-.fee-box .cs-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  font-size: var(--fs-sm); color: var(--ink-2);
-  padding: var(--s1) 0;
-  line-height: 1.5;
+.fee-block {
+  padding: var(--s2) 0;
 }
-.fee-box .cs-row b { color: var(--ink); font-family: var(--font-mono); }
-.fee-box .cs-row.total {
+.fee-block + .fee-block {
   border-top: 1px dotted var(--line);
-  padding-top: var(--s2); margin-top: var(--s1);
-  font-weight: 600; color: var(--ink);
-  font-size: var(--fs-md);
 }
+.fee-head {
+  display: flex; align-items: baseline; gap: var(--s2);
+  font-size: var(--fs-sm); font-weight: 600; color: var(--ink);
+  margin-bottom: var(--s1);
+}
+.fee-head b { font-family: var(--font-mono); }
+.fee-item {
+  font-size: var(--fs-xs); color: var(--ink-2);
+  padding: 2px 0 2px var(--s4);
+  line-height: 1.6;
+}
+.fee-item .fee-dot {
+  display: inline-block; min-width: 72px; color: var(--ink-2);
+}
+.fee-item b { color: var(--ink); font-family: var(--font-mono); font-weight: 500; }
+.fee-note {
+  padding-left: var(--s4); font-style: italic;
+}
+.fee-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-top: 1px solid var(--line);
+  padding-top: var(--s2); margin-top: var(--s1);
+  font-size: var(--fs-md); font-weight: 700; color: var(--ink);
+}
+.fee-total b { font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--seal); }
 
 /* 服务保障 */
 .inspect-guarantee {
@@ -466,3 +484,6 @@
   .p01-price-hero b { font-size: 22px; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Save bar inside card — 去掉 style.css 的 margin-top */
+.card .save-bar { margin-top: 0; }

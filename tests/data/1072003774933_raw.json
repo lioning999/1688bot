@@ -1,0 +1,413 @@
+{
+  "offerId": "1072003774933",
+  "supplier": {
+    "memberId": "b2b-3309838456b3763",
+    "flags": {
+      "isChtMember": false,
+      "isIndustrySeller": false,
+      "isEaseBuyDealer": true,
+      "isFactoryDealer": true,
+      "isSuperFactory": true,
+      "isTpFactory": false,
+      "isShiliFactory": false,
+      "isSiliCertifiedBrand": false,
+      "isFactory": true,
+      "isTp": true,
+      "isHyper": false,
+      "isBrandPlus": false,
+      "isProcessingTag": true,
+      "isSmt": true,
+      "isImall": false,
+      "isFullOnline": true,
+      "isTuoguan": false,
+      "isYuantouFlagship": false
+    },
+    "featureBadge": null,
+    "companyName": "杭州采菁化妆品有限公司",
+    "loginId": "广州采菁化妆品有限公司",
+    "userId": "3309838456",
+    "videos": [
+      {
+        "title": "工厂整体视频",
+        "url": "https://cloud.video.taobao.com/play/u/3309838456/p/2/e/6/t/1/317907233347.mp4",
+        "coverImage": "https://img.alicdn.com/imgextra/i1/6000000001991/O1CN01CVFI6W1QZvG8wSxPs_!!6000000001991-0-tbvideo.jpg",
+        "durationSeconds": 96,
+        "type": "factoryBossShowVideo",
+        "videoId": "195189232"
+      }
+    ],
+    "foundedYear": null,
+    "sellerType": "super_factory",
+    "isOnline": true,
+    "fans": "23w",
+    "tpYear": 10,
+    "mainCategory": "美容护肤/彩妆",
+    "address": "广东省汕头市潮阳区和平镇凤善",
+    "coordinates": "116.480712,23.247489",
+    "rank": {
+      "text": "2026上榜一钻工厂",
+      "url": "https://sale.1688.com/factory/bd_jpzz.html?__existtitle__=1&__removesafearea__=1&id=&_topOfferId_=b2b-3309838456b3763",
+      "type": "ranking_list#jpzz"
+    },
+    "certification": {
+      "type": "intertek",
+      "number": "编号:CNIR2604SZ13544",
+      "reportUrl": "https://r.1688.com/auth/fcaReportWireless.htm?showReport=true&mid=b2b-3309838456b3763"
+    },
+    "legalCompanyName": "1688广州美妆国际选品中心",
+    "originMerchant": null,
+    "shopUrl": "https://winport.m.1688.com/page/index.html?newRender=true&memberId=b2b-3309838456b3763&upstreamSource=share&__existtitle__=1",
+    "imUrl": "https://wangwang.m.1688.com/chat?siteid=cnalichn&clientid=广州采菁化妆品有限公司",
+    "factoryTags": [
+      {
+        "text": "回头率",
+        "value": "68%"
+      },
+      {
+        "text": "履约率",
+        "value": "99%"
+      },
+      {
+        "text": "服务分",
+        "value": "4.5"
+      }
+    ],
+    "stats": {
+      "repeatBuyers": null,
+      "crossBorderBuyers": null,
+      "brandPartner": null,
+      "repeatRate": null,
+      "positiveReviewRate": null,
+      "responseRate": null,
+      "factoryArea": 7847,
+      "employees": 49,
+      "patents": 2,
+      "mainDevices": null,
+      "scaleTier": null,
+      "certifications": "USFDA",
+      "ownBrand": null,
+      "rawCardDetail": [
+        {
+          "code": "isMajorPartner",
+          "title": "大牌合作商",
+          "info": "是",
+          "unit": null
+        },
+        {
+          "code": "acreage",
+          "title": "工厂面积",
+          "info": 7847,
+          "unit": "m²"
+        },
+        {
+          "code": "worker_num",
+          "title": "员工人数",
+          "info": "49",
+          "unit": "人"
+        },
+        {
+          "code": "patentsNum",
+          "title": "证书数量",
+          "info": 2,
+          "unit": "个"
+        },
+        {
+          "code": "patentsName",
+          "title": "证书名称",
+          "info": "USFDA",
+          "unit": null
+        }
+      ],
+      "totalOffers": 2673
+    }
+  },
+  "sourceKeyword": "",
+  "specs": [
+    {
+      "name": "功效",
+      "value": "变色"
+    },
+    {
+      "name": "品牌",
+      "value": "国货品牌"
+    },
+    {
+      "name": "质地",
+      "value": "镜面,哑光"
+    },
+    {
+      "name": "保质期",
+      "value": "3年"
+    },
+    {
+      "name": "产地",
+      "value": "广州"
+    },
+    {
+      "name": "规格",
+      "value": "正常规格"
+    },
+    {
+      "name": "是否进口",
+      "value": "否"
+    },
+    {
+      "name": "货号",
+      "value": "C393"
+    },
+    {
+      "name": "系列",
+      "value": "kakashow蝴蝶结双头唇釉"
+    },
+    {
+      "name": "生产许可证号",
+      "value": "粤妆20170110"
+    },
+    {
+      "name": "品牌类型",
+      "value": "国货品牌"
+    },
+    {
+      "name": "是否跨境出口专供货源",
+      "value": "否"
+    },
+    {
+      "name": "颜色",
+      "value": "01#桃心水母,02#深海珊瑚,03#糖霜枣泥,04#半山松石,05#枫糖番茄"
+    },
+    {
+      "name": "净含量",
+      "value": "2+2g"
+    },
+    {
+      "name": "非特化妆品备案证号",
+      "value": "粤G妆网备字2024326744"
+    },
+    {
+      "name": "适用肤质",
+      "value": "中性"
+    },
+    {
+      "name": "特殊用途化妆品",
+      "value": "否"
+    },
+    {
+      "name": "包装种类",
+      "value": "基础包装"
+    },
+    {
+      "name": "适用人群",
+      "value": "普通人群"
+    },
+    {
+      "name": "产品名称",
+      "value": "kakashow蝴蝶结双头唇釉"
+    },
+    {
+      "name": "是否IP授权",
+      "value": "否"
+    }
+  ],
+  "images": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01yYUhzStcPbL2n5iw_!!3309838456-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01MrOtpkDfBKJ2n5iw_!!3309838456-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01oX8ViUT4LNK2n5iw_!!3309838456-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01hHcnkd1iTfE2J49cG_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01cgQfgv1iTfDuGWupU_!!3843094414-0-cib.jpg"
+  ],
+  "videoUrl": "",
+  "dropship": {
+    "enabled": true,
+    "consignPrice": null,
+    "consignPriceTiers": [],
+    "channels": [],
+    "channelDetails": [],
+    "protections": [],
+    "downstreamPerformance": null,
+    "metrics": {
+      "orders30d": null,
+      "orders7d": null,
+      "pickupRate48h": null,
+      "pickupRate24h": null,
+      "distributorCount": null,
+      "downstreamStoreCount": null,
+      "publishDate": null
+    }
+  },
+  "shipping": {
+    "deliveryHours": 48,
+    "deliveryDays": 2,
+    "carrier": "中通快递",
+    "logisticsText": "承诺48小时发货·常发中通快递",
+    "unitWeight": 0.08,
+    "location": "广东广州",
+    "postFee": null,
+    "isFreeShipping": false,
+    "freeShippingThreshold": null,
+    "protectionInfos": [
+      {
+        "name": "7天无理由退货",
+        "code": "qtwlybt",
+        "description": "7天无理由退货"
+      },
+      {
+        "name": "晚发必赔",
+        "code": "ssbxsfh",
+        "description": "晚发必赔"
+      },
+      {
+        "name": "假一赔四",
+        "code": "jyps",
+        "description": "商家承诺消费者在1688平台购买商品，在收到货后若确认该商品非“正品”，则除交易退款外，还需向消费者增加赔偿。"
+      }
+    ],
+    "templateRemark": null,
+    "locationCode": null
+  },
+  "categoryId": "201306608",
+  "topCategoryId": "97",
+  "categoryName": null,
+  "categoryPath": null,
+  "unit": "支",
+  "saledCount": 0,
+  "saledCountStr": "<10",
+  "winportUrl": "https://winport.1688.com/page/index.html?memberId=b2b-3309838456b3763&_tabId_=index&upstreamSource=od&offerId=1072003774933",
+  "descriptionUrl": "https://air.1688.com/pages/od/app-desc/d7p56fw2w/index.html?url=https://itemcdn.tmall.com/1688offer/icoss8833376697a22715bf7aedd96&offerId=1072003774933&sellerLoginId=广州采菁化妆品有限公司",
+  "isOutOfStock": false,
+  "isCrossBorderTrade": false,
+  "wantBuyCount": null,
+  "recentSoldCount": 0,
+  "soldDisplay": "已售<10件",
+  "stock": 3102,
+  "minOrderQuantity": 1,
+  "supportsMix": true,
+  "mixWholesale": {
+    "minAmount": null,
+    "minVarieties": 1
+  },
+  "serviceLabels": [
+    "7天无理由退货",
+    "晚发必赔",
+    "假一赔四"
+  ],
+  "skuImages": [
+    {
+      "name": "01#桃心水母",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01zRPS4y1iTfE4n2Lpb_!!3843094414-0-cib.jpg"
+    },
+    {
+      "name": "02#深海珊瑚",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01jjndjP1iTfDuGkg4k_!!3843094414-0-cib.jpg"
+    },
+    {
+      "name": "03#糖霜枣泥",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01f43Sls1iTfE2kRzIY_!!3843094414-0-cib.jpg"
+    },
+    {
+      "name": "04#半山松石",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01Gv3o8j1iTfDuGlLgi_!!3843094414-0-cib.jpg"
+    },
+    {
+      "name": "05#枫糖番茄",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01PaJhYM1iTfE1guWxQ_!!3843094414-0-cib.jpg"
+    }
+  ],
+  "promotions": [],
+  "productFlags": {
+    "isSkuOffer": true,
+    "isPreSell": false,
+    "isConsignMarket": false,
+    "isFreeSample": false,
+    "isBuyerProtection": true,
+    "isWeChatSupply": false,
+    "isCrossBorder": true,
+    "isOnePiece": false,
+    "isWholesale": false,
+    "isToTikTok": false,
+    "isToKuaiShou": false,
+    "isSupportMix": true,
+    "hasRelationOffer": false,
+    "isChtSingleOffer": false,
+    "isDetailForbidden": false,
+    "supportsCustomization": false
+  },
+  "unitWeight": null,
+  "purchaseLimits": {
+    "personalLimit": null,
+    "promotionLimit": null
+  },
+  "supportsSampling": false,
+  "customization": {
+    "supported": false,
+    "title": null,
+    "shortTitle": null
+  },
+  "title": "kakashow蝴蝶结双头唇釉哑光口红镜面丝绒柔雾水光嘟嘟唇跨境美妆",
+  "quantityPrices": [
+    {
+      "quantityRange": "≥1个",
+      "quantityMin": 1,
+      "quantityMax": null,
+      "price": 3.8
+    }
+  ],
+  "price": {
+    "min": 3.8,
+    "max": 3.8,
+    "currency": "CNY"
+  },
+  "detailUrl": "https://detail.1688.com/offer/1072003774933.html",
+  "services": [
+    {
+      "name": "7天无理由退货",
+      "code": "qtwlybt",
+      "description": "满足相应条件下，卖家需支持7天无理由，其中定制订单不支持“7天无理由退货”。",
+      "linkUrl": null
+    },
+    {
+      "name": "晚发必赔",
+      "code": "ssbxsfh",
+      "description": "若商家未按订单约定的时间发货，您可以在订单详情申请赔付",
+      "linkUrl": "https://air.1688.com/app/ctf-page/protection-air/claim-rule.html"
+    },
+    {
+      "name": "假一赔四",
+      "code": "jyps",
+      "description": "商家承诺消费者在1688平台购买商品，在收到货后若确认该商品非“正品”，则除交易退款外，还需向消费者增加赔偿。",
+      "linkUrl": "https://show.1688.com/brand/promotion/5byiowgn.html?spm=a2637k.publish.0.0.4eb85da8EUl2D5&__pageId__=226462&cms_id=226462"
+    }
+  ],
+  "coupons": [
+    {
+      "couponId": null,
+      "type": "ACTIVITY",
+      "typeName": null,
+      "label": "满168元包邮",
+      "summary": "单笔订单满168元，免快递运费",
+      "validFrom": "2026-02-24 00:00:00",
+      "validTo": "2029-12-31 00:00:00",
+      "linkUrl": null
+    }
+  ],
+  "descriptionImages": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01p4L78x1iTfE1cWpDq_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01tEZ3vv1iTfE4HSqPM_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN016gOv681iTfDzSbyYL_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01d2GVsr1iTfE1gx9Ld_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01krmTnZ1iTfDzScB4a_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01UxPU3T1iTfE164sdb_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01rhrD6H1iTfE1cWDpd_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01lZaJ6U1iTfE2JKs7R_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01m9KyHI1iTfDuGpF4V_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01pSGzQU1iTfE4n5i1c_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01VDr4YV1iTfE3iAScX_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Wt0zvu1iTfDzSeFxU_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01vXWA661iTfE4HV7pQ_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Q6qK4z1iTfE1661JV_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN010NQzlo1iTfDzkccml_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01hyoAm91iTfE2lF8Km_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01qWOVTN1iTfDygOCw8_!!3843094414-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01orFlxt1iTfE3iB44I_!!3843094414-0-cib.jpg"
+  ],
+  "descriptionText": null
+}

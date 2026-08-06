@@ -346,8 +346,8 @@ def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lan
     """
     try:
         dims_out: list[dict[str, Any]] = []
-        for dim in product_raw.get("dimensions") or []:
-            if not isinstance(dim, dict):
+        for dim in cast(list[dict[str, Any]], product_raw.get("dimensions") or []):
+            if not isinstance(dim, dict):  # pyright: ignore[reportUnnecessaryIsInstance]
                 continue
             d_out: dict[str, Any] = {
                 "key": dim.get("key", ""),
@@ -385,6 +385,10 @@ def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lan
                     )
                 else:
                     d_out["data"] = ""
+            # 无数据 → 标记 na，前端灰色弱化
+            if not d_out.get("data"):
+                d_out["data"] = _glossary("no_data", lang, "")
+                d_out["na"] = True
 
             # ref
             ref_fmt: str = str(dim.get("ref_fmt", ""))
@@ -444,8 +448,8 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
 
         # 翻译维度
         dims_out: list[dict[str, Any]] = []
-        for dim in supplier_raw.get("dimensions") or []:
-            if not isinstance(dim, dict):
+        for dim in cast(list[dict[str, Any]], supplier_raw.get("dimensions") or []):
+            if not isinstance(dim, dict):  # pyright: ignore[reportUnnecessaryIsInstance]
                 continue
             d_out: dict[str, Any] = {
                 "key": dim.get("key", ""),
@@ -479,6 +483,11 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
                 else:
                     d_out["data"] = ""
 
+            # 无数据 → 标记 na，前端灰色弱化
+            if not d_out.get("data"):
+                d_out["data"] = _glossary("no_data", lang, "")
+                d_out["na"] = True
+
             # ref：format string + num
             ref_fmt: str = str(dim.get("ref_fmt", ""))
             if ref_fmt and dim.get("ref_num") is not None:
@@ -504,8 +513,9 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
         summary_raw: Any = supplier_raw.get("summary")
         summary_text: str = ""
         if summary_raw and isinstance(summary_raw, dict):
-            sk: str = str(summary_raw.get("key", ""))
-            sp: dict[str, Any] = dict(summary_raw.get("params", {}))
+            s: dict[str, Any] = cast(dict[str, Any], summary_raw)
+            sk: str = str(s.get("key", ""))
+            sp: dict[str, Any] = s.get("params") or {}
             if "identity_key" in sp:
                 sp["identity"] = _glossary(str(sp.pop("identity_key")), lang)
             template: str = _glossary(sk, lang)
@@ -583,10 +593,10 @@ def _format_verdict(v: Any, lang: str) -> str:
 
     # 翻译 reason_keys（list of key → 各语言文本 → 拼接）
     if "reason_keys" in params:
-        rks: list[str] = params.pop("reason_keys")
+        rks = params.pop("reason_keys")
         if isinstance(rks, list) and rks:
             sep: str = _glossary("supp_reason_sep", lang, "、")
-            translated: list[str] = [_glossary(str(rk), lang, rk) for rk in rks]
+            translated: list[str] = [_glossary(str(rk), lang, rk) for rk in cast(list[str], rks)]
             reason_str: str = sep.join(translated)
             params["reason"] = reason_str
             params["reasons"] = reason_str
@@ -597,6 +607,60 @@ def _format_verdict(v: Any, lang: str) -> str:
         unit_translated: str = _glossary(f"unit_{unit_cn}", lang)
         if unit_translated and unit_translated != unit_cn:
             params["unit"] = unit_translated
+
+    # ---- 新判词系统参数 ----
+
+    # good_part_keys: list of glossary key → resolve each → join with "。"
+    if "good_part_keys" in params:
+        gks: Any = params.pop("good_part_keys")
+        if isinstance(gks, list) and gks:
+            parts: list[str] = []
+            for gk in gks:
+                part_tpl: str = _glossary(str(gk), lang, str(gk))
+                try:
+                    parts.append(part_tpl.format(**params))
+                except (KeyError, ValueError):
+                    parts.append(part_tpl)
+            params["good_parts"] = "。".join(parts) if parts else ""
+        else:
+            params["good_parts"] = ""
+
+    # bad_part_keys: list of glossary key → resolve each → join with "。"
+    if "bad_part_keys" in params:
+        bks: Any = params.pop("bad_part_keys")
+        if isinstance(bks, list) and bks:
+            parts: list[str] = []
+            for bk in bks:
+                part_tpl: str = _glossary(str(bk), lang, str(bk))
+                try:
+                    parts.append(part_tpl.format(**params))
+                except (KeyError, ValueError):
+                    parts.append(part_tpl)
+            params["bad_parts"] = "。".join(parts) if parts else ""
+        else:
+            params["bad_parts"] = ""
+
+    # barrier_tip_key: glossary key → resolve → format with nested params (price, moq)
+    if "barrier_tip_key" in params:
+        tip_key: str = str(params.pop("barrier_tip_key"))
+        tip_tpl: str = _glossary(tip_key, lang, tip_key)
+        try:
+            params["barrier_tip"] = tip_tpl.format(**params)
+        except (KeyError, ValueError):
+            params["barrier_tip"] = tip_tpl
+
+    # action_key: glossary key → resolve
+    if "action_key" in params:
+        action_key: str = str(params.pop("action_key"))
+        params["action"] = _glossary(action_key, lang, action_key)
+
+    # risk_note_key: glossary key → resolve → {risk_note}（无风险时为空字符串）
+    risk_note = ""
+    if "risk_note_key" in params:
+        rn_key: str = str(params.pop("risk_note_key"))
+        risk_note = _glossary(rn_key, lang, rn_key)
+    params["risk_note"] = risk_note
+
     try:
         return template.format(**params)
     except (KeyError, ValueError):

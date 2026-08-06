@@ -65,6 +65,7 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "return7day": "OK" if _has_tag(raw.get("serviceLabels", []) or [], "7天")
                             or _has_tag(raw.get("serviceLabels", []) or [], "退货") else "NO",
         "sold": raw.get("saledCount"),
+        "wantBuy": raw.get("wantBuyCount"),
 
         # 产品标签（Badge 行）
         "badgeLabels": _build_badge_labels(
@@ -246,8 +247,8 @@ def _filter_specs(specs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     KEYS = {"材质", "品牌", "颜色", "规格", "尺寸", "风格", "货号", "重量", "包装", "工艺", "类别", "骨架"}
     result: list[dict[str, str]] = []
     for s in specs:
-        if not isinstance(s, dict):
-            continue  # 非 dict 格式跳过（Apify 偶尔返回纯字符串）
+        if not isinstance(s, dict):  # pyright: ignore[reportUnnecessaryIsInstance] — Apify 偶尔返回纯字符串
+            continue
         name = str(s.get("name", "")).strip()
         value = str(s.get("value", "")).strip()
         if name in KEYS and value and value != "咨询客服" and len(value) < 30:
@@ -296,7 +297,7 @@ def _parse_repurchase(raw: dict[str, Any], supplier: dict[str, Any], stats: dict
     # 路径 3：supplier.factoryTags 中的 "回头率"
     factory_tags: list[dict[str, Any]] = supplier.get("factoryTags") or []
     for tag in factory_tags:
-        if isinstance(tag, dict) and "回头率" in str(tag.get("text", "")):
+        if isinstance(tag, dict) and "回头率" in str(tag.get("text", "")):  # pyright: ignore[reportUnnecessaryIsInstance]
             result = _parse_pct(tag.get("value"))
             if result is not None:
                 return result

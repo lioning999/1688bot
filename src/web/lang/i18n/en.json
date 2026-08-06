@@ -29,6 +29,9 @@
   "report.saveBtn": "💾 Save",
   "report.savedBtn": "✓ Saved",
   "report.savingBtn": "Saving...",
+  "report.startFailed": "Analysis failed to start",
+  "report.sampleLoading": "Loading sample data...",
+  "report.sampleFailed": "Sample failed to load, paste a link to search",
   "ship.landLabel": "🚛 Land",
   "ship.airLabel": "✈️ Air",
   "ship.weightNote": "Based on weight/volume",
@@ -144,5 +147,9 @@
   "inspect.unit": "piece",
   "inspect.moq": "MOQ",
   "inspect.companyName": "Company Name",
-  "inspect.industryCluster": "Industry Cluster"
+  "inspect.industryCluster": "Industry Cluster",
+  "report.resuming": "Resuming unfinished analysis...",
+  "report.dbLoadingHint": "Loading saved analysis...",
+  "report.dbLoadedHint": "Saved analysis data",
+  "report.expiredBtn": "⚠ Expired"
 }

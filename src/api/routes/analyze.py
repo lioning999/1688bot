@@ -7,6 +7,7 @@
   #14  L1 前端按钮防重（后端配合：同 offer_id 未完成任务返回已有 task_id）
 """
 
+import time
 from typing import Any
 
 from fastapi import APIRouter, Request
@@ -48,6 +49,8 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
 
     前端收到 task_id 后每 2 秒轮询 GET /api/analyze/{task_id}。
     """
+    t_req_start = time.time()
+
     # ---- 1. 提取 offerId ----
     offer_id = extract_offer_id(body.url)
     if not offer_id or not offer_id.isdigit():
@@ -67,9 +70,18 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
     # ---- 3. 缓存前置：命中直接返回 task_id，不扣配额 ----
     cached: dict[str, Any] | None = analysis_cache.get(offer_id)
     if cached:
-        logger.info(f"[汇总] offer_id={offer_id} 缓存命中 | 配额0 Apify✗ Qwen✗")
+        t_elapsed = time.time() - t_req_start
+        logger.info(
+            f"[请求] POST /api/analyze offer_id={offer_id} lang={body.lang or 'zh'} "
+            f"缓存命中 | 耗时={t_elapsed:.2f}s | 配额0 Apify✗ Qwen✗"
+        )
         result: dict[str, Any] = await build_result_with_display(cached, offer_id, body.lang)
         task_id: str = analyze_service.create_done_task(result)
+        display_size = len(str(result.get("display", {})))
+        logger.info(
+            f"[请求] ✓ 返回 offer_id={offer_id} task_id={task_id} "
+            f"总耗时={time.time() - t_req_start:.2f}s displaySize={display_size}B"
+        )
         return {"code": 200, "msg_code": "OK", "data": {"task_id": task_id, "status": "pending"}, "message": "ok"}
 
     # ---- 4. 每日配额（未登录按 IP 3 次/天，登录按 user_id 10 次/天） ----
@@ -91,7 +103,11 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
 
     # ---- 5. 启动后台分析 ----
     task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url, lang=body.lang, quota_key=quota_key)
-    logger.info(f"[汇总] offer_id={offer_id} task_id={task_id} 启动Apify | lang={body.lang or 'zh'}")
+    t_elapsed = time.time() - t_req_start
+    logger.info(
+        f"[请求] POST /api/analyze offer_id={offer_id} task_id={task_id} lang={body.lang or 'zh'} "
+        f"启动Apify | 耗时={t_elapsed:.2f}s | 配额消耗 user_id={user_id} quota_key={quota_key}"
+    )
 
     return {
         "code": 200,
@@ -126,6 +142,18 @@ async def analyze_status(task_id: str) -> dict[str, Any]:
             "data": task,
             "message": task.get("error", "分析失败"),
         }
+
+    # 任务完成 → 日志记录 display JSON 大小
+    if task.get("status") == "done":
+        result: dict[str, Any] = task.get("result", {}) or {}
+        display: dict[str, Any] = result.get("display", {}) or {}
+        display_size = len(str(display))
+        created = task.get("created_at", 0)
+        elapsed = time.time() - created if created else 0
+        logger.info(
+            f"[请求] GET /api/analyze/{task_id} status=done "
+            f"displaySize={display_size}B 分析耗时={elapsed:.1f}s"
+        )
 
     return {
         "code": 200,

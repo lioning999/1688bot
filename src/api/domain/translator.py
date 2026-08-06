@@ -1,7 +1,7 @@
 """1688 商品数据翻译 — Qwen3-Flash 翻译 1688 原始中文字段。
 
-翻译范围：仅 1688/Apify 返回的中文数据（title/supplierName/shippingLocation/certType/rankText/factoryFlags +
-specs/skus）。解释文案/判词已通过 glossary 预翻译，不在此层处理。
+翻译范围：仅 1688/Apify 返回的中文数据（title/supplierName/rankText）。
+解释文案/判词已通过 glossary 预翻译，不在此层处理。
 
 4 语言独立 prompt，每语言含术语表 + 禁用词表。
 Prompt 配置从 translator_prompts.json 加载，改 prompt 不改代码。
@@ -44,10 +44,9 @@ _LANG_NAMES: dict[str, str] = {
 # Path 3 需要翻译的字段白名单。只留 1688 原始数据，解释文案/判词/tier/industry 已走 glossary。
 _TRANSLATABLE_SCALAR: list[str] = [
     "title",
-    "supplierName", "shippingLocation", "factoryFlags",
-    "certType", "rankText",
+    "supplierName", "rankText",
 ]
-_TRANSLATABLE_LIST: list[str] = ["specs", "skus"]
+_TRANSLATABLE_LIST: list[str] = []
 
 # 白名单字段名 → 子对象中的实际键名。
 # 改 _TRANSLATABLE_SCALAR / _TRANSLATABLE_LIST → 必须同步改此表。
@@ -56,9 +55,6 @@ _KEY_IN_SOURCE: dict[str, str] = {
     "title":            "title",
     # factory 子对象
     "supplierName":     "supplierName",
-    "shippingLocation": "shippingLocation",
-    "factoryFlags":     "factoryFlags",
-    "certType":         "certType",
     "rankText":         "rankText",
 }
 
@@ -169,8 +165,6 @@ def _extract_translatable(display: dict[str, Any]) -> dict[str, Any]:
                 result[key] = val
                 break
 
-    # specs / skus 列表。skus 只取前 5 个（控制 Qwen 输出长度，其余去 1688 原链接看）。
-    SKU_MAX = 5
     for list_key in _TRANSLATABLE_LIST:
         items: Any = display.get(list_key)
         if items and isinstance(items, list):
@@ -181,9 +175,6 @@ def _extract_translatable(display: dict[str, Any]) -> dict[str, Any]:
                     value: str = str(item.get("value", ""))  # type: ignore[reportUnknownMemberType,reportUnknownArgumentType]
                     if _contains_chinese(name) or _contains_chinese(value):
                         filtered.append({"name": name, "value": value})
-            if list_key == "skus" and len(filtered) > SKU_MAX:
-                logger.info(f"[翻译] SKU 过多 {len(filtered)}→{SKU_MAX}，截断")
-                filtered = filtered[:SKU_MAX]
             if filtered:
                 result[list_key] = filtered
 

@@ -1,156 +1,138 @@
 {
   "_about": "Sourcely 术语/模板字典 — 唯一翻译数据源。5语言平行(zh/en/vi/th/id)。改中文KEY时必须同步检查其他4语言翻译。",
-
-  "源头工厂":     { "zh": "源头工厂",     "en": "Factory",              "vi": "Nhà Máy",                          "th": "โรงงาน",                        "id": "Pabrik" },
-  "贸易商":       { "zh": "贸易商",       "en": "Trader",               "vi": "Công Ty",                          "th": "บริษัท",                      "id": "Perusahaan" },
-  "实力工厂":     { "zh": "实力工厂",     "en": "Verified Factory",     "vi": "Nhà Máy Đã Kiểm Định",             "th": "โรงงานที่ผ่านการรับรอง",          "id": "Pabrik Terverifikasi" },
-  "超级工厂":     { "zh": "超级工厂",     "en": "Super Factory",        "vi": "Siêu Nhà Máy",                     "th": "ซูเปอร์แฟคทอรี่",               "id": "Pabrik Super" },
-  "通品工厂":     { "zh": "通品工厂",     "en": "Standard Factory",     "vi": "Nhà Máy Tiêu Chuẩn",               "th": "โรงงานมาตรฐาน",                 "id": "Pabrik Standar" },
-  "源头旗舰":     { "zh": "源头旗舰",     "en": "Flagship Factory",     "vi": "Nhà Máy Flagship",                 "th": "โรงงานเรือธง",                  "id": "Pabrik Unggulan" },
-  "普通商家":     { "zh": "普通商家",     "en": "Standard Seller",      "vi": "Nhà Bán Hàng Thường",              "th": "ผู้ขายทั่วไป",                "id": "Penjual Biasa" },
-  "非生产厂家":   { "zh": "非生产厂家",   "en": "Non-Manufacturer",     "vi": "Không Phải Nhà Sản Xuất",          "th": "ไม่ใช่ผู้ผลิต",              "id": "Bukan Produsen" },
-  "生产厂家":     { "zh": "生产厂家",     "en": "Manufacturer",         "vi": "Nhà Sản Xuất",                     "th": "ผู้ผลิต",                     "id": "Produsen" },
-  "工厂直供":     { "zh": "工厂直供",     "en": "Factory Direct",       "vi": "Nhà Máy Cung Cấp Trực Tiếp",       "th": "โรงงานจำหน่ายตรง",              "id": "Pasokan Langsung Pabrik" },
-  "深度验厂":     { "zh": "深度验厂",     "en": "Deep Factory Audit",   "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",     "th": "การตรวจสอบโรงงานเชิงลึก",         "id": "Audit Pabrik Mendalam" },
-  "实地认证":     { "zh": "实地认证",     "en": "On-site Certification","vi": "Chứng Nhận Tại Chỗ",                "th": "การรับรองหน้างาน",              "id": "Sertifikasi Di Tempat" },
-  "第三方验厂":   { "zh": "第三方验厂",   "en": "Third-Party Factory Audit","vi": "Kiểm Toán Bên Thứ Ba",           "th": "การตรวจสอบโดยบุคคลที่สาม",       "id": "Audit Pihak Ketiga" },
-  "SGS 实地认证": { "zh": "SGS 实地认证", "en": "SGS On-site Certification","vi": "Chứng Nhận SGS Tại Chỗ",        "th": "การรับรอง SGS หน้างาน",          "id": "Sertifikasi SGS Di Tempat" },
-  "累计销量":     { "zh": "累计销量",     "en": "Total Sales",          "vi": "Tổng Doanh Số",                    "th": "ยอดขายรวม",                    "id": "Total Penjualan" },
-  "回头率":       { "zh": "回头率",       "en": "Repurchase Rate",      "vi": "Tỷ Lệ Mua Lại",                    "th": "อัตราการซื้อซ้ำ",             "id": "Tingkat Pembelian Ulang" },
-  "品类排名":     { "zh": "品类排名",     "en": "Category Rank",        "vi": "Xếp Hạng Ngành Hàng",              "th": "อันดับหมวดหมู่",               "id": "Peringkat Kategori" },
-  "暂无认证":     { "zh": "暂无认证",     "en": "No Certification",     "vi": "Chưa Có Chứng Nhận",               "th": "ยังไม่มีการรับรอง",            "id": "Belum Ada Sertifikasi" },
-  "暂无排名":     { "zh": "暂无排名",     "en": "No Ranking",           "vi": "Chưa Có Xếp Hạng",                 "th": "ยังไม่มีอันดับ",              "id": "Belum Ada Peringkat" },
-  "不适用":       { "zh": "不适用",       "en": "N/A",                  "vi": "Không Áp Dụng",                    "th": "ไม่เกี่ยวข้อง",              "id": "Tidak Berlaku" },
-  "产业带":       { "zh": "产业带",       "en": "Industrial Cluster",   "vi": "Cụm Công Nghiệp",                  "th": "กลุ่มอุตสาหกรรม",            "id": "Klaster Industri" },
-  "源头产地":     { "zh": "源头产地",     "en": "Source Region",        "vi": "Vùng Sản Xuất Gốc",                "th": "แหล่งผลิตต้นทาง",            "id": "Wilayah Produksi Sumber" },
-  "集散地":       { "zh": "集散地",       "en": "Distribution Hub",     "vi": "Trung Tâm Phân Phối",              "th": "ศูนย์กระจายสินค้า",            "id": "Pusat Distribusi" },
-  "现货":         { "zh": "现货",         "en": "In Stock / Ready Stock","vi": "Hàng Có Sẵn",                      "th": "สินค้าพร้อมส่ง",               "id": "Stok Tersedia" },
-  "支持混批":     { "zh": "支持混批",     "en": "Mixed Batch OK",       "vi": "Hỗ Trợ Đơn Hàng Nhỏ",              "th": "รับออเดอร์คละ",                "id": "Mendukung Campuran" },
-
-  "免费拿样":     { "zh": "免费拿样",     "en": "Free Sample",          "vi": "Mẫu Miễn Phí",                     "th": "ตัวอย่างฟรี",                 "id": "Sampel Gratis" },
-  "买家保障":     { "zh": "买家保障",     "en": "Buyer Protection",     "vi": "Bảo Vệ Người Mua",                 "th": "คุ้มครองผู้ซื้อ",              "id": "Perlindungan Pembeli" },
-  "跨境专供":     { "zh": "跨境专供",     "en": "Cross-Border Supply",  "vi": "Cung Cấp Xuyên Biên Giới",         "th": "ซัพพลายข้ามพรมแดน",            "id": "Pasokan Lintas Batas" },
-  "批发价":       { "zh": "批发价",       "en": "Wholesale Price",      "vi": "Giá Sỉ",                           "th": "ราคาส่ง",                      "id": "Harga Grosir" },
-  "包邮":         { "zh": "包邮",         "en": "Free Shipping",        "vi": "Miễn Phí Vận Chuyển",              "th": "จัดส่งฟรี",                    "id": "Gratis Ongkir" },
-  "晚发必赔":     { "zh": "晚发必赔",     "en": "Late Delivery Compensation","vi": "Bồi Thường Giao Hàng Trễ",     "th": "ชดเชยหากจัดส่งล่าช้า",          "id": "Kompensasi Keterlambatan" },
-  "7天包换":      { "zh": "7天包换",      "en": "7-Day Exchange",       "vi": "Đổi Hàng 7 Ngày",                  "th": "เปลี่ยนสินค้า 7 วัน",           "id": "Tukar 7 Hari" },
-  "48小时发货":   { "zh": "48小时发货",   "en": "48-Hour Dispatch",     "vi": "Giao Hàng Trong 48 Giờ",           "th": "จัดส่งภายใน 48 ชม.",           "id": "Pengiriman 48 Jam" },
-  "24小时发货":   { "zh": "24小时发货",   "en": "24-Hour Dispatch",     "vi": "Giao Hàng Trong 24 Giờ",           "th": "จัดส่งภายใน 24 ชม.",           "id": "Pengiriman 24 Jam" },
-
-  "品质不符包赔": { "zh": "品质不符包赔", "en": "Quality Guaranteed",       "vi": "Đảm Bảo Chất Lượng",           "th": "รับประกันคุณภาพ",              "id": "Jaminan Kualitas" },
-  "7天无理由退货": { "zh": "7天无理由退货", "en": "7-Day Returns",          "vi": "Đổi Trả 7 Ngày",               "th": "คืนสินค้า 7 วัน",               "id": "Retur 7 Hari" },
-  "严选晚发必赔": { "zh": "严选晚发必赔", "en": "On-Time Guaranteed",       "vi": "Đảm Bảo Giao Đúng Hạn",         "th": "รับประกันจัดส่งตรงเวลา",         "id": "Jaminan Pengiriman Tepat Waktu" },
-
-  "trust_sold_fmt":         { "zh": "{n}+ 已售",     "en": "{n}+ sold",        "vi": "Đã bán {n}+",          "th": "ขายแล้ว {n}+",            "id": "{n}+ terjual" },
-  "sales_sold_fmt":         { "zh": "{n} 已售",      "en": "{n} sold",          "vi": "Đã bán {n}",            "th": "ขายแล้ว {n}",              "id": "{n} terjual" },
-  "trust_years_fmt":        { "zh": "{n}年 1688",    "en": "{n}y on 1688",      "vi": "{n} năm trên 1688",    "th": "{n} ปีบน 1688",           "id": "{n} thn di 1688" },
-  "badge_repurchase_fmt":   { "zh": "{n}% 回头率",   "en": "{n}% repurchase",   "vi": "Mua lại {n}%",          "th": "ซื้อซ้ำ {n}%",             "id": "Beli ulang {n}%" },
-
-  "star_sufficient_label":  { "zh": "推荐",     "en": "Recommended",  "vi": "Nên Dùng",           "th": "แนะนำ",                "id": "Direkomendasikan" },
-  "star_partial_label":     { "zh": "可考虑",   "en": "Consider",     "vi": "Cân Nhắc",           "th": "พิจารณา",             "id": "Pertimbangkan" },
-  "star_limited_label":     { "zh": "数据有限", "en": "Limited Data", "vi": "Dữ Liệu Hạn Chế",    "th": "ข้อมูลจำกัด",          "id": "Data Terbatas" },
-
-  "tier_sufficient_2y":   { "zh": "平台认证 + 2年+，样品风险低",          "en": "Platform verified + 2y+, low sample risk",                    "vi": "Đã xác minh nền tảng + 2 năm+, rủi ro lấy mẫu thấp",       "th": "แพลตฟอร์มรับรอง + 2 ปี+, ความเสี่ยงตัวอย่างต่ำ",            "id": "Terverifikasi platform + 2 thn+, risiko sampel rendah" },
-  "tier_advanced_lt2y":   { "zh": "平台认证，<2年，建议验货",              "en": "Platform verified, <2y, inspect recommended",                 "vi": "Đã xác minh nền tảng, <2 năm, nên kiểm tra",              "th": "แพลตฟอร์มรับรอง, <2 ปี, แนะนำให้ตรวจสอบ",                   "id": "Terverifikasi platform, <2 thn, disarankan inspeksi" },
-  "tier_factory_1y":      { "zh": "生产厂家，1年+，建议样品验证",          "en": "Manufacturer, 1y+, sample verification advised",              "vi": "Nhà sản xuất, 1 năm+, nên xác minh mẫu",                  "th": "ผู้ผลิต, 1 ปี+, แนะนำตรวจสอบตัวอย่าง",                       "id": "Produsen, 1 thn+, disarankan verifikasi sampel" },
-  "tier_no_cert_1y":      { "zh": "无认证，1年+，建议样品验证",            "en": "No cert, 1y+, sample verification advised",                   "vi": "Không chứng nhận, 1 năm+, nên xác minh mẫu",               "th": "ไม่มีการรับรอง, 1 ปี+, แนะนำตรวจสอบตัวอย่าง",                 "id": "Tanpa sertifikasi, 1 thn+, disarankan verifikasi sampel" },
-  "tier_insufficient":    { "zh": "无认证，<1年，建议手动验证",             "en": "No cert, <1y, manual verification advised",                   "vi": "Không chứng nhận, <1 năm, nên xác minh thủ công",          "th": "ไม่มีการรับรอง, <1 ปี, แนะนำตรวจสอบด้วยตนเอง",                "id": "Tanpa sertifikasi, <1 thn, disarankan verifikasi manual" },
-
-  "unit_个":   { "zh": "个",   "en": "pcs",    "vi": "cái",    "th": "ชิ้น",    "id": "pcs" },
-  "unit_件":   { "zh": "件",   "en": "pcs",    "vi": "cái",    "th": "ชิ้น",    "id": "pcs" },
-  "unit_把":   { "zh": "把",   "en": "pcs",    "vi": "cái",    "th": "ชิ้น",    "id": "pcs" },
-  "unit_只":   { "zh": "只",   "en": "pcs",    "vi": "cái",    "th": "ชิ้น",    "id": "pcs" },
-  "unit_套":   { "zh": "套",   "en": "set",    "vi": "bộ",     "th": "ชุด",     "id": "set" },
-  "unit_包":   { "zh": "包",   "en": "pack",   "vi": "gói",    "th": "แพ็ค",   "id": "pak" },
-  "unit_袋":   { "zh": "袋",   "en": "pack",   "vi": "túi",    "th": "ถุง",     "id": "pak" },
-  "unit_副":   { "zh": "副",   "en": "pair",   "vi": "đôi",    "th": "คู่",     "id": "pasang" },
-  "unit_对":   { "zh": "对",   "en": "pair",   "vi": "đôi",    "th": "คู่",     "id": "pasang" },
-  "unit_双":   { "zh": "双",   "en": "pair",   "vi": "đôi",    "th": "คู่",     "id": "pasang" },
-  "unit_盒":   { "zh": "盒",   "en": "box",    "vi": "hộp",    "th": "กล่อง",  "id": "kotak" },
-  "unit_箱":   { "zh": "箱",   "en": "carton", "vi": "thùng",  "th": "ลัง",     "id": "karton" },
-  "unit_瓶":   { "zh": "瓶",   "en": "bottle", "vi": "chai",   "th": "ขวด",     "id": "botol" },
-  "unit_条":   { "zh": "条",   "en": "pcs",    "vi": "cái",    "th": "ชิ้น",    "id": "pcs" },
-  "unit_米":   { "zh": "米",   "en": "m",      "vi": "m",      "th": "ม.",      "id": "m" },
-  "unit_码":   { "zh": "码",   "en": "yd",     "vi": "yd",     "th": "หลา",    "id": "yd" },
-  "unit_克":   { "zh": "克",   "en": "g",      "vi": "g",      "th": "ก.",      "id": "g" },
-  "unit_千克": { "zh": "千克", "en": "kg",     "vi": "kg",     "th": "กก.",     "id": "kg" },
-  "unit_吨":   { "zh": "吨",   "en": "t",      "vi": "tấn",   "th": "ตัน",     "id": "ton" },
-  "unit_平方米":{ "zh": "平方米","en": "m²",    "vi": "m²",     "th": "ตร.ม.",   "id": "m²" },
-
-  "emoji_factory": { "zh": "🏭 ", "en": "🏭 ", "vi": "🏭 ", "th": "🏭 ", "id": "🏭 " },
-  "emoji_rank":    { "zh": "🏆 ", "en": "🏆 ", "vi": "🏆 ", "th": "🏆 ", "id": "🏆 " },
-
-  "verdict_product_recommend": {
-    "zh": "✅ 推荐取样 — ¥{price}/{unit}，起订 {moq}，月销 {sold}+，试错成本极低",
-    "en": "✅ Recommend sampling — ¥{price}/{unit}, MOQ {moq}, {sold}+ sold monthly, very low trial cost",
-    "vi": "✅ Nên lấy mẫu — ¥{price}/{unit}, MOQ {moq}, {sold}+ bán/tháng, chi phí thử rất thấp",
-    "th": "✅ แนะนำสั่งตัวอย่าง — ¥{price}/{unit}, MOQ {moq}, ขาย {sold}+/เดือน, ต้นทุนทดลองต่ำมาก",
-    "id": "✅ Rekomendasi sampel — ¥{price}/{unit}, MOQ {moq}, {sold}+ terjual/bulan, biaya uji coba rendah"
+  "24小时发货": {
+    "zh": "24小时发货",
+    "en": "24-Hour Dispatch",
+    "vi": "Giao Hàng Trong 24 Giờ",
+    "th": "จัดส่งภายใน 24 ชม.",
+    "id": "Pengiriman 24 Jam"
   },
-  "verdict_product_consider": {
-    "zh": "✅ 值得考虑 — ¥{price}/{unit}，起订 {moq}，已认证。建议取样确认",
-    "en": "✅ Worth considering — ¥{price}/{unit}, MOQ {moq}, certified. Suggest sample confirmation",
-    "vi": "✅ Đáng cân nhắc — ¥{price}/{unit}, MOQ {moq}, đã chứng nhận. Nên xác nhận mẫu",
-    "th": "✅ น่าพิจารณา — ¥{price}/{unit}, MOQ {moq}, รับรองแล้ว. แนะนำยืนยันตัวอย่าง",
-    "id": "✅ Layak dipertimbangkan — ¥{price}/{unit}, MOQ {moq}, tersertifikasi. Sarankan konfirmasi sampel"
+  "48小时发货": {
+    "zh": "48小时发货",
+    "en": "48-Hour Dispatch",
+    "vi": "Giao Hàng Trong 48 Giờ",
+    "th": "จัดส่งภายใน 48 ชม.",
+    "id": "Pengiriman 48 Jam"
   },
-  "verdict_product_no_cert": {
-    "zh": "⚠️ 无认证 — {sold}+ 已售但无验厂记录。¥{deposit} 取样验证质量",
-    "en": "⚠️ No certification — {sold}+ sold but no factory audit. ¥{deposit} to sample and verify quality",
-    "vi": "⚠️ Thiếu chứng nhận — {sold}+ đã bán nhưng không có kiểm toán. ¥{deposit} lấy mẫu xác minh",
-    "th": "⚠️ ไม่มีการรับรอง — ขาย {sold}+ แต่ไม่มีการตรวจโรงงาน. ¥{deposit} สั่งตัวอย่างตรวจสอบคุณภาพ",
-    "id": "⚠️ Tanpa sertifikasi — {sold}+ terjual tanpa audit pabrik. ¥{deposit} sampel untuk verifikasi"
+  "7天包换": {
+    "zh": "7天包换",
+    "en": "7-Day Exchange",
+    "vi": "Đổi Hàng 7 Ngày",
+    "th": "เปลี่ยนสินค้า 7 วัน",
+    "id": "Tukar 7 Hari"
   },
-  "verdict_product_insufficient": {
-    "zh": "⚠️ 数据不足 — 缺少销量和认证数据。¥{deposit} 取 2 个样品是最安全的做法",
-    "en": "⚠️ Insufficient data — Missing sales & certification data. ¥{deposit} to sample 2 pcs is the safest approach",
-    "vi": "⚠️ Thiếu dữ liệu — Thiếu dữ liệu bán hàng & chứng nhận. ¥{deposit} lấy 2 mẫu là an toàn nhất",
-    "th": "⚠️ ข้อมูลไม่เพียงพอ — ไม่มีข้อมูลการขายและการรับรอง. ¥{deposit} สั่งตัวอย่าง 2 ชิ้นปลอดภัยที่สุด",
-    "id": "⚠️ Data tidak cukup — Tidak ada data penjualan & sertifikasi. ¥{deposit} sampel 2 pcs paling aman"
+  "7天无理由退货": {
+    "zh": "7天无理由退货",
+    "en": "7-Day Returns",
+    "vi": "Đổi Trả 7 Ngày",
+    "th": "คืนสินค้า 7 วัน",
+    "id": "Retur 7 Hari"
   },
-  "verdict_factory_reliable": {
-    "zh": "✅ 可靠工厂 — 成立 {years} 年 + {cert} 认证。合作风险低",
-    "en": "✅ Reliable factory — {years}y established + {cert} audit. Low cooperation risk",
-    "vi": "✅ Nhà máy đáng tin — {years} năm hoạt động + {cert}. Rủi ro hợp tác thấp",
-    "th": "✅ โรงงานน่าเชื่อถือ — ก่อตั้ง {years} ปี + {cert}. ความเสี่ยงความร่วมมือต่ำ",
-    "id": "✅ Pabrik terpercaya — {years} thn berdiri + {cert}. Risiko kerja sama rendah"
+  "SGS 实地认证": {
+    "zh": "SGS 实地认证",
+    "en": "SGS On-site Certification",
+    "vi": "Chứng Nhận SGS Tại Chỗ",
+    "th": "การรับรอง SGS หน้างาน",
+    "id": "Sertifikasi SGS Di Tempat"
   },
-  "verdict_factory_cooperative": {
-    "zh": "✅ 值得合作 — {years} 年工厂 + 已认证。建议取样确认产能",
-    "en": "✅ Worth cooperating — {years}y factory + certified. Suggest sample to confirm capacity",
-    "vi": "✅ Đáng hợp tác — Nhà máy {years} năm + chứng nhận. Nên lấy mẫu xác nhận năng lực",
-    "th": "✅ น่าร่วมมือ — โรงงาน {years} ปี + รับรอง. แนะนำตัวอย่างยืนยันกำลังการผลิต",
-    "id": "✅ Layak kerja sama — Pabrik {years} thn + tersertifikasi. Sarankan sampel konfirmasi kapasitas"
+  "badge_repurchase_fmt": {
+    "zh": "{n}% 回头率",
+    "en": "{n}% repurchase",
+    "vi": "Mua lại {n}%",
+    "th": "ซื้อซ้ำ {n}%",
+    "id": "Beli ulang {n}%"
   },
-  "verdict_factory_self_claimed": {
-    "zh": "⚠️ 自认工厂 — 无第三方验厂审计。通过样品验证，不要轻信宣称",
-    "en": "⚠️ Self-claimed factory — No third-party audit. Verify via sample, don't trust claims alone",
-    "vi": "⚠️ Tự xưng nhà máy — Không có kiểm toán bên thứ ba. Xác minh qua mẫu, đừng tin lời nói",
-    "th": "⚠️ อ้างตัวเป็นโรงงาน — ไม่มีการตรวจสอบจากบุคคลที่สาม. ตรวจสอบผ่านตัวอย่าง อย่าเชื่อแค่คำพูด",
-    "id": "⚠️ Klaim pabrik sendiri — Tanpa audit pihak ketiga. Verifikasi via sampel, jangan percaya klaim saja"
+  "emoji_factory": {
+    "zh": "🏭 ",
+    "en": "🏭 ",
+    "vi": "🏭 ",
+    "th": "🏭 ",
+    "id": "🏭 "
   },
-  "verdict_factory_trader": {
-    "zh": "⚠️ 非工厂 — 贸易商从第三方拿货。价格可能有差异；先取样对比",
-    "en": "⚠️ Not a factory — Trader sources from third parties. Price may vary; compare via sample first",
-    "vi": "⚠️ Không phải nhà máy — Thương nhân lấy hàng từ bên thứ ba. Giá có thể chênh; so sánh qua mẫu",
-    "th": "⚠️ ไม่ใช่โรงงาน — ผู้ค้ารับสินค้าจากบุคคลที่สาม. ราคาอาจต่าง; เปรียบเทียบผ่านตัวอย่างก่อน",
-    "id": "⚠️ Bukan pabrik — Trader mengambil dari pihak ketiga. Harga bisa berbeda; bandingkan via sampel dulu"
+  "emoji_rank": {
+    "zh": "🏆 ",
+    "en": "🏆 ",
+    "vi": "🏆 ",
+    "th": "🏆 ",
+    "id": "🏆 "
   },
-  "verdict_factory_insufficient": {
-    "zh": "⚠️ 数据不足 — 缺少工商信息。建议 WhatsApp 联系后再决定",
-    "en": "⚠️ Insufficient data — Missing business info. Suggest WhatsApp contact before deciding",
-    "vi": "⚠️ Thiếu dữ liệu — Thiếu thông tin kinh doanh. Nên liên hệ WhatsApp trước khi quyết định",
-    "th": "⚠️ ข้อมูลไม่เพียงพอ — ไม่มีข้อมูลธุรกิจ. แนะนำติดต่อ WhatsApp ก่อนตัดสินใจ",
-    "id": "⚠️ Data tidak cukup — Tidak ada info bisnis. Sarankan kontak WhatsApp sebelum memutuskan"
+  "explain_cert_has": {
+    "zh": "第三方实地验厂，验证了经营资质和运营状态。",
+    "en": "Third-party on-site factory audit, verifying business qualifications and operational status.",
+    "vi": "Kiểm toán nhà máy tại chỗ bởi bên thứ ba, xác minh trình độ kinh doanh và tình trạng hoạt động.",
+    "th": "การตรวจโรงงานหน้างานโดยบุคคลที่สาม ตรวจสอบคุณสมบัติธุรกิจและสถานะการดำเนินงาน.",
+    "id": "Audit pabrik di tempat oleh pihak ketiga, memverifikasi kualifikasi bisnis dan status operasional."
   },
-  "verdict_sample_two_payment": {
-    "zh": "① 支付定金 → ② 验货拍照 → ③ 支付尾款 → ④ 发货",
-    "en": "① Pay deposit → ② Inspection photos → ③ Pay balance → ④ Ship",
-    "vi": "① Thanh toán cọc → ② Ảnh kiểm tra → ③ Thanh toán phần còn lại → ④ Giao hàng",
-    "th": "① จ่ายมัดจำ → ② รูปตรวจสอบ → ③ จ่ายส่วนที่เหลือ → ④ จัดส่ง",
-    "id": "① Bayar deposit → ② Foto inspeksi → ③ Bayar sisa → ④ Kirim"
+  "explain_cert_none": {
+    "zh": "该供应商未展示第三方认证。建议取样后确认质量。",
+    "en": "This supplier has not displayed third-party certification. Suggest confirming quality after sampling.",
+    "vi": "Nhà cung cấp này chưa hiển thị chứng nhận bên thứ ba. Nên xác nhận chất lượng sau khi lấy mẫu.",
+    "th": "ซัพพลายเออร์นี้ยังไม่แสดงการรับรองจากบุคคลที่สาม. แนะนำยืนยันคุณภาพหลังจากสั่งตัวอย่าง.",
+    "id": "Pemasok ini belum menampilkan sertifikasi pihak ketiga. Sarankan konfirmasi kualitas setelah sampel."
   },
-
+  "explain_company_name": {
+    "zh": "政府注册的法定名称，可在企业信用系统中验证。",
+    "en": "Government-registered legal name, verifiable in the enterprise credit system.",
+    "vi": "Tên pháp lý đã đăng ký chính phủ, có thể xác minh trong hệ thống tín dụng doanh nghiệp.",
+    "th": "ชื่อตามกฎหมายที่จดทะเบียนกับรัฐบาล ตรวจสอบได้ในระบบเครดิตองค์กร",
+    "id": "Nama resmi terdaftar pemerintah, dapat diverifikasi di sistem kredit perusahaan."
+  },
+  "explain_flags_flagship": {
+    "zh": "1688 现货品类旗舰店。价格有竞争力。可放心采购；建议取样确认。",
+    "en": "1688 flagship in ready-stock category. Competitive pricing. Can purchase with confidence; suggest sample confirmation.",
+    "vi": "1688 flagship trong danh mục hàng có sẵn. Giá cạnh tranh. Có thể mua tự tin; nên xác nhận mẫu.",
+    "th": "1688 เรือธงในหมวดสินค้าพร้อมส่ง. ราคาแข่งขันได้. มั่นใจในการซื้อ; แนะนำยืนยันตัวอย่าง.",
+    "id": "1688 flagship dalam kategori stok siap. Harga kompetitif. Dapat membeli dengan percaya diri; sarankan konfirmasi sampel."
+  },
+  "explain_flags_self_claimed": {
+    "zh": "自行宣称工厂，无 1688 深度验厂。建议先取样验证产线和质量。",
+    "en": "Self-claimed factory without 1688 advanced audit. Suggest sampling first to verify production line and quality.",
+    "vi": "Tự xưng nhà máy không có kiểm toán nâng cao 1688. Nên lấy mẫu trước để xác minh dây chuyền và chất lượng.",
+    "th": "อ้างตัวเป็นโรงงานโดยไม่มีการตรวจขั้นสูงของ 1688. แนะนำสั่งตัวอย่างก่อนเพื่อตรวจสอบสายการผลิตและคุณภาพ.",
+    "id": "Klaim pabrik sendiri tanpa audit lanjutan 1688. Sarankan sampel dulu untuk verifikasi lini produksi dan kualitas."
+  },
+  "explain_flags_shili": {
+    "zh": "1688 官方验厂（系统更新中）。产能稳定 + 基础质检。建议取样试用。",
+    "en": "1688 official factory audit (system updating). Stable production capacity + basic QC. Suggest sample trial.",
+    "vi": "Kiểm toán nhà máy chính thức 1688 (hệ thống đang cập nhật). Năng lực sản xuất ổn định + QC cơ bản. Nên thử mẫu.",
+    "th": "การตรวจโรงงานอย่างเป็นทางการของ 1688 (ระบบกำลังอัปเดต). กำลังการผลิตเสถียร + QC พื้นฐาน. แนะนำทดลองตัวอย่าง.",
+    "id": "Audit pabrik resmi 1688 (sistem sedang diperbarui). Kapasitas produksi stabil + QC dasar. Sarankan uji coba sampel."
+  },
+  "explain_flags_super": {
+    "zh": "1688 最高级别验厂认证。自有产线，从小批量试单到大货均可承接。",
+    "en": "1688 highest-level factory audit certification. Own production line, handles small trials to bulk orders.",
+    "vi": "Chứng nhận kiểm toán cấp cao nhất 1688. Dây chuyền sản xuất riêng, nhận từ đơn nhỏ đến số lượng lớn.",
+    "th": "การรับรองตรวจโรงงานระดับสูงสุดของ 1688. มีสายการผลิตของตัวเอง รับตั้งแต่ออเดอร์ทดลองถึงจำนวนมาก.",
+    "id": "Sertifikasi audit pabrik tingkat tertinggi 1688. Lini produksi sendiri, menerima dari uji coba kecil hingga pesanan besar."
+  },
+  "explain_flags_trader": {
+    "zh": "贸易商无自有工厂产能；货物来自第三方供应商。",
+    "en": "Trader has no in-house factory capacity; goods sourced from third-party suppliers.",
+    "vi": "Thương nhân không có năng lực sản xuất; hàng lấy từ nhà cung cấp bên thứ ba.",
+    "th": "ผู้ค้าไม่มีกำลังการผลิตของตนเอง; สินค้ามาจากซัพพลายเออร์บุคคลที่สาม.",
+    "id": "Trader tidak memiliki kapasitas pabrik sendiri; barang dari pemasok pihak ketiga."
+  },
+  "explain_industry_cluster": {
+    "zh": "源头产地，价格有竞争力。",
+    "en": "Source region, competitive pricing.",
+    "vi": "Vùng sản xuất gốc, giá cạnh tranh.",
+    "th": "แหล่งผลิตต้นทาง ราคาแข่งขันได้",
+    "id": "Wilayah produksi sumber, harga kompetitif."
+  },
+  "explain_industry_fmt": {
+    "zh": "{industry}。源头产地，价格有竞争力。",
+    "en": "{industry}. Source region, competitive pricing.",
+    "vi": "{industry}. Vùng sản xuất gốc, giá cạnh tranh.",
+    "th": "{industry}. แหล่งผลิตต้นทาง ราคาแข่งขันได้.",
+    "id": "{industry}. Wilayah produksi sumber, harga kompetitif."
+  },
+  "explain_rank_none": {
+    "zh": "该供应商尚未进入 1688 品类排行榜。",
+    "en": "This supplier is not yet ranked on the 1688 category leaderboard.",
+    "vi": "Nhà cung cấp này chưa được xếp hạng trên bảng xếp hạng danh mục 1688.",
+    "th": "ซัพพลายเออร์นี้ยังไม่ได้รับการจัดอันดับบนกระดานจัดอันดับหมวดหมู่ 1688.",
+    "id": "Pemasok ini belum diperingkat di papan peringkat kategori 1688."
+  },
   "explain_sales_high": {
     "zh": "高销量意味着市场已验证 — 该品类有持续需求。",
     "en": "High sales volume indicates market validation — this category has sustained demand.",
@@ -172,524 +154,181 @@
     "th": "ผู้ค้า/ตัวแทน ไม่ใช่ผู้ผลิต. แนะนำตรวจสอบคุณภาพผ่านตัวอย่าง.",
     "id": "Trader/agen, bukan produsen. Sarankan verifikasi kualitas via sampel."
   },
-  "explain_company_name": {
-    "zh": "政府注册的法定名称，可在企业信用系统中验证。",
-    "en": "Government-registered legal name, verifiable in the enterprise credit system.",
-    "vi": "Tên pháp lý đã đăng ký chính phủ, có thể xác minh trong hệ thống tín dụng doanh nghiệp.",
-    "th": "ชื่อตามกฎหมายที่จดทะเบียนกับรัฐบาล ตรวจสอบได้ในระบบเครดิตองค์กร",
-    "id": "Nama resmi terdaftar pemerintah, dapat diverifikasi di sistem kredit perusahaan."
+  "industry_chaozhou": {
+    "zh": "潮州 — 陶瓷/卫浴产业带",
+    "en": "Chaozhou — Ceramics/Sanitary Ware Industrial Belt",
+    "vi": "Triều Châu — Vành Đai Công Nghiệp Gốm Sứ/Thiết Bị Vệ Sinh",
+    "th": "เฉาโจว — เขตอุตสาหกรรมเซรามิก/สุขภัณฑ์",
+    "id": "Chaozhou — Sabuk Industri Keramik/Perlengkapan Sanitasi"
+  },
+  "industry_chenghai": {
+    "zh": "澄海 — 玩具产业带",
+    "en": "Chenghai — Toys Industrial Belt",
+    "vi": "Trừng Hải — Vành Đai Công Nghiệp Đồ Chơi",
+    "th": "เฉิงไห่ — เขตอุตสาหกรรมของเล่น",
+    "id": "Chenghai — Sabuk Industri Mainan"
+  },
+  "industry_dongguan": {
+    "zh": "东莞 — 电子/玩具/模具产业带",
+    "en": "Dongguan — Electronics/Toys/Molds Industrial Belt",
+    "vi": "Đông Quản — Vành Đai Công Nghiệp Điện Tử/Đồ Chơi/Khuôn Mẫu",
+    "th": "ตงก่วน — เขตอุตสาหกรรมอิเล็กทรอนิกส์/ของเล่น/แม่พิมพ์",
+    "id": "Dongguan — Sabuk Industri Elektronik/Mainan/Cetakan"
+  },
+  "industry_fallback": {
+    "zh": "中国制造产源地",
+    "en": "China Manufacturing Source Region",
+    "vi": "Vùng Sản Xuất Trung Quốc",
+    "th": "เขตการผลิตของจีน",
+    "id": "Kawasan Manufaktur Tiongkok"
+  },
+  "industry_foshan": {
+    "zh": "佛山 — 家具/陶瓷产业带",
+    "en": "Foshan — Furniture/Ceramics Industrial Belt",
+    "vi": "Phật Sơn — Vành Đai Công Nghiệp Nội Thất/Gốm Sứ",
+    "th": "ฝอซาน — เขตอุตสาหกรรมเฟอร์นิเจอร์/เซรามิก",
+    "id": "Foshan — Sabuk Industri Furnitur/Keramik"
+  },
+  "industry_guangzhou": {
+    "zh": "广州 — 服装/箱包/皮具产业带",
+    "en": "Guangzhou — Apparel/Bags/Leather Goods Industrial Belt",
+    "vi": "Quảng Châu — Vành Đai Công Nghiệp May Mặc/Túi/Đồ Da",
+    "th": "กวางโจว — เขตอุตสาหกรรมเสื้อผ้า/กระเป๋า/เครื่องหนัง",
+    "id": "Guangzhou — Sabuk Industri Pakaian/Tas/Barang Kulit"
+  },
+  "industry_hangzhou": {
+    "zh": "杭州 — 女装/电商供应链中心",
+    "en": "Hangzhou — Women's Wear/E-Commerce Supply Chain Center",
+    "vi": "Hàng Châu — Trung Tâm Chuỗi Cung Ứng Thời Trang Nữ/Thương Mại Điện Tử",
+    "th": "หางโจว — ศูนย์ห่วงโซ่อุปทานเสื้อผ้าสตรี/อีคอมเมิร์ซ",
+    "id": "Hangzhou — Pusat Rantai Pasokan Pakaian Wanita/E-Commerce"
+  },
+  "industry_jinjiang": {
+    "zh": "晋江 — 运动服/运动鞋产业带",
+    "en": "Jinjiang — Sportswear/Sneaker Industrial Belt",
+    "vi": "Tấn Giang — Vành Đai Công Nghiệp Đồ Thể Thao/Giày Thể Thao",
+    "th": "จิ้นเจียง — เขตอุตสาหกรรมชุดกีฬา/รองเท้าผ้าใบ",
+    "id": "Jinjiang — Sabuk Industri Pakaian Olahraga/Sepatu Olahraga"
+  },
+  "industry_nantong": {
+    "zh": "南通 — 家纺产业带",
+    "en": "Nantong — Home Textile Industrial Belt",
+    "vi": "Nam Thông — Vành Đai Công Nghiệp Dệt May Gia Dụng",
+    "th": "หนานทง — เขตอุตสาหกรรมสิ่งทอภายในบ้าน",
+    "id": "Nantong — Sabuk Industri Tekstil Rumah Tangga"
+  },
+  "industry_ningbo": {
+    "zh": "宁波 — 小家电/文具产业带",
+    "en": "Ningbo — Small Appliances/Stationery Industrial Belt",
+    "vi": "Ninh Ba — Vành Đai Công Nghiệp Thiết Bị Gia Dụng Nhỏ/Văn Phòng Phẩm",
+    "th": "หนิงปัว — เขตอุตสาหกรรมเครื่องใช้ไฟฟ้าขนาดเล็ก/เครื่องเขียน",
+    "id": "Ningbo — Sabuk Industri Peralatan Kecil/Alat Tulis"
+  },
+  "industry_quanzhou": {
+    "zh": "泉州 — 鞋服/箱包产业带",
+    "en": "Quanzhou — Footwear/Apparel/Bags Industrial Belt",
+    "vi": "Tuyền Châu — Vành Đai Công Nghiệp Giày Dép/May Mặc/Túi",
+    "th": "เฉวียนโจว — เขตอุตสาหกรรมรองเท้า/เสื้อผ้า/กระเป๋า",
+    "id": "Quanzhou — Sabuk Industri Alas Kaki/Pakaian/Tas"
+  },
+  "industry_shantou": {
+    "zh": "汕头 — 玩具/内衣/工艺品产业带",
+    "en": "Shantou — Toys/Lingerie/Crafts Industrial Belt",
+    "vi": "Sán Đầu — Vành Đai Công Nghiệp Đồ Chơi/Đồ Lót/Thủ Công",
+    "th": "ซานโถว — เขตอุตสาหกรรมของเล่น/ชุดชั้นใน/หัตถกรรม",
+    "id": "Shantou — Sabuk Industri Mainan/Pakaian Dalam/Kerajinan"
+  },
+  "industry_shaoxing": {
+    "zh": "绍兴 — 纺织/面料产业带",
+    "en": "Shaoxing — Textile/Fabric Industrial Belt",
+    "vi": "Thiệu Hưng — Vành Đai Công Nghiệp Dệt May/Vải",
+    "th": "เช่าซิง — เขตอุตสาหกรรมสิ่งทอ/ผ้า",
+    "id": "Shaoxing — Sabuk Industri Tekstil/Kain"
+  },
+  "industry_shenzhen": {
+    "zh": "深圳 — 3C 电子/跨境电商货源",
+    "en": "Shenzhen — 3C Electronics/Cross-Border E-Commerce Source",
+    "vi": "Thâm Quyến — Nguồn Điện Tử 3C/Thương Mại Điện Tử Xuyên Biên Giới",
+    "th": "เซินเจิ้น — แหล่งอิเล็กทรอนิกส์ 3C/อีคอมเมิร์ซข้ามพรมแดน",
+    "id": "Shenzhen — Sumber Elektronik 3C/E-Commerce Lintas Batas"
+  },
+  "industry_taizhou": {
+    "zh": "台州 — 眼镜/模具/塑料产业带",
+    "en": "Taizhou — Eyewear/Molds/Plastics Industrial Belt",
+    "vi": "Thai Châu — Vành Đai Công Nghiệp Kính Mắt/Khuôn Mẫu/Nhựa",
+    "th": "ไทโจว — เขตอุตสาหกรรมแว่นตา/แม่พิมพ์/พลาสติก",
+    "id": "Taizhou — Sabuk Industri Kacamata/Cetakan/Plastik"
+  },
+  "industry_wenzhou": {
+    "zh": "温州 — 鞋业/五金/眼镜产业带",
+    "en": "Wenzhou — Footwear/Hardware/Eyewear Industrial Belt",
+    "vi": "Ôn Châu — Vành Đai Công Nghiệp Giày Dép/Phần Cứng/Kính Mắt",
+    "th": "เวินโจว — เขตอุตสาหกรรมรองเท้า/ฮาร์ดแวร์/แว่นตา",
+    "id": "Wenzhou — Sabuk Industri Alas Kaki/Hardware/Kacamata"
+  },
+  "industry_yiwu": {
+    "zh": "义乌/金华 — 中国小商品集散中心",
+    "en": "Yiwu/Jinhua — China Small Commodity Distribution Hub",
+    "vi": "Nghĩa Ô/Kim Hoa — Trung Tâm Phân Phối Hàng Hóa Nhỏ Trung Quốc",
+    "th": "อี้อู/จินหัว — ศูนย์กระจายสินค้าเบ็ดเตล็ดของจีน",
+    "id": "Yiwu/Jinhua — Pusat Distribusi Komoditas Kecil Tiongkok"
+  },
+  "industry_yongkang": {
+    "zh": "永康 — 五金/杯壶产业带",
+    "en": "Yongkang — Hardware/Cups & Bottles Industrial Belt",
+    "vi": "Vĩnh Khang — Vành Đai Công Nghiệp Phần Cứng/Cốc & Chai",
+    "th": "หย่งคัง — เขตอุตสาหกรรมฮาร์ดแวร์/แก้วและขวด",
+    "id": "Yongkang — Sabuk Industri Hardware/Gelas & Botol"
+  },
+  "industry_zhuji": {
+    "zh": "诸暨 — 袜子/珍珠产业带",
+    "en": "Zhuji — Socks/Pearls Industrial Belt",
+    "vi": "Chư Kỵ — Vành Đai Công Nghiệp Tất/Ngọc Trai",
+    "th": "จูจี้ — เขตอุตสาหกรรมถุงเท้า/ไข่มุก",
+    "id": "Zhuji — Sabuk Industri Kaus Kaki/Mutiara"
+  },
+  "no_data": {
+    "zh": "暂无数据",
+    "en": "No data",
+    "vi": "Không có dữ liệu",
+    "th": "ไม่มีข้อมูล",
+    "id": "Tidak ada data"
+  },
+  "prod_barrier_tip_high": {
+    "zh": "试错成本偏高（¥{price}/{moq}件起），先算账再决定",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_barrier_tip_low": {
+    "zh": "试错成本极低（¥{price}/{moq}件起），拿样基本不亏",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_barrier_tip_mid": {
+    "zh": "试错成本适中（¥{price}/{moq}件起），拿样不贵",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_dim_d1_data_fmt": {
+    "zh": "月销 {n}",
+    "en": "Monthly Sales {n}",
+    "vi": "Doanh số tháng {n}",
+    "th": "ยอดขายต่อเดือน {n}",
+    "id": "Penjualan Bulanan {n}"
+  },
+  "prod_dim_d1_label": {
+    "zh": "🔥热销品",
+    "en": "🔥 Hot Seller",
+    "vi": "🔥 Bán Chạy",
+    "th": "🔥 สินค้าขายดี",
+    "id": "🔥 Produk Laris"
   },
-  "explain_flags_trader": {
-    "zh": "贸易商无自有工厂产能；货物来自第三方供应商。",
-    "en": "Trader has no in-house factory capacity; goods sourced from third-party suppliers.",
-    "vi": "Thương nhân không có năng lực sản xuất; hàng lấy từ nhà cung cấp bên thứ ba.",
-    "th": "ผู้ค้าไม่มีกำลังการผลิตของตนเอง; สินค้ามาจากซัพพลายเออร์บุคคลที่สาม.",
-    "id": "Trader tidak memiliki kapasitas pabrik sendiri; barang dari pemasok pihak ketiga."
-  },
-  "explain_flags_super": {
-    "zh": "1688 最高级别验厂认证。自有产线，从小批量试单到大货均可承接。",
-    "en": "1688 highest-level factory audit certification. Own production line, handles small trials to bulk orders.",
-    "vi": "Chứng nhận kiểm toán cấp cao nhất 1688. Dây chuyền sản xuất riêng, nhận từ đơn nhỏ đến số lượng lớn.",
-    "th": "การรับรองตรวจโรงงานระดับสูงสุดของ 1688. มีสายการผลิตของตัวเอง รับตั้งแต่ออเดอร์ทดลองถึงจำนวนมาก.",
-    "id": "Sertifikasi audit pabrik tingkat tertinggi 1688. Lini produksi sendiri, menerima dari uji coba kecil hingga pesanan besar."
-  },
-  "explain_flags_flagship": {
-    "zh": "1688 现货品类旗舰店。价格有竞争力。可放心采购；建议取样确认。",
-    "en": "1688 flagship in ready-stock category. Competitive pricing. Can purchase with confidence; suggest sample confirmation.",
-    "vi": "1688 flagship trong danh mục hàng có sẵn. Giá cạnh tranh. Có thể mua tự tin; nên xác nhận mẫu.",
-    "th": "1688 เรือธงในหมวดสินค้าพร้อมส่ง. ราคาแข่งขันได้. มั่นใจในการซื้อ; แนะนำยืนยันตัวอย่าง.",
-    "id": "1688 flagship dalam kategori stok siap. Harga kompetitif. Dapat membeli dengan percaya diri; sarankan konfirmasi sampel."
-  },
-  "explain_flags_shili": {
-    "zh": "1688 官方验厂（系统更新中）。产能稳定 + 基础质检。建议取样试用。",
-    "en": "1688 official factory audit (system updating). Stable production capacity + basic QC. Suggest sample trial.",
-    "vi": "Kiểm toán nhà máy chính thức 1688 (hệ thống đang cập nhật). Năng lực sản xuất ổn định + QC cơ bản. Nên thử mẫu.",
-    "th": "การตรวจโรงงานอย่างเป็นทางการของ 1688 (ระบบกำลังอัปเดต). กำลังการผลิตเสถียร + QC พื้นฐาน. แนะนำทดลองตัวอย่าง.",
-    "id": "Audit pabrik resmi 1688 (sistem sedang diperbarui). Kapasitas produksi stabil + QC dasar. Sarankan uji coba sampel."
-  },
-  "explain_flags_self_claimed": {
-    "zh": "自行宣称工厂，无 1688 深度验厂。建议先取样验证产线和质量。",
-    "en": "Self-claimed factory without 1688 advanced audit. Suggest sampling first to verify production line and quality.",
-    "vi": "Tự xưng nhà máy không có kiểm toán nâng cao 1688. Nên lấy mẫu trước để xác minh dây chuyền và chất lượng.",
-    "th": "อ้างตัวเป็นโรงงานโดยไม่มีการตรวจขั้นสูงของ 1688. แนะนำสั่งตัวอย่างก่อนเพื่อตรวจสอบสายการผลิตและคุณภาพ.",
-    "id": "Klaim pabrik sendiri tanpa audit lanjutan 1688. Sarankan sampel dulu untuk verifikasi lini produksi dan kualitas."
-  },
-  "explain_cert_has": {
-    "zh": "第三方实地验厂，验证了经营资质和运营状态。",
-    "en": "Third-party on-site factory audit, verifying business qualifications and operational status.",
-    "vi": "Kiểm toán nhà máy tại chỗ bởi bên thứ ba, xác minh trình độ kinh doanh và tình trạng hoạt động.",
-    "th": "การตรวจโรงงานหน้างานโดยบุคคลที่สาม ตรวจสอบคุณสมบัติธุรกิจและสถานะการดำเนินงาน.",
-    "id": "Audit pabrik di tempat oleh pihak ketiga, memverifikasi kualifikasi bisnis dan status operasional."
-  },
-  "explain_cert_none": {
-    "zh": "该供应商未展示第三方认证。建议取样后确认质量。",
-    "en": "This supplier has not displayed third-party certification. Suggest confirming quality after sampling.",
-    "vi": "Nhà cung cấp này chưa hiển thị chứng nhận bên thứ ba. Nên xác nhận chất lượng sau khi lấy mẫu.",
-    "th": "ซัพพลายเออร์นี้ยังไม่แสดงการรับรองจากบุคคลที่สาม. แนะนำยืนยันคุณภาพหลังจากสั่งตัวอย่าง.",
-    "id": "Pemasok ini belum menampilkan sertifikasi pihak ketiga. Sarankan konfirmasi kualitas setelah sampel."
-  },
-  "explain_rank_none": {
-    "zh": "该供应商尚未进入 1688 品类排行榜。",
-    "en": "This supplier is not yet ranked on the 1688 category leaderboard.",
-    "vi": "Nhà cung cấp này chưa được xếp hạng trên bảng xếp hạng danh mục 1688.",
-    "th": "ซัพพลายเออร์นี้ยังไม่ได้รับการจัดอันดับบนกระดานจัดอันดับหมวดหมู่ 1688.",
-    "id": "Pemasok ini belum diperingkat di papan peringkat kategori 1688."
-  },
-  "explain_industry_fmt": {
-    "zh": "{industry}。源头产地，价格有竞争力。",
-    "en": "{industry}. Source region, competitive pricing.",
-    "vi": "{industry}. Vùng sản xuất gốc, giá cạnh tranh.",
-    "th": "{industry}. แหล่งผลิตต้นทาง ราคาแข่งขันได้.",
-    "id": "{industry}. Wilayah produksi sumber, harga kompetitif."
-  },
-
-  "industry_yiwu":       { "zh": "义乌/金华 — 中国小商品集散中心",            "en": "Yiwu/Jinhua — China Small Commodity Distribution Hub",        "vi": "Nghĩa Ô/Kim Hoa — Trung Tâm Phân Phối Hàng Hóa Nhỏ Trung Quốc", "th": "อี้อู/จินหัว — ศูนย์กระจายสินค้าเบ็ดเตล็ดของจีน",          "id": "Yiwu/Jinhua — Pusat Distribusi Komoditas Kecil Tiongkok" },
-  "industry_guangzhou":  { "zh": "广州 — 服装/箱包/皮具产业带",                "en": "Guangzhou — Apparel/Bags/Leather Goods Industrial Belt",      "vi": "Quảng Châu — Vành Đai Công Nghiệp May Mặc/Túi/Đồ Da",        "th": "กวางโจว — เขตอุตสาหกรรมเสื้อผ้า/กระเป๋า/เครื่องหนัง",      "id": "Guangzhou — Sabuk Industri Pakaian/Tas/Barang Kulit" },
-  "industry_shenzhen":   { "zh": "深圳 — 3C 电子/跨境电商货源",                "en": "Shenzhen — 3C Electronics/Cross-Border E-Commerce Source",    "vi": "Thâm Quyến — Nguồn Điện Tử 3C/Thương Mại Điện Tử Xuyên Biên Giới", "th": "เซินเจิ้น — แหล่งอิเล็กทรอนิกส์ 3C/อีคอมเมิร์ซข้ามพรมแดน", "id": "Shenzhen — Sumber Elektronik 3C/E-Commerce Lintas Batas" },
-  "industry_jinjiang":   { "zh": "晋江 — 运动服/运动鞋产业带",                  "en": "Jinjiang — Sportswear/Sneaker Industrial Belt",                "vi": "Tấn Giang — Vành Đai Công Nghiệp Đồ Thể Thao/Giày Thể Thao",  "th": "จิ้นเจียง — เขตอุตสาหกรรมชุดกีฬา/รองเท้าผ้าใบ",            "id": "Jinjiang — Sabuk Industri Pakaian Olahraga/Sepatu Olahraga" },
-  "industry_nantong":    { "zh": "南通 — 家纺产业带",                          "en": "Nantong — Home Textile Industrial Belt",                       "vi": "Nam Thông — Vành Đai Công Nghiệp Dệt May Gia Dụng",           "th": "หนานทง — เขตอุตสาหกรรมสิ่งทอภายในบ้าน",                    "id": "Nantong — Sabuk Industri Tekstil Rumah Tangga" },
-  "industry_quanzhou":   { "zh": "泉州 — 鞋服/箱包产业带",                     "en": "Quanzhou — Footwear/Apparel/Bags Industrial Belt",            "vi": "Tuyền Châu — Vành Đai Công Nghiệp Giày Dép/May Mặc/Túi",      "th": "เฉวียนโจว — เขตอุตสาหกรรมรองเท้า/เสื้อผ้า/กระเป๋า",        "id": "Quanzhou — Sabuk Industri Alas Kaki/Pakaian/Tas" },
-  "industry_dongguan":   { "zh": "东莞 — 电子/玩具/模具产业带",                 "en": "Dongguan — Electronics/Toys/Molds Industrial Belt",            "vi": "Đông Quản — Vành Đai Công Nghiệp Điện Tử/Đồ Chơi/Khuôn Mẫu",  "th": "ตงก่วน — เขตอุตสาหกรรมอิเล็กทรอนิกส์/ของเล่น/แม่พิมพ์",    "id": "Dongguan — Sabuk Industri Elektronik/Mainan/Cetakan" },
-  "industry_foshan":     { "zh": "佛山 — 家具/陶瓷产业带",                      "en": "Foshan — Furniture/Ceramics Industrial Belt",                  "vi": "Phật Sơn — Vành Đai Công Nghiệp Nội Thất/Gốm Sứ",             "th": "ฝอซาน — เขตอุตสาหกรรมเฟอร์นิเจอร์/เซรามิก",                "id": "Foshan — Sabuk Industri Furnitur/Keramik" },
-  "industry_hangzhou":   { "zh": "杭州 — 女装/电商供应链中心",                   "en": "Hangzhou — Women's Wear/E-Commerce Supply Chain Center",       "vi": "Hàng Châu — Trung Tâm Chuỗi Cung Ứng Thời Trang Nữ/Thương Mại Điện Tử", "th": "หางโจว — ศูนย์ห่วงโซ่อุปทานเสื้อผ้าสตรี/อีคอมเมิร์ซ",  "id": "Hangzhou — Pusat Rantai Pasokan Pakaian Wanita/E-Commerce" },
-  "industry_wenzhou":    { "zh": "温州 — 鞋业/五金/眼镜产业带",                  "en": "Wenzhou — Footwear/Hardware/Eyewear Industrial Belt",          "vi": "Ôn Châu — Vành Đai Công Nghiệp Giày Dép/Phần Cứng/Kính Mắt",  "th": "เวินโจว — เขตอุตสาหกรรมรองเท้า/ฮาร์ดแวร์/แว่นตา",          "id": "Wenzhou — Sabuk Industri Alas Kaki/Hardware/Kacamata" },
-  "industry_ningbo":     { "zh": "宁波 — 小家电/文具产业带",                    "en": "Ningbo — Small Appliances/Stationery Industrial Belt",         "vi": "Ninh Ba — Vành Đai Công Nghiệp Thiết Bị Gia Dụng Nhỏ/Văn Phòng Phẩm", "th": "หนิงปัว — เขตอุตสาหกรรมเครื่องใช้ไฟฟ้าขนาดเล็ก/เครื่องเขียน", "id": "Ningbo — Sabuk Industri Peralatan Kecil/Alat Tulis" },
-  "industry_shaoxing":   { "zh": "绍兴 — 纺织/面料产业带",                      "en": "Shaoxing — Textile/Fabric Industrial Belt",                    "vi": "Thiệu Hưng — Vành Đai Công Nghiệp Dệt May/Vải",               "th": "เช่าซิง — เขตอุตสาหกรรมสิ่งทอ/ผ้า",                        "id": "Shaoxing — Sabuk Industri Tekstil/Kain" },
-  "industry_chenghai":   { "zh": "澄海 — 玩具产业带",                          "en": "Chenghai — Toys Industrial Belt",                              "vi": "Trừng Hải — Vành Đai Công Nghiệp Đồ Chơi",                   "th": "เฉิงไห่ — เขตอุตสาหกรรมของเล่น",                           "id": "Chenghai — Sabuk Industri Mainan" },
-  "industry_yongkang":   { "zh": "永康 — 五金/杯壶产业带",                      "en": "Yongkang — Hardware/Cups & Bottles Industrial Belt",           "vi": "Vĩnh Khang — Vành Đai Công Nghiệp Phần Cứng/Cốc & Chai",      "th": "หย่งคัง — เขตอุตสาหกรรมฮาร์ดแวร์/แก้วและขวด",              "id": "Yongkang — Sabuk Industri Hardware/Gelas & Botol" },
-  "industry_zhuji":      { "zh": "诸暨 — 袜子/珍珠产业带",                      "en": "Zhuji — Socks/Pearls Industrial Belt",                         "vi": "Chư Kỵ — Vành Đai Công Nghiệp Tất/Ngọc Trai",                 "th": "จูจี้ — เขตอุตสาหกรรมถุงเท้า/ไข่มุก",                       "id": "Zhuji — Sabuk Industri Kaus Kaki/Mutiara" },
-  "industry_chaozhou":   { "zh": "潮州 — 陶瓷/卫浴产业带",                      "en": "Chaozhou — Ceramics/Sanitary Ware Industrial Belt",            "vi": "Triều Châu — Vành Đai Công Nghiệp Gốm Sứ/Thiết Bị Vệ Sinh",   "th": "เฉาโจว — เขตอุตสาหกรรมเซรามิก/สุขภัณฑ์",                   "id": "Chaozhou — Sabuk Industri Keramik/Perlengkapan Sanitasi" },
-  "industry_taizhou":    { "zh": "台州 — 眼镜/模具/塑料产业带",                  "en": "Taizhou — Eyewear/Molds/Plastics Industrial Belt",             "vi": "Thai Châu — Vành Đai Công Nghiệp Kính Mắt/Khuôn Mẫu/Nhựa",    "th": "ไทโจว — เขตอุตสาหกรรมแว่นตา/แม่พิมพ์/พลาสติก",              "id": "Taizhou — Sabuk Industri Kacamata/Cetakan/Plastik" },
-  "industry_shantou":    { "zh": "汕头 — 玩具/内衣/工艺品产业带",                "en": "Shantou — Toys/Lingerie/Crafts Industrial Belt",               "vi": "Sán Đầu — Vành Đai Công Nghiệp Đồ Chơi/Đồ Lót/Thủ Công",      "th": "ซานโถว — เขตอุตสาหกรรมของเล่น/ชุดชั้นใน/หัตถกรรม",          "id": "Shantou — Sabuk Industri Mainan/Pakaian Dalam/Kerajinan" },
-  "industry_fallback":   { "zh": "中国制造产源地",                              "en": "China Manufacturing Source Region",                            "vi": "Vùng Sản Xuất Trung Quốc",                                     "th": "เขตการผลิตของจีน",                                          "id": "Kawasan Manufaktur Tiongkok" },
-
-  "prod_verdict_high": {
-    "zh": "销量高、口碑好、门槛低、可退货——值得拿样",
-    "en": "High sales, good reviews, low MOQ, easy returns — worth sampling",
-    "vi": "Doanh số cao, đánh giá tốt, MOQ thấp, dễ đổi trả — nên lấy mẫu",
-    "th": "ขายดี รีวิวดี MOQ ต่ำ คืนง่าย — คุ้มค่าสั่งตัวอย่าง",
-    "id": "Penjualan tinggi, ulasan bagus, MOQ rendah, mudah retur — layak sampel"
-  },
-  "prod_verdict_good": {
-    "zh": "数据不错，建议拿样确认品质",
-    "en": "Good data, suggest sampling to confirm quality",
-    "vi": "Dữ liệu tốt, nên lấy mẫu xác nhận chất lượng",
-    "th": "ข้อมูลดี แนะนำสั่งตัวอย่างยืนยันคุณภาพ",
-    "id": "Data bagus, sarankan sampel untuk konfirmasi kualitas"
-  },
-  "prod_verdict_mid": {
-    "zh": "数据中等，拿样自己判断",
-    "en": "Mixed data, sample and judge yourself",
-    "vi": "Dữ liệu trung bình, lấy mẫu tự đánh giá",
-    "th": "ข้อมูลปานกลาง สั่งตัวอย่างแล้วตัดสินเอง",
-    "id": "Data sedang, sampel dan nilai sendiri"
-  },
-  "prod_verdict_low": {
-    "zh": "数据偏少，先拿样看看",
-    "en": "Limited data, sample first to check",
-    "vi": "Ít dữ liệu, lấy mẫu xem trước",
-    "th": "ข้อมูลน้อย สั่งตัวอย่างดูก่อน",
-    "id": "Data terbatas, sampel dulu untuk cek"
-  },
-  "prod_verdict_none": {
-    "zh": "暂无数据，拿样自行评估",
-    "en": "No data yet, sample and evaluate yourself",
-    "vi": "Chưa có dữ liệu, lấy mẫu tự đánh giá",
-    "th": "ยังไม่มีข้อมูล สั่งตัวอย่างและประเมินเอง",
-    "id": "Belum ada data, sampel dan evaluasi sendiri"
-  },
-
-  "supplier_verdict_t1": {
-    "zh": "认证工厂 {years} 年，深度验厂。拿样确认款式，可放心批量。",
-    "en": "Verified factory {years}y, deep audit. Sample to confirm, then bulk with confidence.",
-    "vi": "Nhà máy được chứng nhận {years} năm, kiểm toán chuyên sâu. Lấy mẫu xác nhận mẫu mã, sau đó đặt số lượng lớn.",
-    "th": "โรงงานรับรอง {years} ปี ตรวจสอบเชิงลึก สั่งตัวอย่างยืนยันแบบ แล้วสั่งจำนวนมากได้",
-    "id": "Pabrik terverifikasi {years} thn, audit mendalam. Sampel untuk konfirmasi, lalu bulk dengan percaya diri."
-  },
-  "supplier_verdict_t2": {
-    "zh": "认证工厂 {years} 年。拿样确认品质后批量。",
-    "en": "Verified factory {years}y. Sample to confirm quality, then bulk.",
-    "vi": "Nhà máy được chứng nhận {years} năm. Lấy mẫu xác nhận chất lượng, sau đó đặt số lượng lớn.",
-    "th": "โรงงานรับรอง {years} ปี สั่งตัวอย่างยืนยันคุณภาพ แล้วสั่งจำนวนมาก",
-    "id": "Pabrik terverifikasi {years} thn. Sampel konfirmasi kualitas, lalu bulk."
-  },
-  "supplier_verdict_t3": {
-    "zh": "认证工厂，经营 {desc}。{reason}。建议拿样验证产能。",
-    "en": "Verified factory, {desc} in business. {reason}. Suggest sampling to verify capacity.",
-    "vi": "Nhà máy được chứng nhận, hoạt động {desc}. {reason}. Nên lấy mẫu xác minh năng lực.",
-    "th": "โรงงานรับรอง ดำเนินการ {desc}. {reason}. แนะนำสั่งตัวอย่างตรวจสอบกำลังการผลิต",
-    "id": "Pabrik terverifikasi, beroperasi {desc}. {reason}. Sarankan sampel verifikasi kapasitas."
-  },
-  "supplier_verdict_t4": {
-    "zh": "工厂直供 {years} 年，{cert} 认证。拿样确认后批量。",
-    "en": "Factory direct {years}y, {cert} certified. Sample to confirm, then bulk.",
-    "vi": "Nhà máy cung cấp trực tiếp {years} năm, chứng nhận {cert}. Lấy mẫu xác nhận, sau đó đặt số lượng lớn.",
-    "th": "โรงงานจำหน่ายตรง {years} ปี รับรอง {cert} สั่งตัวอย่างยืนยัน แล้วสั่งจำนวนมาก",
-    "id": "Pabrik langsung {years} thn, sertifikasi {cert}. Sampel konfirmasi, lalu bulk."
-  },
-  "supplier_verdict_t5": {
-    "zh": "工厂直供 {years} 年，无第三方验厂。拿样验货后再批量。",
-    "en": "Factory direct {years}y, no third-party audit. Sample and inspect before bulk.",
-    "vi": "Nhà máy cung cấp trực tiếp {years} năm, không có kiểm toán bên thứ ba. Lấy mẫu kiểm tra trước khi đặt số lượng lớn.",
-    "th": "โรงงานจำหน่ายตรง {years} ปี ไม่มีการตรวจสอบจากบุคคลที่สาม สั่งตัวอย่างและตรวจสอบก่อนสั่งจำนวนมาก",
-    "id": "Pabrik langsung {years} thn, tanpa audit pihak ketiga. Sampel dan inspeksi sebelum bulk."
-  },
-  "supplier_verdict_t6": {
-    "zh": "工厂直供 {desc}。先拿样验货再决定。",
-    "en": "Factory direct, {desc}. Sample and inspect before deciding.",
-    "vi": "Nhà máy cung cấp trực tiếp, {desc}. Lấy mẫu kiểm tra trước khi quyết định.",
-    "th": "โรงงานจำหน่ายตรง {desc}. สั่งตัวอย่างและตรวจสอบก่อนตัดสินใจ",
-    "id": "Pabrik langsung, {desc}. Sampel dan inspeksi sebelum memutuskan."
-  },
-  "supplier_verdict_t7": {
-    "zh": "贸易商（非工厂），{years} 年老店，{cert} 可信。拿样对比价格再决定。",
-    "en": "Trader (non-factory), {years}y shop, {cert} verified. Sample to compare price before deciding.",
-    "vi": "Thương nhân (không phải nhà máy), cửa hàng {years} năm, {cert} đã xác minh. Lấy mẫu so sánh giá trước khi quyết định.",
-    "th": "ผู้ค้า (ไม่ใช่โรงงาน) ร้าน {years} ปี {cert} ตรวจสอบแล้ว สั่งตัวอย่างเปรียบเทียบราคาก่อนตัดสินใจ",
-    "id": "Trader (non-pabrik), toko {years} thn, {cert} terverifikasi. Sampel untuk bandingkan harga sebelum memutuskan."
-  },
-  "supplier_verdict_t8": {
-    "zh": "贸易商拿货非源头。{reasons}。先拿样验货。",
-    "en": "Trader, not source factory. {reasons}. Sample and inspect first.",
-    "vi": "Thương nhân lấy hàng không phải nguồn gốc. {reasons}. Lấy mẫu kiểm tra trước.",
-    "th": "ผู้ค้ารับสินค้าไม่ใช่แหล่งผลิต {reasons}. สั่งตัวอย่างและตรวจสอบก่อน",
-    "id": "Trader, bukan pabrik sumber. {reasons}. Sampel dan inspeksi dulu."
-  },
-  "supplier_verdict_t0": {
-    "zh": "信息不足，拿样后自己判断。",
-    "en": "Not enough info, sample and judge yourself.",
-    "vi": "Không đủ thông tin, lấy mẫu tự đánh giá.",
-    "th": "ข้อมูลไม่เพียงพอ สั่งตัวอย่างและตัดสินเอง",
-    "id": "Info tidak cukup, sampel dan nilai sendiri."
-  },
-
-  "summary_go": {
-    "zh": "品好、厂稳、门槛低——三样全占，少见。",
-    "en": "Strong product, verified factory, low barrier — all three, rare find.",
-    "vi": "Sản phẩm tốt, nhà máy uy tín, rào cản thấp — cả ba, hiếm có.",
-    "th": "สินค้าดี โรงงานน่าเชื่อถือ อุปสรรคต่ำ — ครบทั้งสาม หายาก",
-    "id": "Produk bagus, pabrik terpercaya, hambatan rendah — ketiganya, jarang."
-  },
-  "summary_ok": {
-    "zh": "整体过关，拿样确认后可以批量。",
-    "en": "Overall pass. Confirm with a sample before ordering in bulk.",
-    "vi": "Tổng thể đạt. Xác nhận bằng mẫu trước khi đặt số lượng lớn.",
-    "th": "ผ่านโดยรวม ยืนยันด้วยตัวอย่างก่อนสั่งจำนวนมาก",
-    "id": "Secara keseluruhan lolos. Konfirmasi dengan sampel sebelum pesan banyak."
-  },
-  "summary_check": {
-    "zh": "有亮点但也有不足，拿样自行判断更稳妥。",
-    "en": "Has strengths but also gaps. Safer to sample and judge yourself.",
-    "vi": "Có điểm mạnh nhưng cũng có điểm yếu. An toàn hơn nếu lấy mẫu tự đánh giá.",
-    "th": "มีจุดเด่นแต่ก็มีช่องว่าง ปลอดภัยกว่าถ้าสั่งตัวอย่างและตัดสินเอง",
-    "id": "Ada kelebihan tapi juga kekurangan. Lebih aman sampel dan nilai sendiri."
-  },
-  "summary_skip": {
-    "zh": "数据有限，建议拿样后自行评估是否批量。",
-    "en": "Limited data. Sample first, then decide on bulk order.",
-    "vi": "Dữ liệu hạn chế. Lấy mẫu trước, sau đó quyết định đặt số lượng lớn.",
-    "th": "ข้อมูลจำกัด สั่งตัวอย่างก่อน แล้วค่อยตัดสินใจสั่งจำนวนมาก",
-    "id": "Data terbatas. Sampel dulu, lalu putuskan pesan banyak."
-  },
-
-  "summary_headline_go": {
-    "zh": "{emoji} 值得拿样",
-    "en": "{emoji} Worth Sampling",
-    "vi": "{emoji} Nên Lấy Mẫu",
-    "th": "{emoji} คุ้มค่าสั่งตัวอย่าง",
-    "id": "{emoji} Layak Sampel"
-  },
-  "summary_headline_caution": {
-    "zh": "{emoji} 谨慎拿样",
-    "en": "{emoji} Sample with Caution",
-    "vi": "{emoji} Thận Trọng Khi Lấy Mẫu",
-    "th": "{emoji} สั่งตัวอย่างด้วยความระมัดระวัง",
-    "id": "{emoji} Hati-hati Sampel"
-  },
-
-  "summary_reason_go": {
-    "zh": "品好、厂稳、门槛低——三样全占，少见。",
-    "en": "Strong product, verified factory, low barrier — all three, rare find.",
-    "vi": "Sản phẩm tốt, nhà máy uy tín, rào cản thấp — cả ba, hiếm có.",
-    "th": "สินค้าดี โรงงานน่าเชื่อถือ อุปสรรคต่ำ — ครบทั้งสาม หายาก",
-    "id": "Produk bagus, pabrik terpercaya, hambatan rendah — ketiganya, jarang."
-  },
-  "summary_reason_ok": {
-    "zh": "整体过关，拿样确认后可以批量。",
-    "en": "Overall pass. Confirm with a sample before ordering in bulk.",
-    "vi": "Tổng thể đạt. Xác nhận bằng mẫu trước khi đặt số lượng lớn.",
-    "th": "ผ่านโดยรวม ยืนยันด้วยตัวอย่างก่อนสั่งจำนวนมาก",
-    "id": "Secara keseluruhan lolos. Konfirmasi dengan sampel sebelum pesan banyak."
-  },
-  "summary_reason_check": {
-    "zh": "有亮点但也有不足，拿样自行判断更稳妥。",
-    "en": "Has strengths but also gaps. Safer to sample and judge yourself.",
-    "vi": "Có điểm mạnh nhưng cũng có điểm yếu. An toàn hơn nếu lấy mẫu tự đánh giá.",
-    "th": "มีจุดเด่นแต่ก็มีช่องว่าง ปลอดภัยกว่าถ้าสั่งตัวอย่างและตัดสินเอง",
-    "id": "Ada kelebihan tapi juga kekurangan. Lebih aman sampel dan nilai sendiri."
-  },
-  "summary_reason_skip": {
-    "zh": "数据有限，建议拿样后自行评估是否批量。",
-    "en": "Limited data. Sample first, then decide on bulk order.",
-    "vi": "Dữ liệu hạn chế. Lấy mẫu trước, sau đó quyết định đặt số lượng lớn.",
-    "th": "ข้อมูลจำกัด สั่งตัวอย่างก่อน แล้วค่อยตัดสินใจสั่งจำนวนมาก",
-    "id": "Data terbatas. Sampel dulu, lalu putuskan pesan banyak."
-  },
-
-  "实力商家": {
-    "zh": "实力商家",
-    "en": "Verified Seller",
-    "vi": "Người Bán Được Xác Minh",
-    "th": "ผู้ขายที่ผ่านการรับรอง",
-    "id": "Penjual Terverifikasi"
-  },
-
-  "supplier_grade_verified": {
-    "zh": "✅ 可信",
-    "en": "✅ Verified",
-    "vi": "✅ Đáng Tin",
-    "th": "✅ เชื่อถือได้",
-    "id": "✅ Terpercaya"
-  },
-  "supplier_grade_ok": {
-    "zh": "⚠️ 可合作",
-    "en": "⚠️ Workable",
-    "vi": "⚠️ Có Thể Hợp Tác",
-    "th": "⚠️ ร่วมมือได้",
-    "id": "⚠️ Dapat Diajak Kerja Sama"
-  },
-  "supplier_grade_caution": {
-    "zh": "🔴 谨慎",
-    "en": "🔴 Caution",
-    "vi": "🔴 Thận Trọng",
-    "th": "🔴 ระมัดระวัง",
-    "id": "🔴 Hati-hati"
-  },
-  "supplier_grade_unknown": {
-    "zh": "⬜ 数据不足",
-    "en": "⬜ Not Enough Data",
-    "vi": "⬜ Thiếu Dữ Liệu",
-    "th": "⬜ ข้อมูลไม่เพียงพอ",
-    "id": "⬜ Data Tidak Cukup"
-  },
-
-  "supp_dim_d1_name_adv": {
-    "zh": "认证工厂",
-    "en": "Verified Factory",
-    "vi": "Nhà Máy Được Chứng Nhận",
-    "th": "โรงงานที่ผ่านการรับรอง",
-    "id": "Pabrik Terverifikasi"
-  },
-  "supp_dim_d1_name_factory": {
-    "zh": "工厂直供",
-    "en": "Factory Direct",
-    "vi": "Nhà Máy Cung Cấp Trực Tiếp",
-    "th": "โรงงานจำหน่ายตรง",
-    "id": "Pasokan Langsung Pabrik"
-  },
-  "supp_dim_d1_name_trader": {
-    "zh": "贸易商",
-    "en": "Trader",
-    "vi": "Công Ty",
-    "th": "บริษัท",
-    "id": "Perusahaan"
-  },
-  "supp_dim_d1_name": {
-    "zh": "身份",
-    "en": "Identity",
-    "vi": "Danh Tính",
-    "th": "ประเภท",
-    "id": "Identitas"
-  },
-  "supp_dim_d1_label_adv": {
-    "zh": "🏭认证工厂",
-    "en": "🏭 Verified Factory",
-    "vi": "🏭 Nhà Máy Được Chứng Nhận",
-    "th": "🏭 โรงงานที่ผ่านการรับรอง",
-    "id": "🏭 Pabrik Terverifikasi"
-  },
-  "supp_dim_d1_label_factory": {
-    "zh": "🏭工厂直供",
-    "en": "🏭 Factory Direct",
-    "vi": "🏭 Nhà Máy Cung Cấp Trực Tiếp",
-    "th": "🏭 โรงงานจำหน่ายตรง",
-    "id": "🏭 Pasokan Langsung Pabrik"
-  },
-  "supp_dim_d1_label_trader": {
-    "zh": "⚠️贸易商",
-    "en": "⚠️ Trader",
-    "vi": "⚠️ Công Ty",
-    "th": "⚠️ บริษัท",
-    "id": "⚠️ Perusahaan"
-  },
-
-  "supp_dim_d2_name_deep": {
-    "zh": "深度验厂",
-    "en": "Deep Factory Audit",
-    "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",
-    "th": "การตรวจสอบโรงงานเชิงลึก",
-    "id": "Audit Pabrik Mendalam"
-  },
-  "supp_dim_d2_name": {
-    "zh": "认证",
-    "en": "Certification",
-    "vi": "Chứng Nhận",
-    "th": "การรับรอง",
-    "id": "Sertifikasi"
-  },
-  "supp_dim_d2_label_deep": {
-    "zh": "📋深度验厂",
-    "en": "📋 Deep Factory Audit",
-    "vi": "📋 Kiểm Toán Nhà Máy Chuyên Sâu",
-    "th": "📋 การตรวจสอบโรงงานเชิงลึก",
-    "id": "📋 Audit Pabrik Mendalam"
-  },
-  "supp_dim_d2_data_no_cert": {
-    "zh": "无第三方认证",
-    "en": "No Third-Party Certification",
-    "vi": "Không Có Chứng Nhận Bên Thứ Ba",
-    "th": "ไม่มีการรับรองจากบุคคลที่สาม",
-    "id": "Tanpa Sertifikasi Pihak Ketiga"
-  },
-
-  "supp_dim_d3_name_old": {
-    "zh": "老店",
-    "en": "Established",
-    "vi": "Cửa Hàng Lâu Năm",
-    "th": "ร้านเก่า",
-    "id": "Toko Lama"
-  },
-  "supp_dim_d3_name": {
-    "zh": "年限",
-    "en": "Years",
-    "vi": "Số Năm",
-    "th": "อายุร้าน",
-    "id": "Tahun"
-  },
-  "supp_dim_d3_name_new": {
-    "zh": "新店",
-    "en": "New Store",
-    "vi": "Cửa Hàng Mới",
-    "th": "ร้านใหม่",
-    "id": "Toko Baru"
-  },
-  "supp_dim_d3_label_old": {
-    "zh": "📅老店",
-    "en": "📅 Established",
-    "vi": "📅 Cửa Hàng Lâu Năm",
-    "th": "📅 ร้านเก่า",
-    "id": "📅 Toko Lama"
-  },
-  "supp_dim_d3_label_new": {
-    "zh": "📅新店",
-    "en": "📅 New Store",
-    "vi": "📅 Cửa Hàng Mới",
-    "th": "📅 ร้านใหม่",
-    "id": "📅 Toko Baru"
-  },
-  "supp_dim_d3_data_fmt": {
-    "zh": "经营 {n} 年",
-    "en": "{n} years in business",
-    "vi": "Kinh doanh {n} năm",
-    "th": "ดำเนินกิจการ {n} ปี",
-    "id": "Bisnis {n} tahun"
-  },
-  "supp_dim_d3_data_short": {
-    "zh": "经营不足 1 年",
-    "en": "Less than 1 year",
-    "vi": "Kinh doanh dưới 1 năm",
-    "th": "ดำเนินกิจการน้อยกว่า 1 ปี",
-    "id": "Kurang dari 1 tahun"
-  },
-  "supp_dim_d3_ref_fmt": {
-    "zh": "标杆 ≥{n}年",
-    "en": "Benchmark ≥{n}y",
-    "vi": "Chuẩn ≥{n} năm",
-    "th": "เกณฑ์ ≥{n} ปี",
-    "id": "Patokan ≥{n} thn"
-  },
-
-  "supp_summary_both": {
-    "zh": "{identity} · 经营 {years} 年",
-    "en": "{identity} · {years} years in business",
-    "vi": "{identity} · Kinh doanh {years} năm",
-    "th": "{identity} · ดำเนินกิจการ {years} ปี",
-    "id": "{identity} · Bisnis {years} tahun"
-  },
-  "supp_summary_identity": {
-    "zh": "{identity}",
-    "en": "{identity}",
-    "vi": "{identity}",
-    "th": "{identity}",
-    "id": "{identity}"
-  },
-  "supp_summary_years": {
-    "zh": "经营 {years} 年",
-    "en": "{years} years in business",
-    "vi": "Kinh doanh {years} năm",
-    "th": "ดำเนินกิจการ {years} ปี",
-    "id": "Bisnis {years} tahun"
-  },
-  "supp_summary_none": {
-    "zh": "数据不足",
-    "en": "Not enough data",
-    "vi": "Không đủ dữ liệu",
-    "th": "ข้อมูลไม่เพียงพอ",
-    "id": "Data tidak cukup"
-  },
-
-  "stock_level_ok": {
-    "zh": "库存充足 ✅",
-    "en": "Sufficient Stock ✅",
-    "vi": "Hàng Có Sẵn ✅",
-    "th": "สินค้าพร้อมส่ง ✅",
-    "id": "Stok Tersedia ✅"
-  },
-  "stock_level_low": {
-    "zh": "库存偏低 ⚠️",
-    "en": "Low Stock ⚠️",
-    "vi": "Hàng Sắp Hết ⚠️",
-    "th": "สินค้าใกล้หมด ⚠️",
-    "id": "Stok Rendah ⚠️"
-  },
-  "stock_level_unknown": {
-    "zh": "库存未公开 ⚠️",
-    "en": "Stock Not Published ⚠️",
-    "vi": "Hàng Không Công Khai ⚠️",
-    "th": "ไม่เปิดเผยสต็อก ⚠️",
-    "id": "Stok Tidak Dipublikasi ⚠️"
-  },
-
-  "supp_help_verified": {
-    "zh": "1688官方认证：年销售额达标、信誉良好的优质商家，享受平台流量扶持。",
-    "en": "1688 Verified Supplier: Meets annual sales thresholds with good reputation, receives platform traffic support.",
-    "vi": "Nhà cung cấp được 1688 xác minh: Đạt doanh số hàng năm, uy tín tốt, nhận hỗ trợ lưu lượng nền tảng.",
-    "th": "ผู้ขายที่ผ่านการรับรองจาก 1688: มียอดขายประจำปีตามเกณฑ์ ชื่อเสียงดี ได้รับการสนับสนุนจากแพลตฟอร์ม",
-    "id": "Pemasok Terverifikasi 1688: Memenuhi ambang penjualan tahunan dengan reputasi baik, menerima dukungan traffic platform."
-  },
-  "supp_help_no_cert": {
-    "zh": "第三方机构（如 TUV、SGS、BV）实地审核工厂。该供应商未经第三方验厂——在1688平台，中小工厂无此认证属于常态。",
-    "en": "Third-party agencies (e.g. TUV, SGS, BV) audit factories on-site. This supplier has no third-party factory audit — on 1688, this is normal for small/medium factories.",
-    "vi": "Các tổ chức bên thứ ba (như TUV, SGS, BV) kiểm toán nhà máy tại chỗ. Nhà cung cấp này chưa có kiểm toán bên thứ ba — trên 1688, điều này là bình thường với nhà máy vừa và nhỏ.",
-    "th": "หน่วยงานภายนอก (เช่น TUV, SGS, BV) ตรวจสอบโรงงานหน้างาน ซัพพลายเออร์นี้ไม่มีการตรวจสอบจากบุคคลที่สาม — ใน 1688 เป็นเรื่องปกติสำหรับโรงงานขนาดเล็ก/กลาง",
-    "id": "Lembaga pihak ketiga (seperti TUV, SGS, BV) mengaudit pabrik di tempat. Pemasok ini tidak memiliki audit pabrik pihak ketiga — di 1688, ini normal untuk pabrik kecil/menengah."
-  },
-  "supp_risk_no_cert": {
-    "zh": "无第三方验厂背书在1688是常态，拿样是最直接的验证方式",
-    "en": "No third-party factory audit is normal on 1688 — sampling is the most direct way to verify",
-    "vi": "Không có kiểm toán bên thứ ba là bình thường trên 1688 — lấy mẫu là cách xác minh trực tiếp nhất",
-    "th": "การไม่มีการตรวจสอบจากบุคคลที่สามเป็นเรื่องปกติใน 1688 — การสั่งตัวอย่างเป็นวิธีตรวจสอบที่ตรงที่สุด",
-    "id": "Tanpa audit pabrik pihak ketiga adalah normal di 1688 — sampel adalah cara paling langsung untuk verifikasi"
-  },
-
-  "explain_industry_cluster": {
-    "zh": "源头产地，价格有竞争力。",
-    "en": "Source region, competitive pricing.",
-    "vi": "Vùng sản xuất gốc, giá cạnh tranh.",
-    "th": "แหล่งผลิตต้นทาง ราคาแข่งขันได้",
-    "id": "Wilayah produksi sumber, harga kompetitif."
-  },
-
   "prod_dim_d1_name": {
     "zh": "销量",
     "en": "Sales",
@@ -704,12 +343,26 @@
     "th": "สินค้าขายดี",
     "id": "Produk Laris"
   },
-  "prod_dim_d1_label": {
-    "zh": "🔥热销品",
-    "en": "🔥 Hot Seller",
-    "vi": "🔥 Bán Chạy",
-    "th": "🔥 สินค้าขายดี",
-    "id": "🔥 Produk Laris"
+  "prod_dim_d1_ref_fmt": {
+    "zh": "标杆 >{n}",
+    "en": "Benchmark >{n}",
+    "vi": "Chuẩn >{n}",
+    "th": "เกณฑ์ >{n}",
+    "id": "Patokan >{n}"
+  },
+  "prod_dim_d2_data_fmt": {
+    "zh": "复购率 {n}%",
+    "en": "Repurchase Rate {n}%",
+    "vi": "Tỷ lệ mua lại {n}%",
+    "th": "อัตราซื้อซ้ำ {n}%",
+    "id": "Tingkat Pembelian Ulang {n}%"
+  },
+  "prod_dim_d2_label": {
+    "zh": "🔄高复购",
+    "en": "🔄 High Repurchase",
+    "vi": "🔄 Mua Lại Cao",
+    "th": "🔄 ซื้อซ้ำสูง",
+    "id": "🔄 Pembelian Ulang Tinggi"
   },
   "prod_dim_d2_name": {
     "zh": "复购",
@@ -725,12 +378,26 @@
     "th": "ซื้อซ้ำสูง",
     "id": "Pembelian Ulang Tinggi"
   },
-  "prod_dim_d2_label": {
-    "zh": "🔄高复购",
-    "en": "🔄 High Repurchase",
-    "vi": "🔄 Mua Lại Cao",
-    "th": "🔄 ซื้อซ้ำสูง",
-    "id": "🔄 Pembelian Ulang Tinggi"
+  "prod_dim_d2_ref_fmt": {
+    "zh": "标杆 >{n}%",
+    "en": "Benchmark >{n}%",
+    "vi": "Chuẩn >{n}%",
+    "th": "เกณฑ์ >{n}%",
+    "id": "Patokan >{n}%"
+  },
+  "prod_dim_d3_data_fmt": {
+    "zh": "¥{price}/{unit} · 起订 {moq} {unit}",
+    "en": "¥{price}/{unit} · MOQ {moq} {unit}",
+    "vi": "¥{price}/{unit} · MOQ {moq} {unit}",
+    "th": "¥{price}/{unit} · MOQ {moq} {unit}",
+    "id": "¥{price}/{unit} · MOQ {moq} {unit}"
+  },
+  "prod_dim_d3_label": {
+    "zh": "💰低门槛",
+    "en": "💰 Low Barrier",
+    "vi": "💰 Rào Cản Thấp",
+    "th": "💰 อุปสรรคต่ำ",
+    "id": "💰 Hambatan Rendah"
   },
   "prod_dim_d3_name": {
     "zh": "门槛",
@@ -753,12 +420,19 @@
     "th": "อุปสรรคสูง",
     "id": "Hambatan Tinggi"
   },
-  "prod_dim_d3_label": {
-    "zh": "💰低门槛",
-    "en": "💰 Low Barrier",
-    "vi": "💰 Rào Cản Thấp",
-    "th": "💰 อุปสรรคต่ำ",
-    "id": "💰 Hambatan Rendah"
+  "prod_dim_d4_data_fmt": {
+    "zh": "好评率 {n}%",
+    "en": "Positive Rate {n}%",
+    "vi": "Tỷ lệ tốt {n}%",
+    "th": "อัตรารีวิวดี {n}%",
+    "id": "Tingkat Positif {n}%"
+  },
+  "prod_dim_d4_label": {
+    "zh": "⭐口碑好",
+    "en": "⭐ Good Reputation",
+    "vi": "⭐ Uy Tín Tốt",
+    "th": "⭐ ชื่อเสียงดี",
+    "id": "⭐ Reputasi Baik"
   },
   "prod_dim_d4_name": {
     "zh": "口碑",
@@ -774,77 +448,6 @@
     "th": "ชื่อเสียงดี",
     "id": "Reputasi Baik"
   },
-  "prod_dim_d4_label": {
-    "zh": "⭐口碑好",
-    "en": "⭐ Good Reputation",
-    "vi": "⭐ Uy Tín Tốt",
-    "th": "⭐ ชื่อเสียงดี",
-    "id": "⭐ Reputasi Baik"
-  },
-  "prod_dim_d5_name": {
-    "zh": "退货",
-    "en": "Returns",
-    "vi": "Đổi trả",
-    "th": "คืนสินค้า",
-    "id": "Retur"
-  },
-  "prod_dim_d5_name_high": {
-    "zh": "7天退货",
-    "en": "7-Day Returns",
-    "vi": "Đổi Trả 7 Ngày",
-    "th": "คืนสินค้า 7 วัน",
-    "id": "Retur 7 Hari"
-  },
-  "prod_dim_d5_label": {
-    "zh": "🛡️7天退货",
-    "en": "🛡️ 7-Day Returns",
-    "vi": "🛡️ Đổi Trả 7 Ngày",
-    "th": "🛡️ คืนสินค้า 7 วัน",
-    "id": "🛡️ Retur 7 Hari"
-  },
-
-  "prod_dim_d1_data_fmt": {
-    "zh": "月销 {n}",
-    "en": "Monthly Sales {n}",
-    "vi": "Doanh số tháng {n}",
-    "th": "ยอดขายต่อเดือน {n}",
-    "id": "Penjualan Bulanan {n}"
-  },
-  "prod_dim_d1_ref_fmt": {
-    "zh": "标杆 >{n}",
-    "en": "Benchmark >{n}",
-    "vi": "Chuẩn >{n}",
-    "th": "เกณฑ์ >{n}",
-    "id": "Patokan >{n}"
-  },
-  "prod_dim_d2_data_fmt": {
-    "zh": "复购率 {n}%",
-    "en": "Repurchase Rate {n}%",
-    "vi": "Tỷ lệ mua lại {n}%",
-    "th": "อัตราซื้อซ้ำ {n}%",
-    "id": "Tingkat Pembelian Ulang {n}%"
-  },
-  "prod_dim_d2_ref_fmt": {
-    "zh": "标杆 >{n}%",
-    "en": "Benchmark >{n}%",
-    "vi": "Chuẩn >{n}%",
-    "th": "เกณฑ์ >{n}%",
-    "id": "Patokan >{n}%"
-  },
-  "prod_dim_d3_data_fmt": {
-    "zh": "¥{price}/{unit} · 起订 {moq} {unit}",
-    "en": "¥{price}/{unit} · MOQ {moq} {unit}",
-    "vi": "¥{price}/{unit} · MOQ {moq} {unit}",
-    "th": "¥{price}/{unit} · MOQ {moq} {unit}",
-    "id": "¥{price}/{unit} · MOQ {moq} {unit}"
-  },
-  "prod_dim_d4_data_fmt": {
-    "zh": "好评率 {n}%",
-    "en": "Positive Rate {n}%",
-    "vi": "Tỷ lệ tốt {n}%",
-    "th": "อัตรารีวิวดี {n}%",
-    "id": "Tingkat Positif {n}%"
-  },
   "prod_dim_d4_ref_fmt": {
     "zh": "标杆 ≥{n}%",
     "en": "Benchmark ≥{n}%",
@@ -852,63 +455,425 @@
     "th": "เกณฑ์ ≥{n}%",
     "id": "Patokan ≥{n}%"
   },
-  "prod_dim_d5_data_ok": {
-    "zh": "7天无理由退货",
-    "en": "7-Day Unconditional Returns",
-    "vi": "Đổi trả 7 ngày không lý do",
-    "th": "คืนสินค้า 7 วันไม่มีเงื่อนไข",
-    "id": "Retur 7 Hari Tanpa Syarat"
+  "prod_dim_d5_data_fmt": {
+    "zh": "{n} 人想看",
+    "en": "{n} want to buy",
+    "vi": "{n} muốn mua",
+    "th": "{n} ต้องการซื้อ",
+    "id": "{n} ingin beli"
   },
-  "prod_dim_d5_data_no": {
+  "prod_dim_d5_label": {
+    "zh": "👀高关注",
+    "en": "👀 High Attention",
+    "vi": "👀 Quan Tâm Cao",
+    "th": "👀 ความสนใจสูง",
+    "id": "👀 Perhatian Tinggi"
+  },
+  "prod_dim_d5_name": {
+    "zh": "关注",
+    "en": "Attention",
+    "vi": "Quan Tâm",
+    "th": "ความสนใจ",
+    "id": "Perhatian"
+  },
+  "prod_dim_d5_name_high": {
+    "zh": "高关注",
+    "en": "High Attention",
+    "vi": "Quan Tâm Cao",
+    "th": "ความสนใจสูง",
+    "id": "Perhatian Tinggi"
+  },
+  "prod_dim_d5_name_low": {
+    "zh": "低关注",
+    "en": "Low Attention",
+    "vi": "Ít Quan Tâm",
+    "th": "ความสนใจต่ำ",
+    "id": "Perhatian Rendah"
+  },
+  "prod_dim_d5_ref_fmt": {
+    "zh": "标杆 >{n}",
+    "en": "Benchmark >{n}",
+    "vi": "Chuẩn >{n}",
+    "th": "เกณฑ์ >{n}",
+    "id": "Patokan >{n}"
+  },
+  "prod_dim_d6_data_no": {
     "zh": "无7天退货",
     "en": "No 7-Day Returns",
     "vi": "Không đổi trả 7 ngày",
     "th": "ไม่มีคืนสินค้า 7 วัน",
     "id": "Tidak Ada Retur 7 Hari"
   },
-
-  "prod_summary_high": {
-    "zh": "{count} 项达标，建议拿样确认",
-    "en": "{count} passed, suggest sampling to confirm",
-    "vi": "{count} đạt, nên lấy mẫu xác nhận",
-    "th": "{count} ผ่าน แนะนำสั่งตัวอย่างยืนยัน",
-    "id": "{count} lulus, sarankan sampel untuk konfirmasi"
+  "prod_dim_d6_data_ok": {
+    "zh": "7天无理由退货",
+    "en": "7-Day Unconditional Returns",
+    "vi": "Đổi trả 7 ngày không lý do",
+    "th": "คืนสินค้า 7 วันไม่มีเงื่อนไข",
+    "id": "Retur 7 Hari Tanpa Syarat"
   },
-  "prod_summary_mid": {
-    "zh": "{count} 项达标，其余待验证",
-    "en": "{count} passed, rest need verification",
-    "vi": "{count} đạt, còn lại cần xác minh",
-    "th": "{count} ผ่าน ที่เหลือต้องตรวจสอบ",
-    "id": "{count} lulus, sisanya perlu verifikasi"
+  "prod_dim_d6_label": {
+    "zh": "🛡️7天退货",
+    "en": "🛡️ 7-Day Returns",
+    "vi": "🛡️ Đổi Trả 7 Ngày",
+    "th": "🛡️ คืนสินค้า 7 วัน",
+    "id": "🛡️ Retur 7 Hari"
   },
-  "prod_summary_low": {
-    "zh": "仅 1 项达标，建议拿样验证",
-    "en": "Only 1 passed, suggest sampling to verify",
-    "vi": "Chỉ 1 đạt, nên lấy mẫu xác minh",
-    "th": "ผ่านเพียง 1 แนะนำสั่งตัวอย่างตรวจสอบ",
-    "id": "Hanya 1 lulus, sarankan sampel untuk verifikasi"
+  "prod_dim_d6_name": {
+    "zh": "退货",
+    "en": "Returns",
+    "vi": "Đổi trả",
+    "th": "คืนสินค้า",
+    "id": "Retur"
   },
-  "prod_summary_none": {
-    "zh": "线上数据有限，建议拿样自行评估",
-    "en": "Limited data, suggest sampling and self-evaluation",
-    "vi": "Dữ liệu hạn chế, nên lấy mẫu tự đánh giá",
-    "th": "ข้อมูลจำกัด แนะนำสั่งตัวอย่างและประเมินเอง",
-    "id": "Data terbatas, sarankan sampel dan evaluasi sendiri"
+  "prod_dim_d6_name_high": {
+    "zh": "7天退货",
+    "en": "7-Day Returns",
+    "vi": "Đổi Trả 7 Ngày",
+    "th": "คืนสินค้า 7 วัน",
+    "id": "Retur 7 Hari"
   },
-
-  "supp_desc_yrs_plus": {
-    "zh": "{n}年+",
-    "en": "{n}y+",
-    "vi": "{n} năm+",
-    "th": "{n} ปี+",
-    "id": "{n} thn+"
+  "prod_summary_caution": {
+    "zh": "产品信号偏弱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
   },
-  "supp_desc_yrs": {
-    "zh": "{n}年",
-    "en": "{n}y",
-    "vi": "{n} năm",
-    "th": "{n} ปี",
-    "id": "{n} thn"
+  "prod_summary_fatal": {
+    "zh": "产品有硬伤",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_summary_go": {
+    "zh": "产品验证过，值得做",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_summary_trial": {
+    "zh": "产品有支撑，需验证",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_summary_watch": {
+    "zh": "产品数据不足",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_caution_hot_low": {
+    "zh": "谨慎。卖得火（{sold}件）但复购仅{repurchase}%——可能是冲动消费或一次性款。先小批试，卖得动再追。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_caution_rep_low": {
+    "zh": "谨慎。复购高（{repurchase}%）但销量少（{sold}件）——复购好但客户群还小。先拿样测需求。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_fatal_badrate": {
+    "zh": "换品。好评率仅{positive}%——差评太多会拖垮店铺。别碰这个品{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_fatal_return": {
+    "zh": "换品。不支持退货——卖出去退不回来，差评降权你扛不住。别碰这个品{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_go_hot_repeat": {
+    "zh": "值得做。热销（{sold}件）+ 有复购（{repurchase}%）——卖得动且有人回头。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_go_hot_wanted": {
+    "zh": "值得做。卖得火（{sold}件）+ 当前热度高（{wanted}人想看）——需求被两次验证过。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_go_repurchase": {
+    "zh": "值得做。有销量打底（{sold}件）+ 买过的人会回来补货（{repurchase}%复购）——品稳、有需求。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_skip_nodata": {
+    "zh": "跳过。核心数据不够（{missing_count}项缺失）——判断不了这个品能不能做。先收藏蹲数据{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_trial_hot_unknown": {
+    "zh": "小批量试。卖得火（{sold}件）但复购数据缺失——不确定买过的人会不会回来。先少量拿，卖动了再追。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_trial_medium3": {
+    "zh": "小批量试。{highlight_count}个维度有亮点——有支撑但不够强。少量试试。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_trial_rep_low": {
+    "zh": "值得试。复购率高（{repurchase}%）说明产品被反复验证过——不是一次性冲动消费。虽然当前销量少（{sold}件），但门槛低，拿样试错基本不亏。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_trial_wanted_low": {
+    "zh": "小批量试。很多人想看（{wanted}人）但还没怎么卖（{sold}件）——需求在但没被验证。拿少量试水。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_watch_flat": {
+    "zh": "观望。全维度平平——没看到足够亮点。先收藏蹲数据。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_verdict_watch_medium12": {
+    "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。先收藏蹲数据，别急着下手。{barrier_tip}{risk_note}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "prod_risk_note_no_return": {
+    "zh": "⚠️ 该商品不支持7天无理由退货——买家无法无理由退换，需自行承担退货风险。",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "sales_sold_fmt": {
+    "zh": "{n} 已售",
+    "en": "{n} sold",
+    "vi": "Đã bán {n}",
+    "th": "ขายแล้ว {n}",
+    "id": "{n} terjual"
+  },
+  "star_limited_label": {
+    "zh": "数据有限",
+    "en": "Limited Data",
+    "vi": "Dữ Liệu Hạn Chế",
+    "th": "ข้อมูลจำกัด",
+    "id": "Data Terbatas"
+  },
+  "star_partial_label": {
+    "zh": "可考虑",
+    "en": "Consider",
+    "vi": "Cân Nhắc",
+    "th": "พิจารณา",
+    "id": "Pertimbangkan"
+  },
+  "star_sufficient_label": {
+    "zh": "推荐",
+    "en": "Recommended",
+    "vi": "Nên Dùng",
+    "th": "แนะนำ",
+    "id": "Direkomendasikan"
+  },
+  "stock_level_low": {
+    "zh": "库存偏低 ⚠️",
+    "en": "Low Stock ⚠️",
+    "vi": "Hàng Sắp Hết ⚠️",
+    "th": "สินค้าใกล้หมด ⚠️",
+    "id": "Stok Rendah ⚠️"
+  },
+  "stock_level_ok": {
+    "zh": "库存充足 ✅",
+    "en": "Sufficient Stock ✅",
+    "vi": "Hàng Có Sẵn ✅",
+    "th": "สินค้าพร้อมส่ง ✅",
+    "id": "Stok Tersedia ✅"
+  },
+  "stock_level_unknown": {
+    "zh": "库存未公开 ⚠️",
+    "en": "Stock Not Published ⚠️",
+    "vi": "Hàng Không Công Khai ⚠️",
+    "th": "ไม่เปิดเผยสต็อก ⚠️",
+    "id": "Stok Tidak Dipublikasi ⚠️"
+  },
+  "summary_conditional_both_mid": {
+    "zh": "品要测，厂要验。拿最少批量试水，同时验货——两件事一起做别分开花钱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_conditional_factory_strong": {
+    "zh": "厂靠得住，但品还没完全验证。先少量拿，卖动了厂能跟上",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_conditional_supplier_weak": {
+    "zh": "品没问题。但厂拖后腿——拿样验货，确认质量再批量",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_go_both": {
+    "zh": "品验证过，厂靠得住。拿样确认，可以放心做",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_go_product_ok": {
+    "zh": "品没问题。厂基本面OK但缺顶级背书——拿样时多留个心眼验货",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_headline_conditional": {
+    "zh": "🟡 有条件做",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_headline_go": {
+    "zh": "🟢 可以出手",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_headline_no": {
+    "zh": "🔴 不建议",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_headline_wait": {
+    "zh": "⬜ 等一等",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_no_product_fatal": {
+    "zh": "硬伤在品，换品。别在这一单上花钱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_no_supplier_fatal": {
+    "zh": "硬伤在厂，换厂。别在这一单上花钱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "summary_wait_data": {
+    "zh": "数据不够——判断不了。先收藏，别急着花钱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_action_check_delivery": {
+    "zh": "拿样确认交期稳不稳",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_action_compare": {
+    "zh": "拿样后先比价，确认有价格优势再合作",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_action_compare_inspect": {
+    "zh": "先比价再拿样，别急着批量",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_action_inspect": {
+    "zh": "拿样时仔细验货",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_action_ok": {
+    "zh": "拿样确认款式后可放心合作",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_bad_cert_none": {
+    "zh": "没人验过厂——品质靠你自己判断",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_bad_id_trader": {
+    "zh": "贸易商拿货，不是源头——价格有加价",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_bad_years_new": {
+    "zh": "新店——稳定性还没被验证",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_cert_deep_audit": {
+    "zh": "深度验厂",
+    "en": "deep audit",
+    "vi": "kiểm toán chuyên sâu",
+    "th": "ตรวจสอบเชิงลึก",
+    "id": "audit mendalam"
+  },
+  "supp_cert_onsite": {
+    "zh": "实地认证",
+    "en": "onsite verified",
+    "vi": "xác minh tại chỗ",
+    "th": "ตรวจสอบหน้างาน",
+    "id": "verifikasi di tempat"
   },
   "supp_desc_lt1": {
     "zh": "不足1年",
@@ -924,13 +889,215 @@
     "th": "ไม่ทราบจำนวนปี",
     "id": "tahun tidak diketahui"
   },
-
-  "supp_reason_short": {
-    "zh": "年限尚短",
-    "en": "short history",
-    "vi": "lịch sử ngắn",
-    "th": "ประวัติสั้น",
-    "id": "sejarah singkat"
+  "supp_desc_yrs": {
+    "zh": "{n}年",
+    "en": "{n}y",
+    "vi": "{n} năm",
+    "th": "{n} ปี",
+    "id": "{n} thn"
+  },
+  "supp_desc_yrs_plus": {
+    "zh": "{n}年+",
+    "en": "{n}y+",
+    "vi": "{n} năm+",
+    "th": "{n} ปี+",
+    "id": "{n} thn+"
+  },
+  "supp_dim_d1_label_adv": {
+    "zh": "🏭认证工厂",
+    "en": "🏭 Verified Factory",
+    "vi": "🏭 Nhà Máy Được Chứng Nhận",
+    "th": "🏭 โรงงานที่ผ่านการรับรอง",
+    "id": "🏭 Pabrik Terverifikasi"
+  },
+  "supp_dim_d1_label_factory": {
+    "zh": "🏭工厂直供",
+    "en": "🏭 Factory Direct",
+    "vi": "🏭 Nhà Máy Cung Cấp Trực Tiếp",
+    "th": "🏭 โรงงานจำหน่ายตรง",
+    "id": "🏭 Pasokan Langsung Pabrik"
+  },
+  "supp_dim_d1_label_trader": {
+    "zh": "⚠️贸易商",
+    "en": "⚠️ Trader",
+    "vi": "⚠️ Công Ty",
+    "th": "⚠️ บริษัท",
+    "id": "⚠️ Perusahaan"
+  },
+  "supp_dim_d1_name": {
+    "zh": "身份",
+    "en": "Identity",
+    "vi": "Danh Tính",
+    "th": "ประเภท",
+    "id": "Identitas"
+  },
+  "supp_dim_d1_name_adv": {
+    "zh": "认证工厂",
+    "en": "Verified Factory",
+    "vi": "Nhà Máy Được Chứng Nhận",
+    "th": "โรงงานที่ผ่านการรับรอง",
+    "id": "Pabrik Terverifikasi"
+  },
+  "supp_dim_d1_name_factory": {
+    "zh": "工厂直供",
+    "en": "Factory Direct",
+    "vi": "Nhà Máy Cung Cấp Trực Tiếp",
+    "th": "โรงงานจำหน่ายตรง",
+    "id": "Pasokan Langsung Pabrik"
+  },
+  "supp_dim_d1_name_trader": {
+    "zh": "贸易商",
+    "en": "Trader",
+    "vi": "Công Ty",
+    "th": "บริษัท",
+    "id": "Perusahaan"
+  },
+  "supp_dim_d2_data_no_cert": {
+    "zh": "无第三方认证",
+    "en": "No Third-Party Certification",
+    "vi": "Không Có Chứng Nhận Bên Thứ Ba",
+    "th": "ไม่มีการรับรองจากบุคคลที่สาม",
+    "id": "Tanpa Sertifikasi Pihak Ketiga"
+  },
+  "supp_dim_d2_label_deep": {
+    "zh": "📋深度验厂",
+    "en": "📋 Deep Factory Audit",
+    "vi": "📋 Kiểm Toán Nhà Máy Chuyên Sâu",
+    "th": "📋 การตรวจสอบโรงงานเชิงลึก",
+    "id": "📋 Audit Pabrik Mendalam"
+  },
+  "supp_dim_d2_name": {
+    "zh": "认证",
+    "en": "Certification",
+    "vi": "Chứng Nhận",
+    "th": "การรับรอง",
+    "id": "Sertifikasi"
+  },
+  "supp_dim_d2_name_deep": {
+    "zh": "深度验厂",
+    "en": "Deep Factory Audit",
+    "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",
+    "th": "การตรวจสอบโรงงานเชิงลึก",
+    "id": "Audit Pabrik Mendalam"
+  },
+  "supp_dim_d3_data_fmt": {
+    "zh": "经营 {n} 年",
+    "en": "{n} years in business",
+    "vi": "Kinh doanh {n} năm",
+    "th": "ดำเนินกิจการ {n} ปี",
+    "id": "Bisnis {n} tahun"
+  },
+  "supp_dim_d3_data_short": {
+    "zh": "经营不足 1 年",
+    "en": "Less than 1 year",
+    "vi": "Kinh doanh dưới 1 năm",
+    "th": "ดำเนินกิจการน้อยกว่า 1 ปี",
+    "id": "Kurang dari 1 tahun"
+  },
+  "supp_dim_d3_label_new": {
+    "zh": "📅新店",
+    "en": "📅 New Store",
+    "vi": "📅 Cửa Hàng Mới",
+    "th": "📅 ร้านใหม่",
+    "id": "📅 Toko Baru"
+  },
+  "supp_dim_d3_label_old": {
+    "zh": "📅老店",
+    "en": "📅 Established",
+    "vi": "📅 Cửa Hàng Lâu Năm",
+    "th": "📅 ร้านเก่า",
+    "id": "📅 Toko Lama"
+  },
+  "supp_dim_d3_name": {
+    "zh": "年限",
+    "en": "Years",
+    "vi": "Số Năm",
+    "th": "อายุร้าน",
+    "id": "Tahun"
+  },
+  "supp_dim_d3_name_new": {
+    "zh": "新店",
+    "en": "New Store",
+    "vi": "Cửa Hàng Mới",
+    "th": "ร้านใหม่",
+    "id": "Toko Baru"
+  },
+  "supp_dim_d3_name_old": {
+    "zh": "老店",
+    "en": "Established",
+    "vi": "Cửa Hàng Lâu Năm",
+    "th": "ร้านเก่า",
+    "id": "Toko Lama"
+  },
+  "supp_dim_d3_ref_fmt": {
+    "zh": "标杆 ≥{n}年",
+    "en": "Benchmark ≥{n}y",
+    "vi": "Chuẩn ≥{n} năm",
+    "th": "เกณฑ์ ≥{n} ปี",
+    "id": "Patokan ≥{n} thn"
+  },
+  "supp_fb_insufficient": {
+    "zh": "资质不足",
+    "en": "insufficient credentials",
+    "vi": "không đủ chứng nhận",
+    "th": "คุณสมบัติไม่เพียงพอ",
+    "id": "kredensial tidak cukup"
+  },
+  "supp_fb_limited": {
+    "zh": "数据有限",
+    "en": "limited data",
+    "vi": "dữ liệu hạn chế",
+    "th": "ข้อมูลจำกัด",
+    "id": "data terbatas"
+  },
+  "supp_good_cert_basic": {
+    "zh": "有{cert_text}认证，基本面过关",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_good_cert_deep": {
+    "zh": "{cert_text}认证——有第三方背书",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_good_id_factory": {
+    "zh": "工厂直供——跳过中间商",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_good_id_super": {
+    "zh": "实力工厂——有实体可追溯",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_good_years_old": {
+    "zh": "干了{years}年——能活下来的不会太差",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_help_no_cert": {
+    "zh": "第三方机构（如 TUV、SGS、BV）实地审核工厂。该供应商未经第三方验厂——在1688平台，中小工厂无此认证属于常态。",
+    "en": "Third-party agencies (e.g. TUV, SGS, BV) audit factories on-site. This supplier has no third-party factory audit — on 1688, this is normal for small/medium factories.",
+    "vi": "Các tổ chức bên thứ ba (như TUV, SGS, BV) kiểm toán nhà máy tại chỗ. Nhà cung cấp này chưa có kiểm toán bên thứ ba — trên 1688, điều này là bình thường với nhà máy vừa và nhỏ.",
+    "th": "หน่วยงานภายนอก (เช่น TUV, SGS, BV) ตรวจสอบโรงงานหน้างาน ซัพพลายเออร์นี้ไม่มีการตรวจสอบจากบุคคลที่สาม — ใน 1688 เป็นเรื่องปกติสำหรับโรงงานขนาดเล็ก/กลาง",
+    "id": "Lembaga pihak ketiga (seperti TUV, SGS, BV) mengaudit pabrik di tempat. Pemasok ini tidak memiliki audit pabrik pihak ketiga — di 1688, ini normal untuk pabrik kecil/menengah."
+  },
+  "supp_help_verified": {
+    "zh": "1688官方认证：年销售额达标、信誉良好的优质商家，享受平台流量扶持。",
+    "en": "1688 Verified Supplier: Meets annual sales thresholds with good reputation, receives platform traffic support.",
+    "vi": "Nhà cung cấp được 1688 xác minh: Đạt doanh số hàng năm, uy tín tốt, nhận hỗ trợ lưu lượng nền tảng.",
+    "th": "ผู้ขายที่ผ่านการรับรองจาก 1688: มียอดขายประจำปีตามเกณฑ์ ชื่อเสียงดี ได้รับการสนับสนุนจากแพลตฟอร์ม",
+    "id": "Pemasok Terverifikasi 1688: Memenuhi ambang penjualan tahunan dengan reputasi baik, menerima dukungan traffic platform."
   },
   "supp_reason_no_cert": {
     "zh": "无第三方认证",
@@ -946,34 +1113,606 @@
     "th": ", ",
     "id": ", "
   },
-
-  "supp_cert_deep_audit": {
-    "zh": "深度验厂",
-    "en": "deep audit",
-    "vi": "kiểm toán chuyên sâu",
-    "th": "ตรวจสอบเชิงลึก",
-    "id": "audit mendalam"
+  "supp_reason_short": {
+    "zh": "年限尚短",
+    "en": "short history",
+    "vi": "lịch sử ngắn",
+    "th": "ประวัติสั้น",
+    "id": "sejarah singkat"
   },
-  "supp_cert_onsite": {
+  "supp_risk_no_cert": {
+    "zh": "无第三方验厂背书在1688是常态，拿样是最直接的验证方式",
+    "en": "No third-party factory audit is normal on 1688 — sampling is the most direct way to verify",
+    "vi": "Không có kiểm toán bên thứ ba là bình thường trên 1688 — lấy mẫu là cách xác minh trực tiếp nhất",
+    "th": "การไม่มีการตรวจสอบจากบุคคลที่สามเป็นเรื่องปกติใน 1688 — การสั่งตัวอย่างเป็นวิธีตรวจสอบที่ตรงที่สุด",
+    "id": "Tanpa audit pabrik pihak ketiga adalah normal di 1688 — sampel adalah cara paling langsung untuk verifikasi"
+  },
+  "supp_summary_caution": {
+    "zh": "供应商信号偏弱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_summary_fatal": {
+    "zh": "供应商有硬伤",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_summary_skip": {
+    "zh": "供应商信息不足",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_summary_trust": {
+    "zh": "供应商可信",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_summary_usable": {
+    "zh": "供应商可用，留意短板",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_verdict_caution_weak2": {
+    "zh": "谨慎。{bad_parts}——{action}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_verdict_fatal_blackbox": {
+    "zh": "别碰。对面是谁都不知道——身份、认证、年限全空。没法追溯，出了事你连人都找不到",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_verdict_skip_nodata": {
+    "zh": "跳过。关键信息不够（{missing_count}项缺失）——判断不了这个厂靠不靠谱",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_verdict_trust_strong2": {
+    "zh": "可信。{good_parts}。拿样确认款式，可放心合作",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supp_verdict_usable_ok": {
+    "zh": "可用。{good_parts}。但{bad_parts}。{action}",
+    "en": "TODO",
+    "vi": "TODO",
+    "th": "TODO",
+    "id": "TODO"
+  },
+  "supplier_grade_caution": {
+    "zh": "🔴 谨慎",
+    "en": "🔴 Caution",
+    "vi": "🔴 Thận Trọng",
+    "th": "🔴 ระมัดระวัง",
+    "id": "🔴 Hati-hati"
+  },
+  "supplier_grade_ok": {
+    "zh": "⚠️ 可合作",
+    "en": "⚠️ Workable",
+    "vi": "⚠️ Có Thể Hợp Tác",
+    "th": "⚠️ ร่วมมือได้",
+    "id": "⚠️ Dapat Diajak Kerja Sama"
+  },
+  "supplier_grade_unknown": {
+    "zh": "⬜ 数据不足",
+    "en": "⬜ Not Enough Data",
+    "vi": "⬜ Thiếu Dữ Liệu",
+    "th": "⬜ ข้อมูลไม่เพียงพอ",
+    "id": "⬜ Data Tidak Cukup"
+  },
+  "supplier_grade_verified": {
+    "zh": "✅ 可信",
+    "en": "✅ Verified",
+    "vi": "✅ Đáng Tin",
+    "th": "✅ เชื่อถือได้",
+    "id": "✅ Terpercaya"
+  },
+  "tier_advanced_lt2y": {
+    "zh": "平台认证，<2年，建议验货",
+    "en": "Platform verified, <2y, inspect recommended",
+    "vi": "Đã xác minh nền tảng, <2 năm, nên kiểm tra",
+    "th": "แพลตฟอร์มรับรอง, <2 ปี, แนะนำให้ตรวจสอบ",
+    "id": "Terverifikasi platform, <2 thn, disarankan inspeksi"
+  },
+  "tier_factory_1y": {
+    "zh": "生产厂家，1年+，建议样品验证",
+    "en": "Manufacturer, 1y+, sample verification advised",
+    "vi": "Nhà sản xuất, 1 năm+, nên xác minh mẫu",
+    "th": "ผู้ผลิต, 1 ปี+, แนะนำตรวจสอบตัวอย่าง",
+    "id": "Produsen, 1 thn+, disarankan verifikasi sampel"
+  },
+  "tier_insufficient": {
+    "zh": "无认证，<1年，建议手动验证",
+    "en": "No cert, <1y, manual verification advised",
+    "vi": "Không chứng nhận, <1 năm, nên xác minh thủ công",
+    "th": "ไม่มีการรับรอง, <1 ปี, แนะนำตรวจสอบด้วยตนเอง",
+    "id": "Tanpa sertifikasi, <1 thn, disarankan verifikasi manual"
+  },
+  "tier_no_cert_1y": {
+    "zh": "无认证，1年+，建议样品验证",
+    "en": "No cert, 1y+, sample verification advised",
+    "vi": "Không chứng nhận, 1 năm+, nên xác minh mẫu",
+    "th": "ไม่มีการรับรอง, 1 ปี+, แนะนำตรวจสอบตัวอย่าง",
+    "id": "Tanpa sertifikasi, 1 thn+, disarankan verifikasi sampel"
+  },
+  "tier_sufficient_2y": {
+    "zh": "平台认证 + 2年+，样品风险低",
+    "en": "Platform verified + 2y+, low sample risk",
+    "vi": "Đã xác minh nền tảng + 2 năm+, rủi ro lấy mẫu thấp",
+    "th": "แพลตฟอร์มรับรอง + 2 ปี+, ความเสี่ยงตัวอย่างต่ำ",
+    "id": "Terverifikasi platform + 2 thn+, risiko sampel rendah"
+  },
+  "trust_sold_fmt": {
+    "zh": "{n}+ 已售",
+    "en": "{n}+ sold",
+    "vi": "Đã bán {n}+",
+    "th": "ขายแล้ว {n}+",
+    "id": "{n}+ terjual"
+  },
+  "trust_years_fmt": {
+    "zh": "{n}年 1688",
+    "en": "{n}y on 1688",
+    "vi": "{n} năm trên 1688",
+    "th": "{n} ปีบน 1688",
+    "id": "{n} thn di 1688"
+  },
+  "unit_个": {
+    "zh": "个",
+    "en": "pcs",
+    "vi": "cái",
+    "th": "ชิ้น",
+    "id": "pcs"
+  },
+  "unit_件": {
+    "zh": "件",
+    "en": "pcs",
+    "vi": "cái",
+    "th": "ชิ้น",
+    "id": "pcs"
+  },
+  "unit_克": {
+    "zh": "克",
+    "en": "g",
+    "vi": "g",
+    "th": "ก.",
+    "id": "g"
+  },
+  "unit_副": {
+    "zh": "副",
+    "en": "pair",
+    "vi": "đôi",
+    "th": "คู่",
+    "id": "pasang"
+  },
+  "unit_包": {
+    "zh": "包",
+    "en": "pack",
+    "vi": "gói",
+    "th": "แพ็ค",
+    "id": "pak"
+  },
+  "unit_千克": {
+    "zh": "千克",
+    "en": "kg",
+    "vi": "kg",
+    "th": "กก.",
+    "id": "kg"
+  },
+  "unit_双": {
+    "zh": "双",
+    "en": "pair",
+    "vi": "đôi",
+    "th": "คู่",
+    "id": "pasang"
+  },
+  "unit_只": {
+    "zh": "只",
+    "en": "pcs",
+    "vi": "cái",
+    "th": "ชิ้น",
+    "id": "pcs"
+  },
+  "unit_吨": {
+    "zh": "吨",
+    "en": "t",
+    "vi": "tấn",
+    "th": "ตัน",
+    "id": "ton"
+  },
+  "unit_套": {
+    "zh": "套",
+    "en": "set",
+    "vi": "bộ",
+    "th": "ชุด",
+    "id": "set"
+  },
+  "unit_对": {
+    "zh": "对",
+    "en": "pair",
+    "vi": "đôi",
+    "th": "คู่",
+    "id": "pasang"
+  },
+  "unit_平方米": {
+    "zh": "平方米",
+    "en": "m²",
+    "vi": "m²",
+    "th": "ตร.ม.",
+    "id": "m²"
+  },
+  "unit_把": {
+    "zh": "把",
+    "en": "pcs",
+    "vi": "cái",
+    "th": "ชิ้น",
+    "id": "pcs"
+  },
+  "unit_条": {
+    "zh": "条",
+    "en": "pcs",
+    "vi": "cái",
+    "th": "ชิ้น",
+    "id": "pcs"
+  },
+  "unit_瓶": {
+    "zh": "瓶",
+    "en": "bottle",
+    "vi": "chai",
+    "th": "ขวด",
+    "id": "botol"
+  },
+  "unit_盒": {
+    "zh": "盒",
+    "en": "box",
+    "vi": "hộp",
+    "th": "กล่อง",
+    "id": "kotak"
+  },
+  "unit_码": {
+    "zh": "码",
+    "en": "yd",
+    "vi": "yd",
+    "th": "หลา",
+    "id": "yd"
+  },
+  "unit_箱": {
+    "zh": "箱",
+    "en": "carton",
+    "vi": "thùng",
+    "th": "ลัง",
+    "id": "karton"
+  },
+  "unit_米": {
+    "zh": "米",
+    "en": "m",
+    "vi": "m",
+    "th": "ม.",
+    "id": "m"
+  },
+  "unit_袋": {
+    "zh": "袋",
+    "en": "pack",
+    "vi": "túi",
+    "th": "ถุง",
+    "id": "pak"
+  },
+  "verdict_factory_cooperative": {
+    "zh": "✅ 值得合作 — {years} 年工厂 + 已认证。建议取样确认产能",
+    "en": "✅ Worth cooperating — {years}y factory + certified. Suggest sample to confirm capacity",
+    "vi": "✅ Đáng hợp tác — Nhà máy {years} năm + chứng nhận. Nên lấy mẫu xác nhận năng lực",
+    "th": "✅ น่าร่วมมือ — โรงงาน {years} ปี + รับรอง. แนะนำตัวอย่างยืนยันกำลังการผลิต",
+    "id": "✅ Layak kerja sama — Pabrik {years} thn + tersertifikasi. Sarankan sampel konfirmasi kapasitas"
+  },
+  "verdict_factory_insufficient": {
+    "zh": "⚠️ 数据不足 — 缺少工商信息。建议 WhatsApp 联系后再决定",
+    "en": "⚠️ Insufficient data — Missing business info. Suggest WhatsApp contact before deciding",
+    "vi": "⚠️ Thiếu dữ liệu — Thiếu thông tin kinh doanh. Nên liên hệ WhatsApp trước khi quyết định",
+    "th": "⚠️ ข้อมูลไม่เพียงพอ — ไม่มีข้อมูลธุรกิจ. แนะนำติดต่อ WhatsApp ก่อนตัดสินใจ",
+    "id": "⚠️ Data tidak cukup — Tidak ada info bisnis. Sarankan kontak WhatsApp sebelum memutuskan"
+  },
+  "verdict_factory_reliable": {
+    "zh": "✅ 可靠工厂 — 成立 {years} 年 + {cert} 认证。合作风险低",
+    "en": "✅ Reliable factory — {years}y established + {cert} audit. Low cooperation risk",
+    "vi": "✅ Nhà máy đáng tin — {years} năm hoạt động + {cert}. Rủi ro hợp tác thấp",
+    "th": "✅ โรงงานน่าเชื่อถือ — ก่อตั้ง {years} ปี + {cert}. ความเสี่ยงความร่วมมือต่ำ",
+    "id": "✅ Pabrik terpercaya — {years} thn berdiri + {cert}. Risiko kerja sama rendah"
+  },
+  "verdict_factory_self_claimed": {
+    "zh": "⚠️ 自认工厂 — 无第三方验厂审计。通过样品验证，不要轻信宣称",
+    "en": "⚠️ Self-claimed factory — No third-party audit. Verify via sample, don't trust claims alone",
+    "vi": "⚠️ Tự xưng nhà máy — Không có kiểm toán bên thứ ba. Xác minh qua mẫu, đừng tin lời nói",
+    "th": "⚠️ อ้างตัวเป็นโรงงาน — ไม่มีการตรวจสอบจากบุคคลที่สาม. ตรวจสอบผ่านตัวอย่าง อย่าเชื่อแค่คำพูด",
+    "id": "⚠️ Klaim pabrik sendiri — Tanpa audit pihak ketiga. Verifikasi via sampel, jangan percaya klaim saja"
+  },
+  "verdict_factory_trader": {
+    "zh": "⚠️ 非工厂 — 贸易商从第三方拿货。价格可能有差异；先取样对比",
+    "en": "⚠️ Not a factory — Trader sources from third parties. Price may vary; compare via sample first",
+    "vi": "⚠️ Không phải nhà máy — Thương nhân lấy hàng từ bên thứ ba. Giá có thể chênh; so sánh qua mẫu",
+    "th": "⚠️ ไม่ใช่โรงงาน — ผู้ค้ารับสินค้าจากบุคคลที่สาม. ราคาอาจต่าง; เปรียบเทียบผ่านตัวอย่างก่อน",
+    "id": "⚠️ Bukan pabrik — Trader mengambil dari pihak ketiga. Harga bisa berbeda; bandingkan via sampel dulu"
+  },
+  "verdict_product_consider": {
+    "zh": "✅ 值得考虑 — ¥{price}/{unit}，起订 {moq}，已认证。建议取样确认",
+    "en": "✅ Worth considering — ¥{price}/{unit}, MOQ {moq}, certified. Suggest sample confirmation",
+    "vi": "✅ Đáng cân nhắc — ¥{price}/{unit}, MOQ {moq}, đã chứng nhận. Nên xác nhận mẫu",
+    "th": "✅ น่าพิจารณา — ¥{price}/{unit}, MOQ {moq}, รับรองแล้ว. แนะนำยืนยันตัวอย่าง",
+    "id": "✅ Layak dipertimbangkan — ¥{price}/{unit}, MOQ {moq}, tersertifikasi. Sarankan konfirmasi sampel"
+  },
+  "verdict_product_insufficient": {
+    "zh": "⚠️ 数据不足 — 缺少销量和认证数据。¥{deposit} 取 2 个样品是最安全的做法",
+    "en": "⚠️ Insufficient data — Missing sales & certification data. ¥{deposit} to sample 2 pcs is the safest approach",
+    "vi": "⚠️ Thiếu dữ liệu — Thiếu dữ liệu bán hàng & chứng nhận. ¥{deposit} lấy 2 mẫu là an toàn nhất",
+    "th": "⚠️ ข้อมูลไม่เพียงพอ — ไม่มีข้อมูลการขายและการรับรอง. ¥{deposit} สั่งตัวอย่าง 2 ชิ้นปลอดภัยที่สุด",
+    "id": "⚠️ Data tidak cukup — Tidak ada data penjualan & sertifikasi. ¥{deposit} sampel 2 pcs paling aman"
+  },
+  "verdict_product_no_cert": {
+    "zh": "⚠️ 无认证 — {sold}+ 已售但无验厂记录。¥{deposit} 取样验证质量",
+    "en": "⚠️ No certification — {sold}+ sold but no factory audit. ¥{deposit} to sample and verify quality",
+    "vi": "⚠️ Thiếu chứng nhận — {sold}+ đã bán nhưng không có kiểm toán. ¥{deposit} lấy mẫu xác minh",
+    "th": "⚠️ ไม่มีการรับรอง — ขาย {sold}+ แต่ไม่มีการตรวจโรงงาน. ¥{deposit} สั่งตัวอย่างตรวจสอบคุณภาพ",
+    "id": "⚠️ Tanpa sertifikasi — {sold}+ terjual tanpa audit pabrik. ¥{deposit} sampel untuk verifikasi"
+  },
+  "verdict_product_recommend": {
+    "zh": "✅ 推荐取样 — ¥{price}/{unit}，起订 {moq}，月销 {sold}+，试错成本极低",
+    "en": "✅ Recommend sampling — ¥{price}/{unit}, MOQ {moq}, {sold}+ sold monthly, very low trial cost",
+    "vi": "✅ Nên lấy mẫu — ¥{price}/{unit}, MOQ {moq}, {sold}+ bán/tháng, chi phí thử rất thấp",
+    "th": "✅ แนะนำสั่งตัวอย่าง — ¥{price}/{unit}, MOQ {moq}, ขาย {sold}+/เดือน, ต้นทุนทดลองต่ำมาก",
+    "id": "✅ Rekomendasi sampel — ¥{price}/{unit}, MOQ {moq}, {sold}+ terjual/bulan, biaya uji coba rendah"
+  },
+  "verdict_sample_two_payment": {
+    "zh": "① 支付定金 → ② 验货拍照 → ③ 支付尾款 → ④ 发货",
+    "en": "① Pay deposit → ② Inspection photos → ③ Pay balance → ④ Ship",
+    "vi": "① Thanh toán cọc → ② Ảnh kiểm tra → ③ Thanh toán phần còn lại → ④ Giao hàng",
+    "th": "① จ่ายมัดจำ → ② รูปตรวจสอบ → ③ จ่ายส่วนที่เหลือ → ④ จัดส่ง",
+    "id": "① Bayar deposit → ② Foto inspeksi → ③ Bayar sisa → ④ Kirim"
+  },
+  "不适用": {
+    "zh": "不适用",
+    "en": "N/A",
+    "vi": "Không Áp Dụng",
+    "th": "ไม่เกี่ยวข้อง",
+    "id": "Tidak Berlaku"
+  },
+  "严选晚发必赔": {
+    "zh": "严选晚发必赔",
+    "en": "On-Time Guaranteed",
+    "vi": "Đảm Bảo Giao Đúng Hạn",
+    "th": "รับประกันจัดส่งตรงเวลา",
+    "id": "Jaminan Pengiriman Tepat Waktu"
+  },
+  "买家保障": {
+    "zh": "买家保障",
+    "en": "Buyer Protection",
+    "vi": "Bảo Vệ Người Mua",
+    "th": "คุ้มครองผู้ซื้อ",
+    "id": "Perlindungan Pembeli"
+  },
+  "产业带": {
+    "zh": "产业带",
+    "en": "Industrial Cluster",
+    "vi": "Cụm Công Nghiệp",
+    "th": "กลุ่มอุตสาหกรรม",
+    "id": "Klaster Industri"
+  },
+  "免费拿样": {
+    "zh": "免费拿样",
+    "en": "Free Sample",
+    "vi": "Mẫu Miễn Phí",
+    "th": "ตัวอย่างฟรี",
+    "id": "Sampel Gratis"
+  },
+  "包邮": {
+    "zh": "包邮",
+    "en": "Free Shipping",
+    "vi": "Miễn Phí Vận Chuyển",
+    "th": "จัดส่งฟรี",
+    "id": "Gratis Ongkir"
+  },
+  "品类排名": {
+    "zh": "品类排名",
+    "en": "Category Rank",
+    "vi": "Xếp Hạng Ngành Hàng",
+    "th": "อันดับหมวดหมู่",
+    "id": "Peringkat Kategori"
+  },
+  "品质不符包赔": {
+    "zh": "品质不符包赔",
+    "en": "Quality Guaranteed",
+    "vi": "Đảm Bảo Chất Lượng",
+    "th": "รับประกันคุณภาพ",
+    "id": "Jaminan Kualitas"
+  },
+  "回头率": {
+    "zh": "回头率",
+    "en": "Repurchase Rate",
+    "vi": "Tỷ Lệ Mua Lại",
+    "th": "อัตราการซื้อซ้ำ",
+    "id": "Tingkat Pembelian Ulang"
+  },
+  "实力商家": {
+    "zh": "实力商家",
+    "en": "Verified Seller",
+    "vi": "Người Bán Được Xác Minh",
+    "th": "ผู้ขายที่ผ่านการรับรอง",
+    "id": "Penjual Terverifikasi"
+  },
+  "实力工厂": {
+    "zh": "实力工厂",
+    "en": "Verified Factory",
+    "vi": "Nhà Máy Đã Kiểm Định",
+    "th": "โรงงานที่ผ่านการรับรอง",
+    "id": "Pabrik Terverifikasi"
+  },
+  "实地认证": {
     "zh": "实地认证",
-    "en": "onsite verified",
-    "vi": "xác minh tại chỗ",
-    "th": "ตรวจสอบหน้างาน",
-    "id": "verifikasi di tempat"
+    "en": "On-site Certification",
+    "vi": "Chứng Nhận Tại Chỗ",
+    "th": "การรับรองหน้างาน",
+    "id": "Sertifikasi Di Tempat"
   },
-
-  "supp_fb_limited": {
-    "zh": "数据有限",
-    "en": "limited data",
-    "vi": "dữ liệu hạn chế",
-    "th": "ข้อมูลจำกัด",
-    "id": "data terbatas"
+  "工厂直供": {
+    "zh": "工厂直供",
+    "en": "Factory Direct",
+    "vi": "Nhà Máy Cung Cấp Trực Tiếp",
+    "th": "โรงงานจำหน่ายตรง",
+    "id": "Pasokan Langsung Pabrik"
   },
-  "supp_fb_insufficient": {
-    "zh": "资质不足",
-    "en": "insufficient credentials",
-    "vi": "không đủ chứng nhận",
-    "th": "คุณสมบัติไม่เพียงพอ",
-    "id": "kredensial tidak cukup"
+  "批发价": {
+    "zh": "批发价",
+    "en": "Wholesale Price",
+    "vi": "Giá Sỉ",
+    "th": "ราคาส่ง",
+    "id": "Harga Grosir"
+  },
+  "支持混批": {
+    "zh": "支持混批",
+    "en": "Mixed Batch OK",
+    "vi": "Hỗ Trợ Đơn Hàng Nhỏ",
+    "th": "รับออเดอร์คละ",
+    "id": "Mendukung Campuran"
+  },
+  "晚发必赔": {
+    "zh": "晚发必赔",
+    "en": "Late Delivery Compensation",
+    "vi": "Bồi Thường Giao Hàng Trễ",
+    "th": "ชดเชยหากจัดส่งล่าช้า",
+    "id": "Kompensasi Keterlambatan"
+  },
+  "普通商家": {
+    "zh": "普通商家",
+    "en": "Standard Seller",
+    "vi": "Nhà Bán Hàng Thường",
+    "th": "ผู้ขายทั่วไป",
+    "id": "Penjual Biasa"
+  },
+  "暂无排名": {
+    "zh": "暂无排名",
+    "en": "No Ranking",
+    "vi": "Chưa Có Xếp Hạng",
+    "th": "ยังไม่มีอันดับ",
+    "id": "Belum Ada Peringkat"
+  },
+  "暂无认证": {
+    "zh": "暂无认证",
+    "en": "No Certification",
+    "vi": "Chưa Có Chứng Nhận",
+    "th": "ยังไม่มีการรับรอง",
+    "id": "Belum Ada Sertifikasi"
+  },
+  "深度验厂": {
+    "zh": "深度验厂",
+    "en": "Deep Factory Audit",
+    "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",
+    "th": "การตรวจสอบโรงงานเชิงลึก",
+    "id": "Audit Pabrik Mendalam"
+  },
+  "源头产地": {
+    "zh": "源头产地",
+    "en": "Source Region",
+    "vi": "Vùng Sản Xuất Gốc",
+    "th": "แหล่งผลิตต้นทาง",
+    "id": "Wilayah Produksi Sumber"
+  },
+  "源头工厂": {
+    "zh": "源头工厂",
+    "en": "Factory",
+    "vi": "Nhà Máy",
+    "th": "โรงงาน",
+    "id": "Pabrik"
+  },
+  "源头旗舰": {
+    "zh": "源头旗舰",
+    "en": "Flagship Factory",
+    "vi": "Nhà Máy Flagship",
+    "th": "โรงงานเรือธง",
+    "id": "Pabrik Unggulan"
+  },
+  "现货": {
+    "zh": "现货",
+    "en": "In Stock / Ready Stock",
+    "vi": "Hàng Có Sẵn",
+    "th": "สินค้าพร้อมส่ง",
+    "id": "Stok Tersedia"
+  },
+  "生产厂家": {
+    "zh": "生产厂家",
+    "en": "Manufacturer",
+    "vi": "Nhà Sản Xuất",
+    "th": "ผู้ผลิต",
+    "id": "Produsen"
+  },
+  "第三方验厂": {
+    "zh": "第三方验厂",
+    "en": "Third-Party Factory Audit",
+    "vi": "Kiểm Toán Bên Thứ Ba",
+    "th": "การตรวจสอบโดยบุคคลที่สาม",
+    "id": "Audit Pihak Ketiga"
+  },
+  "累计销量": {
+    "zh": "累计销量",
+    "en": "Total Sales",
+    "vi": "Tổng Doanh Số",
+    "th": "ยอดขายรวม",
+    "id": "Total Penjualan"
+  },
+  "贸易商": {
+    "zh": "贸易商",
+    "en": "Trader",
+    "vi": "Công Ty",
+    "th": "บริษัท",
+    "id": "Perusahaan"
+  },
+  "超级工厂": {
+    "zh": "超级工厂",
+    "en": "Super Factory",
+    "vi": "Siêu Nhà Máy",
+    "th": "ซูเปอร์แฟคทอรี่",
+    "id": "Pabrik Super"
+  },
+  "跨境专供": {
+    "zh": "跨境专供",
+    "en": "Cross-Border Supply",
+    "vi": "Cung Cấp Xuyên Biên Giới",
+    "th": "ซัพพลายข้ามพรมแดน",
+    "id": "Pasokan Lintas Batas"
+  },
+  "通品工厂": {
+    "zh": "通品工厂",
+    "en": "Standard Factory",
+    "vi": "Nhà Máy Tiêu Chuẩn",
+    "th": "โรงงานมาตรฐาน",
+    "id": "Pabrik Standar"
+  },
+  "集散地": {
+    "zh": "集散地",
+    "en": "Distribution Hub",
+    "vi": "Trung Tâm Phân Phối",
+    "th": "ศูนย์กระจายสินค้า",
+    "id": "Pusat Distribusi"
+  },
+  "非生产厂家": {
+    "zh": "非生产厂家",
+    "en": "Non-Manufacturer",
+    "vi": "Không Phải Nhà Sản Xuất",
+    "th": "ไม่ใช่ผู้ผลิต",
+    "id": "Bukan Produsen"
   }
 }

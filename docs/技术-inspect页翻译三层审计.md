@@ -162,6 +162,7 @@
 | 组头摘要 | `prod_summary_high` ~ `_none`（4 条） | {count} 项达标… | `pe.summary` |
 | 人话判词 | `prod_verdict_high` ~ `_none`（5 条） | 销量高、口碑好… | `pe.verdict` |
 | 库存档位 | `stock_level_ok` / `_low` / `_unknown` | 库存充足 ✅ | `pe.stockLevel.text` |
+| 空数据占位 | `no_data` | 暂无数据 / No data | `pe.dimensions[*].data` / `se.dimensions[*].data`（data 为空时） |
 
 ### Card ② 供应商验证（44 条）
 
@@ -232,18 +233,15 @@
 
 ## 四、🤖 Qwen 翻译
 
-### 白名单（translator.py 翻译的 8 个字段）
+### 白名单（translator.py 翻译的 3 个字段）2026-08-05 精简
 
 | # | 字段 | inspect 页使用 | 说明 |
 |---|------|:---:|------|
 | 1 | `title` | ✅ | Card ① 商品标题 `.p01-title` |
-| 2 | `supplierName` | ✅ | Card ② 公司名称行 |
+| 2 | `supplierName` | ✅ | Card ② 公司名称行 + `factory.supplierName` |
 | 3 | `rankText` | ✅ | Card ① Meta 行 / ② 排名 extra |
-| 4 | `shippingLocation` | — | display_builder 内部查产业带 glossary，不直接渲染 |
-| 5 | `factoryFlags` | — | evaluator 消费后产出维度 text，原始值不渲染 |
-| 6 | `certType` | — | evaluator 消费后产出维度 text |
-| 7 | `specs` | — | inspect.html 无规格参数区 |
-| 8 | `skus` | — | inspect.html 无 SKU 区 |
+
+> 2026-08-05 砍掉 5 字段：`shippingLocation` `factoryFlags` `certType` `specs` `skus` — inspect 页不渲染，白消耗 Qwen token。
 
 ### 翻译链路
 
@@ -277,22 +275,3 @@ Qwen 失败 → 保留中文原文 → 前端显示中文（降级）
 涉及文件：`term_glossary.json`（+7）、`display_builder.py`（+4 字段）、`inspect.js`（8 处 t() → display JSON）、`en/vi/th/id.json`（各 -8 key）
 
 ---
-
-## 六、已知问题
-
-| # | 问题 | 影响 | 优先级 |
-|---|------|------|:---:|
-| 1 | `inspect.pieces` / `inspect.scoreLabel` 在 4 语言 JSON 中无 DOM 引用 | 死 key，浪费翻译维护 | 🔷 低 |
-| 2 | `report.saveBtn/savingBtn/savedBtn` 的 t() 调用在 inspect.js 中残留 | DOM 不存在，调用返回空不影响 | 🔷 低 |
-| 3 | supplier_verdict_t3/t6/t8 的 params（desc/reason/cert）仍为中文 | 判词模板已翻译但嵌入参数未翻译 | 🔶 中 |
-
----
-
-## 七、文件关联
-
-| 文件 | 何时读 |
-|------|--------|
-| 本文 | 改 inspect 页翻译归属前 |
-| `docs/技术-翻译标准规则.md` | 改任何展示文案前（决策树 + 铁律） |
-| `docs/技术-报告页翻译归属清单.md` | 改报告页字段时（逐字段对照） |
-| `docs/技术-数据管线契约与存储约束.md` | 改 mapper/display/前端渲染前 |

@@ -18,6 +18,14 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# 全局 Apify 调用计数器（进程级，重启清零）
+_apify_call_count: int = 0
+
+
+def get_apify_call_count() -> int:
+    """返回 Apify 累计调用次数。"""
+    return _apify_call_count
+
 
 class ApifyAdapter:
     """Apify 1688 Wholesale Scraper 适配器。
@@ -63,7 +71,9 @@ class ApifyAdapter:
             t_token = time.time()
 
             try:
-                logger.info(f"[Apify] 开始调用 offer_id={offer_id} token={i+1}/{len(tokens)} timeout={Config.APIFY_WAIT_SECONDS}s")
+                global _apify_call_count
+                _apify_call_count += 1
+                logger.info(f"[Apify] 调用 #{_apify_call_count} offer_id={offer_id} token={i+1}/{len(tokens)} timeout={Config.APIFY_WAIT_SECONDS}s")
                 run = await client.actor(Config.APIFY_ACTOR_ID).call(
                     run_input={"offerIds": [offer_id]},
                     wait_duration=timedelta(seconds=Config.APIFY_WAIT_SECONDS),
@@ -102,7 +112,7 @@ class ApifyAdapter:
                 has_price = bool(raw.get("priceInfo"))
                 has_sku = bool(raw.get("skuProps"))
                 logger.info(
-                    f"[Apify] ✓ 成功 offer_id={offer_id} token={i+1}/{len(tokens)} "
+                    f"[Apify] ✓ 成功 #{_apify_call_count} offer_id={offer_id} token={i+1}/{len(tokens)} "
                     f"耗时 total={t_dataset - t_token:.1f}s run={t_run - t_token:.1f}s dataset={t_dataset - t_run:.1f}s "
                     f"响应keys={key_count} 有价格={has_price} 有SKU={has_sku}"
                 )

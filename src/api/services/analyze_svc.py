@@ -14,7 +14,7 @@ import uuid
 from typing import Any
 
 from config import Config
-from adapters.apify_adapter import apify_adapter
+from adapters.apify_adapter import apify_adapter, get_apify_call_count
 from domain import cache as analysis_cache
 from domain.display_builder import build_display
 from domain.product_mapper import map_raw
@@ -243,14 +243,24 @@ class AnalyzeService:
     async def _run(self, task_id: str, offer_id: str, raw_url: str, lang: str = "", quota_key: str = "") -> dict[str, Any]:
         """完整分析流水线（在后台 asyncio.Task 中执行）。"""
         t0 = time.time()
+        apify_count_before = get_apify_call_count()
         try:
             _tasks[task_id]["status"] = "running"
 
             # ---- 1. 缓存检查（风险 #1） ----
             cached = analysis_cache.get(offer_id)
             if cached:
-                logger.info(f"Cache hit: offer_id={offer_id}")
+                t1 = time.time()
+                logger.info(f"[流水线] offer_id={offer_id} 缓存命中 | 跳过Apify | 耗时={t1 - t0:.2f}s")
                 result = await build_result_with_display(cached, offer_id, lang)
+                t2 = time.time()
+                display = result.get("display", {})
+                display_size = len(str(display))
+                logger.info(
+                    f"[流水线] ✓ 完成(缓存) offer_id={offer_id} task_id={task_id} "
+                    f"总耗时={t2 - t0:.2f}s displaySize={display_size}B "
+                    f"Apify调用=0(缓存) Qwen={'✓' if display.get('_translatedLang') else '⊘'}"
+                )
                 _tasks[task_id] = {"status": "done", "result": result, "created_at": time.time()}
                 return result
 
@@ -324,6 +334,9 @@ class AnalyzeService:
                 raise ExternalServiceError(service_name="Apify", details={"reason": "empty_result"})
 
             # ---- 3. 映射 + 判词 ----
+            t_apify = time.time()
+            logger.info(f"[流水线] offer_id={offer_id} Apify完成 耗时={t_apify - t0:.1f}s | 开始映射+判词")
+
             mapped = map_raw(raw, raw_url, offer_id)
 
             # 判词（风险 #4 #5 #6）
@@ -333,6 +346,11 @@ class AnalyzeService:
             mapped["verdict_sample"] = verdicts["sample"]
 
             t_mapped = time.time()
+            logger.info(
+                f"[流水线] offer_id={offer_id} 映射+判词完成 耗时={t_mapped - t_apify:.1f}s "
+                f"判词product={verdicts['product'].get('key', '?')} "
+                f"factory={verdicts['factory'].get('key', '?')}"
+            )
             logger.info(f"[TRACE-MAPPED] offer_id={offer_id} lang={lang} mapped={json.dumps(mapped, ensure_ascii=False, default=str)}")
 
             # ---- 4. 写缓存（风险 #1 #14 L2） ----
@@ -345,13 +363,19 @@ class AnalyzeService:
             t_end = time.time()
             _tasks[task_id] = {"status": "done", "result": result, "created_at": t_end}
             qwen_called = bool(lang) and lang != "zh"
-            display_lang = result.get("display", {}).get("_translatedLang", "") if isinstance(result.get("display"), dict) else ""
+            display: dict[str, Any] = result.get("display", {}) or {}
+            display_lang: str = str(display.get("_translatedLang", ""))
             qwen_ok = bool(display_lang)
+            apify_count_after = get_apify_call_count()
+            apify_delta = apify_count_after - apify_count_before
+            display_size = len(str(display))
             logger.info(
-                f"[汇总] offer_id={offer_id} task_id={task_id} "
-                f"Apify✓ Qwen{'✓' if qwen_ok else ('⚠降级' if qwen_called else '⊘跳过')} "
-                f"displayLang={'zh→'+display_lang if display_lang else 'zh(原文)'} "
-                f"耗时 total={t_end - t0:.1f}s apify={t_mapped - t0:.1f}s mapper+translate={t_end - t_mapped:.1f}s"
+                f"[流水线] ✓ 完成 offer_id={offer_id} task_id={task_id} "
+                f"总耗时={t_end - t0:.1f}s "
+                f"Apify={t_mapped - t0:.1f}s(调用{apify_delta}次) "
+                f"判词+mapper={t_end - t_mapped:.1f}s "
+                f"Qwen={'✓' + display_lang if qwen_ok else ('⚠降级' if qwen_called else '⊘跳过')} "
+                f"displaySize={display_size}B"
             )
             return result
 

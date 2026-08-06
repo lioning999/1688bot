@@ -1,0 +1,370 @@
+{
+  "offerId": "723736665098",
+  "supplier": {
+    "memberId": "b2b-2215924081638634b9",
+    "flags": {
+      "isChtMember": false,
+      "isIndustrySeller": false,
+      "isEaseBuyDealer": true,
+      "isFactoryDealer": false,
+      "isSuperFactory": false,
+      "isTpFactory": false,
+      "isShiliFactory": false,
+      "isSiliCertifiedBrand": true,
+      "isFactory": false,
+      "isTp": true,
+      "isHyper": false,
+      "isBrandPlus": false,
+      "isProcessingTag": false,
+      "isSmt": true,
+      "isImall": false,
+      "isFullOnline": false,
+      "isTuoguan": false,
+      "isYuantouFlagship": false
+    },
+    "featureBadge": null,
+    "companyName": "台州市睿霆眼镜有限公司",
+    "loginId": "台州市睿霆眼镜有限公司",
+    "userId": "2215924081638",
+    "videos": [],
+    "foundedYear": 2023,
+    "sellerType": "shili",
+    "isOnline": true,
+    "fans": "1.3k",
+    "tpYear": 4,
+    "mainCategory": "服饰配件、饰品",
+    "address": "浙江临海市杜桥镇杜北村",
+    "coordinates": "121.5006,28.77402",
+    "rank": {
+      "text": "上榜防护眼镜热销榜TOP3",
+      "url": "https://mind.1688.com/default/default/dikz86681/index.html?wh_pid=3500056&__pageId__=3500056&__existtitle__=1&__immersive__=1&rankPage=MemberRank&leafCategoryId=124746032&leafCategoryName=防护眼镜&rankingType=热销榜&userId=2215924081638",
+      "type": null
+    },
+    "certification": {
+      "type": "深度认证·tuv",
+      "number": "编号:TT2603302615",
+      "reportUrl": "https://r.1688.com/auth/fcaReportWireless.htm?showReport=true&mid=b2b-2215924081638634b9"
+    },
+    "legalCompanyName": "台州市睿霆眼镜有限公司",
+    "originMerchant": null,
+    "shopUrl": "https://winport.m.1688.com/page/index.html?newRender=true&memberId=b2b-2215924081638634b9&upstreamSource=share&__existtitle__=1",
+    "imUrl": "https://wangwang.m.1688.com/chat?siteid=cnalichn&clientid=台州市睿霆眼镜有限公司",
+    "factoryTags": [],
+    "stats": {
+      "repeatBuyers": "500+",
+      "crossBorderBuyers": "400+",
+      "brandPartner": null,
+      "repeatRate": 0.675,
+      "positiveReviewRate": 0.996,
+      "responseRate": 0.804,
+      "factoryArea": null,
+      "employees": null,
+      "patents": null,
+      "mainDevices": null,
+      "scaleTier": null,
+      "certifications": null,
+      "ownBrand": null,
+      "rawCardDetail": [
+        {
+          "code": "byrRepeatCustomer",
+          "title": "回购老客",
+          "info": "500+",
+          "unit": "人"
+        },
+        {
+          "code": "kjByrNum90D",
+          "title": "跨境热采",
+          "info": "400+",
+          "unit": "人"
+        },
+        {
+          "code": "companyYearStarted",
+          "title": "成立时间",
+          "info": "2023",
+          "unit": "年"
+        },
+        {
+          "code": "byrRepeatRate",
+          "title": "回头率",
+          "info": "67.5",
+          "unit": "%"
+        },
+        {
+          "code": "goodRate",
+          "title": "好评率",
+          "info": "99.6",
+          "unit": "%"
+        },
+        {
+          "code": "wwResponseScore",
+          "title": "响应率",
+          "info": "80.4",
+          "unit": "%"
+        }
+      ],
+      "totalOffers": 849
+    }
+  },
+  "sourceKeyword": "",
+  "specs": [
+    {
+      "name": "是否偏光",
+      "value": "否"
+    },
+    {
+      "name": "抗UV等级",
+      "value": "UV400"
+    },
+    {
+      "name": "镜片材质",
+      "value": "树脂"
+    },
+    {
+      "name": "品牌",
+      "value": "轩昂赛拉"
+    },
+    {
+      "name": "眼镜款式",
+      "value": "椭圆框"
+    },
+    {
+      "name": "镜框材质",
+      "value": "金属"
+    },
+    {
+      "name": "镜架材质",
+      "value": "金属"
+    },
+    {
+      "name": "是否支持近视镜",
+      "value": "否"
+    },
+    {
+      "name": "货号",
+      "value": "3027"
+    },
+    {
+      "name": "镜片颜色",
+      "value": "黑色"
+    },
+    {
+      "name": "镜架颜色",
+      "value": "黑色"
+    },
+    {
+      "name": "透射比分类",
+      "value": "2类/遮阳镜"
+    },
+    {
+      "name": "眼镜结构",
+      "value": "全框"
+    },
+    {
+      "name": "适用场景",
+      "value": "防晒,垂钓,出游,骑行,驾驶,舞台演出,派对聚会"
+    },
+    {
+      "name": "流行元素",
+      "value": "太阳"
+    },
+    {
+      "name": "上市年份/季节",
+      "value": "2023年春季"
+    },
+    {
+      "name": "是否跨境出口专供货源",
+      "value": "是"
+    },
+    {
+      "name": "颜色",
+      "value": "黑框,枪框"
+    },
+    {
+      "name": "尺码",
+      "value": "普通 黑灰片,偏光 黑灰片,变色偏光,004盒子"
+    },
+    {
+      "name": "产地",
+      "value": "台州"
+    },
+    {
+      "name": "风格",
+      "value": "百搭,优雅,休闲风,运动风,时尚OL,简约,欧美,轻奢风,高级感"
+    },
+    {
+      "name": "风格分类",
+      "value": "时尚通勤"
+    },
+    {
+      "name": "主要销售地区",
+      "value": "非洲,欧洲,南美,东南亚,北美,东北亚,中东"
+    },
+    {
+      "name": "流行元素分类",
+      "value": "自然"
+    }
+  ],
+  "images": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN019mnXCT1NyFba3mSQk_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01rr4xUS1NyFbUeFhQy_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Pylahk1NyFbUeGuIj_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01mSNCiz1NyFbUccJz1_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01mvjvLU1NyFbUcdGDL_!!2215924081638-0-cib.jpg"
+  ],
+  "videoUrl": "https://cloud.video.taobao.com/play/u/2215924081638/p/2/e/6/t/1/415071643447.mp4",
+  "dropship": {
+    "enabled": true,
+    "consignPrice": null,
+    "consignPriceTiers": [],
+    "channels": [],
+    "channelDetails": [],
+    "protections": [],
+    "downstreamPerformance": null,
+    "metrics": {
+      "orders30d": null,
+      "orders7d": null,
+      "pickupRate48h": null,
+      "pickupRate24h": null,
+      "distributorCount": null,
+      "downstreamStoreCount": null,
+      "publishDate": null
+    }
+  },
+  "shipping": {
+    "deliveryHours": 24,
+    "deliveryDays": 1,
+    "carrier": null,
+    "logisticsText": null,
+    "unitWeight": 0.035,
+    "location": "浙江台州",
+    "postFee": 3,
+    "isFreeShipping": false,
+    "freeShippingThreshold": null,
+    "protectionInfos": [
+      {
+        "name": "晚发必赔",
+        "code": "essxsfh",
+        "description": "若商家未按订单约定的时间发货，您可以在订单详情申请赔付"
+      }
+    ],
+    "templateRemark": null,
+    "locationCode": null
+  },
+  "categoryId": "1031922",
+  "topCategoryId": "54",
+  "categoryName": null,
+  "categoryPath": null,
+  "unit": "副",
+  "saledCount": 8950,
+  "saledCountStr": "8900+",
+  "winportUrl": "https://winport.1688.com/page/index.html?memberId=b2b-2215924081638634b9&_tabId_=index&upstreamSource=od&offerId=723736665098",
+  "descriptionUrl": "https://air.1688.com/pages/od/app-desc/d7p56fw2w/index.html?url=https://itemcdn.tmall.com/1688offer/icoss384160824886f9a96380570e7d&offerId=723736665098&sellerLoginId=台州市睿霆眼镜有限公司",
+  "isOutOfStock": false,
+  "isCrossBorderTrade": false,
+  "wantBuyCount": 169,
+  "recentSoldCount": 8950,
+  "soldDisplay": "已售8900+件",
+  "stock": 71080578,
+  "minOrderQuantity": 2,
+  "supportsMix": true,
+  "mixWholesale": {
+    "minAmount": 10,
+    "minVarieties": 3
+  },
+  "serviceLabels": [
+    "晚发必赔"
+  ],
+  "skuImages": [
+    {
+      "name": "黑框",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01Gb03Or1NyFbUcbBKG_!!2215924081638-0-cib.jpg"
+    },
+    {
+      "name": "枪框",
+      "imgUrl": "https://cbu01.alicdn.com/img/ibank/O1CN01AG2eye1NyFbbx5jmw_!!2215924081638-0-cib.jpg"
+    }
+  ],
+  "promotions": [],
+  "productFlags": {
+    "isSkuOffer": true,
+    "isPreSell": false,
+    "isConsignMarket": true,
+    "isFreeSample": true,
+    "isBuyerProtection": true,
+    "isWeChatSupply": true,
+    "isCrossBorder": true,
+    "isOnePiece": true,
+    "isWholesale": false,
+    "isToTikTok": true,
+    "isToKuaiShou": true,
+    "isSupportMix": true,
+    "hasRelationOffer": true,
+    "isChtSingleOffer": false,
+    "isDetailForbidden": false,
+    "supportsCustomization": false
+  },
+  "unitWeight": null,
+  "purchaseLimits": {
+    "personalLimit": null,
+    "promotionLimit": null
+  },
+  "supportsSampling": false,
+  "customization": {
+    "supported": false,
+    "title": null,
+    "shortTitle": null
+  },
+  "title": "新款男士太阳镜高清变色偏光眼镜框防紫外线驾驶钓鱼墨镜厂家批发",
+  "price": {
+    "min": 2,
+    "max": 2,
+    "currency": "CNY"
+  },
+  "detailUrl": "https://detail.1688.com/offer/723736665098.html",
+  "services": [
+    {
+      "name": "晚发必赔",
+      "code": "essxsfh",
+      "description": "若商家未按订单约定的时间发货，您可以在订单详情申请赔付",
+      "linkUrl": "https://air.1688.com/app/ctf-page/protection-air/claim-rule.html"
+    }
+  ],
+  "coupons": [
+    {
+      "couponId": null,
+      "type": "CARD",
+      "typeName": null,
+      "label": "3件混批",
+      "summary": "本店部分商品满10元或3件可混批采购",
+      "validFrom": null,
+      "validTo": null,
+      "linkUrl": null
+    }
+  ],
+  "descriptionImages": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01CMOgRd1NyFbUcb7AO_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01rlc9dI1NyFbbx5fhr_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01mRbz3S1NyFbbx751P_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01aBSsBo1NyFbZbye3P_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01zHaovd1NyFbLxEWc3_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01oZG5QK1NyFbZbzBIm_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Gb03Or1NyFbUcbBKG_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01UNvBP21NyFbXMfaxU_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01uMfVpW1NyFbZbyuh4_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01W2Qe581NyFbb8wbgI_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01Dcu0wl1NyFbWFNvja_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01D36HD81NyFbVvUGSi_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN017DRRGr1NyFbUeJBma_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01sI3nB41NyFbY2nWus_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01tHUh6B1NyFbUeJWaI_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01jpEzMP1NyFbWFNGCv_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01MKME2f1NyFbSZcvxQ_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01PrF6iT1NyFbUcewH8_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01iJVrM61NyFba3pc0v_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN0174ot0x1NyFbVvSzT5_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN014GZR4Z1NyFbWFQXwI_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01UVTbTO1NyFbLxH4fc_!!2215924081638-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01q0LeYu1NyFbXMiY35_!!2215924081638-0-cib.jpg"
+  ],
+  "descriptionText": null
+}
