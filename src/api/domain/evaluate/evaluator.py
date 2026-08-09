@@ -3,20 +3,20 @@
 零外部依赖，零 IO，零随机。同一输入永远同一输出。
 
 外部代码只 import 此文件：
-  from domain.evaluator import evaluate_product, evaluate_supplier, evaluate_summary
+  from domain.evaluate import evaluate_product, evaluate_supplier, evaluate_summary
 
 内部实现拆分：
-  _evaluator_base.py    — 共享工具 + 阈值常量
-  _evaluator_product.py — 产品 6 维 → 致命检查 → 12 规则档位匹配 → 判词
-  _evaluator_supplier.py — 供应商 3 维 → 黑箱检查 → 6 规则信号计数 → 判词
+  _base.py      — 共享工具 + 阈值常量
+  _product.py   — 产品 6 维 → 致命检查 → 12 规则档位匹配 → 判词
+  _supplier.py  — 供应商 3 维 → 黑箱检查 → 6 规则信号计数 → 判词
 
 依据：docs/技术-评分标准与标签体系.md
 """
 from typing import Any
 
-from domain._evaluator_base import _verdict
-from domain._evaluator_product import evaluate_product
-from domain._evaluator_supplier import evaluate_supplier
+from domain.evaluate._base import verdict
+from domain.evaluate._product import evaluate_product
+from domain.evaluate._supplier import evaluate_supplier
 
 # 公开 API（被 display_builder.py 使用）
 __all__ = ["evaluate_product", "evaluate_supplier", "evaluate_summary"]
@@ -95,18 +95,18 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
 
     # headline（4 档）
     if summary_tier.startswith("go_"):
-        headline_kv = _verdict("summary_headline_go")
+        headline_kv = verdict("summary_headline_go")
     elif summary_tier.startswith("conditional_"):
-        headline_kv = _verdict("summary_headline_conditional")
+        headline_kv = verdict("summary_headline_conditional")
     elif summary_tier.startswith("no_"):
-        headline_kv = _verdict("summary_headline_no")
+        headline_kv = verdict("summary_headline_no")
     else:
-        headline_kv = _verdict("summary_headline_wait")
+        headline_kv = verdict("summary_headline_wait")
 
-    reason_kv = _verdict(f"summary_{summary_tier}")
+    reason_kv = verdict(f"summary_{summary_tier}")
 
     return {
-        "verdict": _verdict(f"summary_{summary_tier}"),
+        "verdict": verdict(f"summary_{summary_tier}"),
         "headline": headline_kv,
         "reason": reason_kv,
         "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 15)}",

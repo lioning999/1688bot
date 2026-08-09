@@ -19,7 +19,7 @@ class UserRepository:
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
-                    "SELECT id, google_id, email, name, avatar_url, created_at, last_login FROM users WHERE google_id=%s",
+                    "SELECT id, google_id, email, name, avatar_url, tier, quota, last_reset_date, created_at, last_login FROM users WHERE google_id=%s",
                     (google_id,),
                 )
                 return await cur.fetchone()
@@ -28,13 +28,15 @@ class UserRepository:
 
     async def create(self, google_id: str, email: str | None = None,
                      name: str | None = None, avatar_url: str | None = None) -> int:
-        """创建新用户，返回自增 ID。"""
+        """创建新用户，返回自增 ID。quota = Config.SIGNUP_BONUS_QUOTA（注册赠送）。"""
+        from config import Config
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
-                    "INSERT INTO users (google_id, email, name, avatar_url) VALUES (%s, %s, %s, %s)",
-                    (google_id, email, name, avatar_url),
+                    "INSERT INTO users (google_id, email, name, avatar_url, quota, last_reset_date) "
+                    "VALUES (%s, %s, %s, %s, %s, CURDATE())",
+                    (google_id, email, name, avatar_url, Config.SIGNUP_BONUS_QUOTA),
                 )
                 await conn.commit()
                 return cur.lastrowid  # type: ignore[return-value]
@@ -55,6 +57,96 @@ class UserRepository:
                     (name, avatar_url, google_id),
                 )
                 await conn.commit()
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    # ------------------------------------------------------------------
+    # 配额操作（V2：按 tier 每日补地板，懒重置）
+    # ------------------------------------------------------------------
+
+    async def get_quota_info(self, user_id: int) -> dict[str, Any] | None:
+        """读用户配额信息。返回 None 表示用户不存在。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT id, tier, quota, last_reset_date FROM users WHERE id=%s",
+                    (user_id,),
+                )
+                return await cur.fetchone()
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def decrement_quota(self, user_id: int) -> bool:
+        """原子扣减 1 次配额。返回 True = 扣减成功，False = quota 不足。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "UPDATE users SET quota = quota - 1 WHERE id=%s AND quota > 0",
+                    (user_id,),
+                )
+                await conn.commit()
+                return cur.rowcount > 0
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def increment_quota(self, user_id: int) -> None:
+        """退还 1 次配额（Apify 失败时调用）。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "UPDATE users SET quota = quota + 1 WHERE id=%s",
+                    (user_id,),
+                )
+                await conn.commit()
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def lazy_reset_daily_quota(self, user_id: int, tier: str, daily_floor: int) -> int:
+        """懒重置每日配额（补地板，不削顶）。返回重置后的 quota 值。
+
+        规则：
+          - last_reset_date IS NULL → 首次检查，只打日期戳，不动 quota（保留注册赠送）
+          - last_reset_date < 今天 AND quota < 地板 → 补到地板
+          - last_reset_date < 今天 AND quota >= 地板 → 只更新日期，不动 quota
+          - last_reset_date = 今天 → 不动
+        """
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                # Step 1: 首次检查（last_reset_date IS NULL）→ 只打日期戳
+                await cur.execute(
+                    "UPDATE users SET last_reset_date = CURDATE() "
+                    "WHERE id = %s AND last_reset_date IS NULL",
+                    (user_id,),
+                )
+                # Step 2: 跨天 + quota < 地板 → 补到地板
+                await cur.execute(
+                    "UPDATE users SET quota = %s, last_reset_date = CURDATE() "
+                    "WHERE id = %s AND last_reset_date < CURDATE() AND quota < %s",
+                    (daily_floor, user_id, daily_floor),
+                )
+                # Step 3: 跨天 + quota >= 地板 → 只更新日期
+                await cur.execute(
+                    "UPDATE users SET last_reset_date = CURDATE() "
+                    "WHERE id = %s AND last_reset_date < CURDATE() AND quota >= %s",
+                    (user_id, daily_floor),
+                )
+                await conn.commit()
+                await cur.execute("SELECT quota FROM users WHERE id=%s", (user_id,))
+                row = await cur.fetchone()
+                return row["quota"] if row else 0
         except Exception:
             await conn.rollback()
             raise

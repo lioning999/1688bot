@@ -7,17 +7,20 @@
   #14  L1 前端按钮防重（后端配合：同 offer_id 未完成任务返回已有 task_id）
 """
 
+import re
 import time
+from datetime import datetime, timezone, date
 from typing import Any
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, field_validator
 
 from config import Config
-from domain import cache as analysis_cache, rate_limiter
-from domain.quota import check_quota
-from domain.urls import extract_offer_id, is_valid_1688_url
-from services.analyze_svc import build_result_with_display, analyze_service
+from domain.infra import cache as analysis_cache, rate_limiter
+from domain.infra.urls import extract_offer_id, is_valid_1688_url
+from repositories.user_repo import UserRepository
+from services.analyze_svc import analyze_service
+from services.ai_verdict_svc import build_result_with_display
 from utils.exceptions import ValidationError, InsufficientQuotaError, ResourceNotFoundError, AppError
 from utils.logger import get_logger
 
@@ -84,29 +87,39 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
         )
         return {"code": 200, "msg_code": "OK", "data": {"task_id": task_id, "status": "pending"}, "message": "ok"}
 
-    # ---- 4. 每日配额（未登录按 IP 3 次/天，登录按 user_id 10 次/天） ----
+    # ---- 4. 用户配额检查（JWT 中间件已校验，user_id 一定存在）----
     user_id: int = getattr(request.state, "user_id", 0) or 0
-    if user_id:
-        daily_limit: int = Config.APIFY_DAILY_LOGIN_LIMIT
-        quota_key: str = f"user:{user_id}"
-    else:
-        daily_limit = Config.APIFY_DAILY_FREE_LIMIT
-        quota_key = request.client.host if request.client else "unknown"
+    if not user_id:
+        raise AppError(message="请先登录", msg_code="LOGIN_REQUIRED", http_status=401)
 
-    if not check_quota(quota_key, daily_limit):
-        tip: str = "登录后可获得 10 次/天" if not user_id else "请明天再试或联系 WhatsApp"
+    _user_repo = UserRepository()
+    user_quota = await _user_repo.get_quota_info(user_id)
+    if not user_quota:
+        raise AppError(message="用户不存在", msg_code="USER_NOT_FOUND", http_status=404)
+
+    quota = user_quota["quota"]
+    tier = str(user_quota.get("tier", "free"))
+    last_reset_date = user_quota.get("last_reset_date")
+
+    # 懒重置：补地板，不削顶
+    daily_floor = Config.DAILY_PAID_QUOTA if tier == "paid" else Config.DAILY_FREE_QUOTA
+    today = date.today()
+    if last_reset_date is None or last_reset_date < today:
+        quota = await _user_repo.lazy_reset_daily_quota(user_id, tier, daily_floor)
+
+    if quota <= 0:
         raise InsufficientQuotaError(
             resource_type="今日分析次数",
-            msg_code="DAILY_QUOTA_EXCEEDED",
-            details={"daily_limit": daily_limit, "tip": tip},
+            msg_code="QUOTA_EXHAUSTED",
+            details={"daily_limit": daily_floor},
         )
 
-    # ---- 5. 启动后台分析 ----
-    task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url, lang=body.lang, quota_key=quota_key)
+    # ---- 5. 启动后台分析（扣减在 start() 内，请求合并后执行）----
+    task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url, lang=body.lang)
     t_elapsed = time.time() - t_req_start
     logger.info(
         f"[请求] POST /api/analyze offer_id={offer_id} task_id={task_id} lang={body.lang or 'zh'} "
-        f"启动Apify | 耗时={t_elapsed:.2f}s | 配额消耗 user_id={user_id} quota_key={quota_key}"
+        f"启动Apify | 耗时={t_elapsed:.2f}s | user_id={user_id}"
     )
 
     return {
@@ -130,6 +143,8 @@ async def analyze_status(task_id: str) -> dict[str, Any]:
       - status=done → result 包含完整分析数据
       - status=failed → error 包含错误信息
     """
+    if not re.match(r'^[a-f0-9-]{8,36}$', task_id):
+        raise ValidationError(msg_code="TASK_NOT_FOUND", message="无效的任务ID")
     task = analyze_service.get_task(task_id)
     if task is None:
         raise ResourceNotFoundError(resource_type="任务", resource_id=task_id, msg_code="TASK_NOT_FOUND")
@@ -210,4 +225,45 @@ async def save_report(body: SaveReportRequest, request: Request) -> dict[str, An
         "msg_code": "SAVE_OK",
         "data": {"saved": True},
         "message": "已保存到我的分析",
+    }
+
+
+# ====================================================================
+# GET /api/quota — 查询当前用户剩余配额
+# ====================================================================
+
+@router.get("/api/quota")
+async def get_quota(request: Request) -> dict[str, Any]:
+    """返回当前用户的配额信息，供插件显示。
+
+    需 JWT 认证（/api/ 前缀自动拦截）。
+    """
+    user_id: int = getattr(request.state, "user_id", 0) or 0
+    if not user_id:
+        raise AppError(message="请先登录", msg_code="LOGIN_REQUIRED", http_status=401)
+
+    _user_repo = UserRepository()
+    user_quota = await _user_repo.get_quota_info(user_id)
+    if not user_quota:
+        raise AppError(message="用户不存在", msg_code="USER_NOT_FOUND", http_status=404)
+
+    quota = user_quota["quota"]
+    tier = str(user_quota.get("tier", "free"))
+    last_reset_date = user_quota.get("last_reset_date")
+
+    # 懒重置：补地板
+    daily_floor = Config.DAILY_PAID_QUOTA if tier == "paid" else Config.DAILY_FREE_QUOTA
+    today = date.today()
+    if last_reset_date is None or last_reset_date < today:
+        quota = await _user_repo.lazy_reset_daily_quota(user_id, tier, daily_floor)
+
+    return {
+        "code": 200,
+        "msg_code": "OK",
+        "data": {
+            "remaining": quota,
+            "daily_limit": daily_floor,
+            "tier": tier,
+        },
+        "message": "ok",
     }

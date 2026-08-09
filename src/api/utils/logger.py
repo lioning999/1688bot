@@ -2,12 +2,32 @@
 
 import logging
 import os
+import re
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 # 默认日志目录：src/api/logs/（从 logger.py 的 __file__ 推导）
 _DEFAULT_LOG_DIR = str(Path(__file__).resolve().parent.parent / "logs")
+
+# ---- 脱敏 ----
+
+def sanitize(text: str) -> str:
+    """脱敏日志中的敏感信息：email → 前3位***@***，token → 只记长度。"""
+    # email: abc@def.com → abc***@***
+    text = re.sub(r'([a-zA-Z0-9._%+-]{1,3})[a-zA-Z0-9._%+-]*@([a-zA-Z0-9.-]+)',
+                  r'\1***@***', text)
+    # token 出现在 URL query 或日志中
+    text = re.sub(r'token=([^&\s]+)',
+                  lambda m: f'token=***({len(m.group(1))}chars)', text)
+    return text
+
+
+class SanitizingFormatter(logging.Formatter):
+    """在格式化前对日志消息执行脱敏。"""
+    def format(self, record: logging.LogRecord) -> str:
+        record.msg = sanitize(str(record.msg))
+        return super().format(record)
 
 
 def get_logger(
@@ -37,7 +57,7 @@ def get_logger(
     logger.setLevel(level)
     logger.propagate = False
 
-    formatter = logging.Formatter(
+    formatter = SanitizingFormatter(
         "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )

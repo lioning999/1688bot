@@ -20,7 +20,10 @@ CREATE TABLE users (
   name        VARCHAR(200) COMMENT 'Google 账号显示名',
   avatar_url  VARCHAR(500) COMMENT 'Google 头像 URL',
   created_at  DATETIME DEFAULT NOW(),
-  last_login  DATETIME DEFAULT NOW() COMMENT '每次登录更新'
+  last_login  DATETIME DEFAULT NOW() COMMENT '每次登录更新',
+  tier        VARCHAR(20) NOT NULL DEFAULT 'free' COMMENT 'free|paid',
+  quota       INT NOT NULL DEFAULT 10 COMMENT '剩余分析次数',
+  last_reset_date DATE DEFAULT NULL COMMENT '上次配额补充日期，用于懒重置'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   COMMENT='Google 登录用户';
 

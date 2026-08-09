@@ -6,6 +6,7 @@ import httpx
 from fastapi import APIRouter, Query
 from fastapi.responses import Response
 
+from config import Config
 from utils.exceptions import AppError, ExternalServiceError
 from utils.logger import get_logger
 
@@ -40,9 +41,14 @@ async def proxy_image(url: str = Query(..., description="需要代理的图片�
                        msg_code="PROXY_HOST_DENIED", http_status=403)
 
     try:
-        async with httpx.AsyncClient(timeout=15, headers=PROXY_HEADERS, http2=False) as client:
+        async with httpx.AsyncClient(timeout=Config.PROXY_TIMEOUT, headers=PROXY_HEADERS, http2=False) as client:
             resp = await client.get(url, follow_redirects=True)
             resp.raise_for_status()
+            # 二次校验：防止 CDN 302 重定向到未授权域名导致 SSRF
+            final_host = urlparse(str(resp.url)).hostname or ""
+            if final_host != host and final_host not in ALLOWED_HOSTS and not any(final_host.endswith(s) for s in _ALLOWED_SUFFIXES):
+                logger.warning(f"图片代理重定向到未授权域名: {host} → {final_host}")
+                raise ExternalServiceError(service_name="图片代理", msg_code="PROXY_FETCH_FAILED")
     except httpx.HTTPError as e:
         logger.warning(f"图片代理失败: {url[:80]} — {e}")
         raise ExternalServiceError(service_name="图片代理", msg_code="PROXY_FETCH_FAILED")

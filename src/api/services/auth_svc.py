@@ -9,13 +9,22 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# 模块级单例 — routes 层不再直接 import adapter
+_google_auth = GoogleAuthAdapter()
+_user_repo = UserRepository()
+
 
 class AuthService:
-    """认证业务编排。依赖注入 adapter + repository。"""
+    """认证业务编排。"""
 
-    def __init__(self, google_auth: GoogleAuthAdapter, user_repo: UserRepository):
-        self.google_auth = google_auth
-        self.user_repo = user_repo
+    def __init__(self, google_auth: GoogleAuthAdapter | None = None,
+                 user_repo: UserRepository | None = None):
+        self.google_auth = google_auth or _google_auth
+        self.user_repo = user_repo or _user_repo
+
+    def get_auth_url(self, state: str = "") -> str:
+        """获取 Google OAuth 授权 URL（委托 adapter）。"""
+        return self.google_auth.get_auth_url(state=state)
 
     async def login_with_google(self, code: str) -> dict[str, Any]:
         """Google OAuth 登录/注册（自动判断）。

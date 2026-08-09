@@ -4,15 +4,17 @@
   #3  90s 超时 → wait_duration=timedelta(seconds=Config.APIFY_WAIT_SECONDS)
 """
 
+import json
+import os
 import time
+from datetime import datetime, timezone, timedelta
 from typing import Any
-from datetime import timedelta
 
 from apify_client import ApifyClientAsync
 from apify_client.errors import ApifyApiError
 
 from config import Config
-from domain.urls import extract_offer_id
+from domain.infra.urls import extract_offer_id
 from utils.exceptions import ExternalServiceError
 from utils.logger import get_logger
 
@@ -21,9 +23,48 @@ logger = get_logger(__name__)
 # 全局 Apify 调用计数器（进程级，重启清零）
 _apify_call_count: int = 0
 
+# ---- 用量账本（独立文件，持久化） ----
+_USAGE_LOG_PATH: str = os.path.join(os.path.dirname(__file__), "..", "db", "apify_usage.jsonl")
+
+
+def _write_usage_log(entry: dict[str, Any]) -> None:
+    """追加一行 JSON 到 apify_usage.jsonl。"""
+    try:
+        with open(_USAGE_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception:
+        pass  # 日志写入失败不影响主流程
+
+
+def get_usage_stats() -> dict[str, Any]:
+    """读取用量账本，返回统计摘要：今日调用次数、总计调用次数、每个 token 今日用量。"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    total = 0
+    today_count = 0
+    token_today: dict[str, int] = {}
+    try:
+        with open(_USAGE_LOG_PATH, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                total += 1
+                ts = entry.get("ts", "")
+                if ts.startswith(today):
+                    today_count += 1
+                    token_idx = str(entry.get("token_idx", "?"))
+                    token_today[token_idx] = token_today.get(token_idx, 0) + 1
+    except FileNotFoundError:
+        pass
+    return {"total": total, "today": today_count, "token_today": token_today, "date": today}
+
 
 def get_apify_call_count() -> int:
-    """返回 Apify 累计调用次数。"""
+    """返回 Apify 累计调用次数（进程级，重启清零）。"""
     return _apify_call_count
 
 
@@ -89,6 +130,15 @@ class ApifyAdapter:
                 status_msg = (getattr(run, "status_message", "") or "").lower()
                 if "free runs" in status_msg or "all 25" in status_msg:
                     logger.warning(f"[Apify] token {i+1}/{len(tokens)} 配额耗尽 (run status): {status_msg[:100]}")
+                    _write_usage_log({
+                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "offer_id": offer_id,
+                        "call_no": _apify_call_count,
+                        "token_idx": i + 1,
+                        "token_total": len(tokens),
+                        "result": "quota_exhausted",
+                        "elapsed_s": round(t_run - t_token, 1),
+                    })
                     quota_exhausted = True
                     continue
 
@@ -103,6 +153,15 @@ class ApifyAdapter:
                 # 检测 item 级别的配额耗尽标记
                 if len(items) == 1 and items[0].get("limit_reached"):
                     logger.warning(f"[Apify] token {i+1}/{len(tokens)} 配额耗尽 (item flag)，切换下一个")
+                    _write_usage_log({
+                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "offer_id": offer_id,
+                        "call_no": _apify_call_count,
+                        "token_idx": i + 1,
+                        "token_total": len(tokens),
+                        "result": "quota_exhausted",
+                        "elapsed_s": round(t_dataset - t_token, 1),
+                    })
                     quota_exhausted = True
                     continue
 
@@ -116,6 +175,16 @@ class ApifyAdapter:
                     f"耗时 total={t_dataset - t_token:.1f}s run={t_run - t_token:.1f}s dataset={t_dataset - t_run:.1f}s "
                     f"响应keys={key_count} 有价格={has_price} 有SKU={has_sku}"
                 )
+                _write_usage_log({
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "offer_id": offer_id,
+                    "call_no": _apify_call_count,
+                    "token_idx": i + 1,
+                    "token_total": len(tokens),
+                    "result": "success",
+                    "elapsed_s": round(t_dataset - t_token, 1),
+                    "keys": key_count,
+                })
                 return raw
 
             except ApifyApiError as e:
@@ -124,6 +193,16 @@ class ApifyAdapter:
                     f"[Apify] ✗ API异常 token={i+1} offer_id={offer_id} "
                     f"耗时={t_fail - t_token:.1f}s status={getattr(e, 'status_code', '?')} error={e}"
                 )
+                _write_usage_log({
+                    "ts": datetime.now(timezone.utc).isoformat(),
+                    "offer_id": offer_id,
+                    "call_no": _apify_call_count,
+                    "token_idx": i + 1,
+                    "token_total": len(tokens),
+                    "result": "error",
+                    "elapsed_s": round(t_fail - t_token, 1),
+                    "error": str(e)[:100],
+                })
                 last_error = e
                 continue
 

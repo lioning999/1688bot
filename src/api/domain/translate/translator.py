@@ -26,12 +26,12 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 # ---- 加载 prompt 配置 ----
-_PROMPTS_PATH = Path(__file__).parent / "translator_prompts.json"
+_PROMPTS_PATH = Path(__file__).parent / "prompts.json"
 with open(_PROMPTS_PATH, "r", encoding="utf-8") as _f:
     _P = json.load(_f)
 
 # ---- 加载术语表（与 display_builder.py 共享同一数据源） ----
-_GLOSSARY_PATH = Path(__file__).parent / "term_glossary.json"
+_GLOSSARY_PATH = Path(__file__).parent.parent / "data" / "glossary.json"
 with open(_GLOSSARY_PATH, "r", encoding="utf-8") as _f:
     _GL = json.load(_f)
 
@@ -80,6 +80,10 @@ async def translate_display(display: dict[str, Any], lang: str) -> dict[str, Any
     Returns:
         同一 display dict，Path 3 字段已翻译。翻译失败时原样返回。
     """
+    # AI 判词已处理翻译 → 跳过（Phase 2）
+    if display.get("_aiGenerated"):
+        return display
+
     if lang not in _LANG_NAMES:
         logger.debug(f"[翻译] 跳过: lang={lang} 不在支持列表 {list(_LANG_NAMES)}")
         return display

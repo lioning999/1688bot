@@ -4,8 +4,10 @@
 """
 from typing import Any
 
+__all__ = ["verdict", "safe_int", "safe_float"]
 
-def _verdict(key: str, **params: Any) -> dict[str, Any]:
+
+def verdict(key: str, **params: Any) -> dict[str, Any]:
     """构建判词输出：{key, params} dict。
 
     key 对应 term_glossary.json 中的条目，display_builder 负责查表 + 参数替换。
@@ -13,7 +15,7 @@ def _verdict(key: str, **params: Any) -> dict[str, Any]:
     return {"key": key, "params": params}
 
 
-def _safe_int(val: Any) -> int | None:
+def safe_int(val: Any) -> int | None:
     """安全转 int。None / 非数字 → None。"""
     if val is None:
         return None
@@ -23,7 +25,7 @@ def _safe_int(val: Any) -> int | None:
         return None
 
 
-def _safe_float(val: Any) -> float | None:
+def safe_float(val: Any) -> float | None:
     """安全转 float。None / 非数字 → None。"""
     if val is None:
         return None

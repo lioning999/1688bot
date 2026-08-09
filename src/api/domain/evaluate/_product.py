@@ -6,8 +6,8 @@
 """
 from typing import Any, cast
 
-from domain._evaluator_base import (
-    _verdict, _safe_int, _safe_float,
+from domain.evaluate._base import (
+    verdict, safe_int, safe_float,
     SOLD_HOT, SOLD_POTENTIAL,
     REPURCHASE_HIGH, REPURCHASE_MID,
     PRICE_LOW, PRICE_MID, MOQ_LOW, MOQ_MID,
@@ -29,13 +29,13 @@ def _product_signals(mapped: dict[str, Any]) -> dict[str, Any]:
     """
     price_cny_raw: Any = mapped.get("priceCNY")
     price_cny: dict[str, Any] = cast(dict[str, Any], price_cny_raw) if isinstance(price_cny_raw, dict) else {}
-    price: float | None = _safe_float(price_cny.get("low"))
-    entry_price: float | None = _safe_float(price_cny.get("high")) or price
-    moq: int | None = _safe_int(mapped.get("moq"))
-    sales: int | None = _safe_int(mapped.get("sold"))
-    repurchase: float | None = _safe_float(mapped.get("repurchase"))
-    positive: float | None = _safe_float(mapped.get("positive_rate"))
-    wanted: int | None = _safe_int(mapped.get("wantBuy"))
+    price: float | None = safe_float(price_cny.get("low"))
+    entry_price: float | None = safe_float(price_cny.get("high")) or price
+    moq: int | None = safe_int(mapped.get("moq"))
+    sales: int | None = safe_int(mapped.get("sold"))
+    repurchase: float | None = safe_float(mapped.get("repurchase"))
+    positive: float | None = safe_float(mapped.get("positive_rate"))
+    wanted: int | None = safe_int(mapped.get("wantBuy"))
     return7day: str = str(mapped.get("return7day", ""))
     has_service_labels: bool = bool(mapped.get("has_service_labels"))
     unit: str = str(mapped.get("unit", ""))
@@ -173,8 +173,8 @@ def _product_fatal(signals: dict[str, Any]) -> dict[str, Any] | None:
     """
     if signals["positive"] is not None and signals["positive"] < POSITIVE_BAD:
         return _make_result(0, "bad", "fatal_badrate",
-                            _verdict("prod_summary_fatal"),
-                            _verdict("prod_verdict_fatal_badrate",
+                            verdict("prod_summary_fatal"),
+                            verdict("prodverdict_fatal_badrate",
                                      positive=str(signals["positive"])),
                             signals, fatal_reason="badrate")
     return None
@@ -283,7 +283,7 @@ def _common_params(signals: dict[str, Any]) -> dict[str, Any]:
     return params
 
 
-def _product_verdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
+def _productverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     """根据 tier 组装完整 verdict dict。"""
     sold = signals["sold"]
     repurchase = signals["repurchase"]
@@ -294,23 +294,23 @@ def _product_verdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
 
     # tier → (verdict_key, summary_key, grade, extra_params)
     mapping: dict[str, tuple[str, str, str, dict[str, Any]]] = {
-        "skip":            ("prod_verdict_skip_nodata",    "prod_summary_watch",   "none", {"missing_count": str(_count_missing(signals))}),
-        "go_repurchase":   ("prod_verdict_go_repurchase",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "go_hot_wanted":   ("prod_verdict_go_hot_wanted",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "wanted": str(wanted or 0)}),
-        "go_hot_repeat":   ("prod_verdict_go_hot_repeat",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "trial_hot_unknown": ("prod_verdict_trial_hot_unknown", "prod_summary_trial", "ok", {"sold": str(sold or 0)}),
-        "trial_wanted_low":  ("prod_verdict_trial_wanted_low",  "prod_summary_trial", "ok", {"wanted": str(wanted or 0), "sold": str(sold or 0)}),
-        "trial_rep_low":   ("prod_verdict_trial_rep_low",  "prod_summary_trial",   "ok",   {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
-        "trial_medium3":   ("prod_verdict_trial_medium3",  "prod_summary_trial",   "ok",   {"highlight_count": str(medium)}),
-        "caution_hot_low": ("prod_verdict_caution_hot_low","prod_summary_caution",  "bad",  {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "caution_rep_low": ("prod_verdict_caution_rep_low","prod_summary_caution",  "bad",  {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
-        "watch_medium12":  ("prod_verdict_watch_medium12", "prod_summary_watch",   "none", {"highlight_count": str(medium)}),
-        "watch_flat":      ("prod_verdict_watch_flat",     "prod_summary_watch",   "none", {}),
+        "skip":            ("prodverdict_skip_nodata",    "prod_summary_watch",   "none", {"missing_count": str(_count_missing(signals))}),
+        "go_repurchase":   ("prodverdict_go_repurchase",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
+        "go_hot_wanted":   ("prodverdict_go_hot_wanted",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "wanted": str(wanted or 0)}),
+        "go_hot_repeat":   ("prodverdict_go_hot_repeat",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
+        "trial_hot_unknown": ("prodverdict_trial_hot_unknown", "prod_summary_trial", "ok", {"sold": str(sold or 0)}),
+        "trial_wanted_low":  ("prodverdict_trial_wanted_low",  "prod_summary_trial", "ok", {"wanted": str(wanted or 0), "sold": str(sold or 0)}),
+        "trial_rep_low":   ("prodverdict_trial_rep_low",  "prod_summary_trial",   "ok",   {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
+        "trial_medium3":   ("prodverdict_trial_medium3",  "prod_summary_trial",   "ok",   {"highlight_count": str(medium)}),
+        "caution_hot_low": ("prodverdict_caution_hot_low","prod_summary_caution",  "bad",  {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
+        "caution_rep_low": ("prodverdict_caution_rep_low","prod_summary_caution",  "bad",  {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
+        "watch_medium12":  ("prodverdict_watch_medium12", "prod_summary_watch",   "none", {"highlight_count": str(medium)}),
+        "watch_flat":      ("prodverdict_watch_flat",     "prod_summary_watch",   "none", {}),
     }
 
-    v_key, s_key, grade, extra = mapping.get(tier, ("prod_verdict_watch_flat", "prod_summary_watch", "none", {}))
-    v = _verdict(v_key, **extra, **base)
-    summary_kv = _verdict(s_key)
+    v_key, s_key, grade, extra = mapping.get(tier, ("prodverdict_watch_flat", "prod_summary_watch", "none", {}))
+    v = verdict(v_key, **extra, **base)
+    summary_kv = verdict(s_key)
 
     total = sum(signals[d]["score"] for d in ("d1", "d2", "d3", "d4", "d5", "d6"))
 
@@ -355,5 +355,5 @@ def evaluate_product(mapped: dict[str, Any]) -> dict[str, Any]:
     if fatal is not None:
         return fatal
     if _product_missing(signals):
-        return _product_verdict("skip", signals)
-    return _product_verdict(_product_tier(signals), signals)
+        return _productverdict("skip", signals)
+    return _productverdict(_product_tier(signals), signals)

@@ -6,8 +6,8 @@
 """
 from typing import Any
 
-from domain._evaluator_base import (
-    _verdict, _safe_int,
+from domain.evaluate._base import (
+    verdict, safe_int,
     SHOP_OLD, SHOP_NEW,
 )
 
@@ -30,7 +30,7 @@ def _supplier_signals(mapped: dict[str, Any]) -> dict[str, Any]:
     # 字符串 "None" 来自 mapper 的 _safe_cert_type({}) → "None"，视为无认证
     cert_type: str = str(cert_type_raw) if (cert_type_raw and str(cert_type_raw) not in ("None", "")) else ""
     shop_years_val: Any = mapped.get("shop_years")
-    shop_years: int | None = _safe_int(shop_years_val)
+    shop_years: int | None = safe_int(shop_years_val)
 
     # ---- 身份强度 ----
     is_advanced: bool = (
@@ -89,17 +89,17 @@ def _supplier_signals(mapped: dict[str, Any]) -> dict[str, Any]:
     if not has_years:
         years_strength, years_label = "unknown", ""
         d3 = _dim_fmt("d3", 0, "📅", "supp_dim_d3_name", "", "", None, "", None)
-    elif shop_years is not None and shop_years >= SHOP_OLD:
+    elif shop_years >= SHOP_OLD:
         years_strength, years_label = "strong", "supp_good_years_old"
         d3 = _dim_fmt("d3", 3, "📅", "supp_dim_d3_name_old", "supp_dim_d3_label_old",
                       "supp_dim_d3_data_fmt", shop_years, "supp_dim_d3_ref_fmt", SHOP_OLD)
-    elif shop_years is not None and shop_years >= SHOP_NEW:
+    elif shop_years >= SHOP_NEW:
         years_strength, years_label = "medium", ""
         d3 = _dim_fmt("d3", 2, "📅", "supp_dim_d3_name", "",
                       "supp_dim_d3_data_fmt", shop_years, "supp_dim_d3_ref_fmt", SHOP_OLD)
     else:
         years_strength, years_label = "weak", "supp_bad_years_new"
-        d3 = {"key": "d3", "score": 1, "icon": "📅",
+        d3: dict[str, Any] = {"key": "d3", "score": 1, "icon": "📅",
               "name_key": "supp_dim_d3_name_new", "label_key": "supp_dim_d3_label_new",
               "data_key": "supp_dim_d3_data_short",
               "ref_fmt": "supp_dim_d3_ref_fmt", "ref_num": SHOP_OLD, "ref_params": {}}
@@ -160,8 +160,8 @@ def _supplier_fatal(signals: dict[str, Any]) -> dict[str, Any] | None:
         return {
             "score": 0, "max_score": 9,
             "grade": "bad", "tier": "fatal_blackbox",
-            "summary": _verdict("supp_summary_fatal"),
-            "verdict": _verdict("supp_verdict_fatal_blackbox"),
+            "summary": verdict("supp_summary_fatal"),
+            "verdict": verdict("suppverdict_fatal_blackbox"),
             "dimensions": [signals["d1"], signals["d2"], signals["d3"]],
             "fatal_reason": "blackbox", "skip_reason": None,
             "signals": signals,
@@ -202,7 +202,7 @@ def _supplier_tier(signals: dict[str, Any]) -> str:
 # verdict 组装
 # ====================================================================
 
-def _supplier_verdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
+def _supplierverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     """根据 tier 组装供应商 verdict dict。"""
     shop_years = signals["shop_years"]
     cert_type = signals["cert_type"]
@@ -247,24 +247,24 @@ def _supplier_verdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     # tier → (verdict_key, summary_key, grade)
     if tier == "skip":
         missing = (0 if signals["has_id"] else 1) + (0 if signals["has_years"] else 1)
-        v = _verdict("supp_verdict_skip_nodata", missing_count=str(missing))
-        summary_kv, grade = _verdict("supp_summary_skip"), "none"
+        v = verdict("suppverdict_skip_nodata", missing_count=str(missing))
+        summary_kv, grade = verdict("supp_summary_skip"), "none"
     elif tier == "fatal_blackbox":
-        v, summary_kv, grade = _verdict("supp_verdict_fatal_blackbox"), _verdict("supp_summary_fatal"), "bad"
+        v, summary_kv, grade = verdict("suppverdict_fatal_blackbox"), verdict("supp_summary_fatal"), "bad"
     elif tier == "trust_strong2":
-        v = _verdict("supp_verdict_trust_strong2",
+        v = verdict("suppverdict_trust_strong2",
                      good_part_keys=good_keys, years=years_str, cert_text=cert_display)
-        summary_kv, grade = _verdict("supp_summary_trust"), "go"
+        summary_kv, grade = verdict("supp_summary_trust"), "go"
     elif tier == "usable_ok":
-        v = _verdict("supp_verdict_usable_ok",
+        v = verdict("suppverdict_usable_ok",
                      good_part_keys=good_keys, bad_part_keys=bad_keys,
                      years=years_str, cert_text=cert_type, action_key=action_key)
-        summary_kv, grade = _verdict("supp_summary_usable"), "ok"
+        summary_kv, grade = verdict("supp_summary_usable"), "ok"
     else:  # caution_weak2
-        v = _verdict("supp_verdict_caution_weak2",
+        v = verdict("suppverdict_caution_weak2",
                      bad_part_keys=bad_keys, good_part_keys=good_keys,
                      years=years_str, cert_text=cert_type, action_key=action_key)
-        summary_kv, grade = _verdict("supp_summary_caution"), "bad"
+        summary_kv, grade = verdict("supp_summary_caution"), "bad"
 
     total = sum(signals[d]["score"] for d in ("d1", "d2", "d3"))
 
@@ -290,5 +290,5 @@ def evaluate_supplier(mapped: dict[str, Any]) -> dict[str, Any]:
     if fatal is not None:
         return fatal
     if _supplier_missing(signals):
-        return _supplier_verdict("skip", signals)
-    return _supplier_verdict(_supplier_tier(signals), signals)
+        return _supplierverdict("skip", signals)
+    return _supplierverdict(_supplier_tier(signals), signals)

@@ -9,10 +9,10 @@ import asyncio
 import time
 from collections import deque
 
+from config import Config
+
 _timestamps: deque[float] = deque()
 _lock: asyncio.Lock = asyncio.Lock()
-LIMIT = 30   # 次
-WINDOW = 60  # 秒
 
 
 async def check() -> bool:
@@ -23,9 +23,9 @@ async def check() -> bool:
     """
     async with _lock:
         now = time.time()
-        while _timestamps and now - _timestamps[0] > WINDOW:
+        while _timestamps and now - _timestamps[0] > Config.RATE_LIMIT_WINDOW:
             _timestamps.popleft()
-        if len(_timestamps) >= LIMIT:
+        if len(_timestamps) >= Config.RATE_LIMIT_MAX:
             return False
         _timestamps.append(now)
         return True

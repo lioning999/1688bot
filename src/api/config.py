@@ -30,7 +30,6 @@ class Config:
     APP_NAME: str = os.getenv("APP_NAME", "Sourcely")
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
     TEST_MODE: bool = os.getenv("TEST_MODE", "false").lower() == "true"
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "change-me")
     PORT: int = int(os.getenv("PORT", "8008"))
 
     # ---- 数据库 ----
@@ -45,7 +44,7 @@ class Config:
     # ---- JWT ----
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "change-me")
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "1440"))
+    JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "129600"))  # 90 天
 
     # ---- Google OAuth 2.0 ----
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
@@ -54,6 +53,7 @@ class Config:
     GOOGLE_AUTH_URL: str = "https://accounts.google.com/o/oauth2/v2/auth"
     GOOGLE_TOKEN_URL: str = "https://oauth2.googleapis.com/token"
     GOOGLE_CLOCK_SKEW: int = 60
+    CHROME_EXTENSION_ID: str = os.getenv("CHROME_EXTENSION_ID", "")  # 插件登录回调用
 
     # ---- Apify 1688 数据采集 ----
     # 多 token 轮换：免费账号每日配额有限，配额耗尽自动切换下一个 token
@@ -61,8 +61,17 @@ class Config:
     APIFY_TOKEN: str = _APIFY_TOKENS[0] if _APIFY_TOKENS else ""  # 向后兼容
     APIFY_ACTOR_ID: str = os.getenv("APIFY_ACTOR_ID", "zen-studio~1688-wholesale-scraper")
     APIFY_WAIT_SECONDS: int = int(os.getenv("APIFY_WAIT_SECONDS", "90"))
-    APIFY_DAILY_FREE_LIMIT: int = int(os.getenv("DAILY_FREE_LIMIT", "3"))
-    APIFY_DAILY_LOGIN_LIMIT: int = int(os.getenv("DAILY_LOGIN_LIMIT", "10"))
+    # ---- 用户分析配额（按 tier 每日补地板，懒重置） ----
+    SIGNUP_BONUS_QUOTA: int = int(os.getenv("SIGNUP_BONUS_QUOTA", "10"))        # 注册一次性赠送
+    DAILY_FREE_QUOTA: int = int(os.getenv("DAILY_FREE_QUOTA", "3"))              # free tier 每日地板
+    DAILY_PAID_QUOTA: int = int(os.getenv("DAILY_PAID_QUOTA", "20"))             # paid tier 每日地板
+    QWEN_TIMEOUT: float = float(os.getenv("QWEN_TIMEOUT", "20.0"))
+    OAUTH_TIMEOUT: float = float(os.getenv("OAUTH_TIMEOUT", "15.0"))
+    PROXY_TIMEOUT: float = float(os.getenv("PROXY_TIMEOUT", "15.0"))
+
+    # ---- 限流 ----
+    RATE_LIMIT_MAX: int = int(os.getenv("RATE_LIMIT_MAX", "30"))
+    RATE_LIMIT_WINDOW: int = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
     URL_1688_DETAIL: str = "https://detail.1688.com/offer/{offer_id}.html"
 
     # ---- 业务常量 ----
@@ -91,7 +100,6 @@ class Config:
     def validate(cls):
         """启动时校验必填配置。缺失报错，防止带病启动。"""
         required = [
-            ("SECRET_KEY", cls.SECRET_KEY),
             ("JWT_SECRET_KEY", cls.JWT_SECRET_KEY),
             ("DATABASE_HOST", cls.DB_HOST),
             ("DATABASE_NAME", cls.DB_NAME),

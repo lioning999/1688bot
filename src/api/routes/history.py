@@ -1,11 +1,12 @@
 """历史记录 API — 登录用户查看/删除过往分析记录（只读 DB，不调 Apify）。"""
 
+import re
 from typing import Any
 
 from fastapi import APIRouter, Request
 
 from services.analyze_svc import analyze_service
-from utils.exceptions import AppError
+from utils.exceptions import AppError, ValidationError
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -32,6 +33,8 @@ async def list_history(request: Request) -> dict[str, Any]:
 
 @router.delete("/api/history/{analysis_id}")
 async def delete_history(analysis_id: int, request: Request) -> dict[str, Any]:
+    if analysis_id <= 0:
+        raise ValidationError(msg_code="HISTORY_NOT_FOUND", message="无效的记录ID")
     """删除一条分析记录。校验归属后才删除。
 
     需 JWT 认证（/api/ 前缀自动拦截）。
@@ -57,6 +60,8 @@ async def get_report(offer_id: str, request: Request, lang: str = "") -> dict[st
 
     需 JWT 认证。
     """
+    if not re.match(r'^\d+$', offer_id):
+        raise ValidationError(msg_code="OFFER_ID_INVALID", message="无效的商品ID")
     user_id: int = getattr(request.state, "user_id", 0) or 0
     if not user_id:
         raise AppError(message="请先登录", code="LOGIN_REQUIRED", msg_code="LOGIN_REQUIRED",

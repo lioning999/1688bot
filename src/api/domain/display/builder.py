@@ -11,14 +11,14 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from domain.evaluator import evaluate_product, evaluate_supplier, evaluate_summary
+from domain.evaluate import evaluate_product, evaluate_supplier, evaluate_summary
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 # ---- 加载配置 JSON ----
 _HERE = Path(__file__).parent
-with open(_HERE / "term_glossary.json", "r", encoding="utf-8") as _f:
+with open(_HERE.parent / "data" / "glossary.json", "r", encoding="utf-8") as _f:
     GL = json.load(_f)
 
 
@@ -62,7 +62,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
         构建失败返回最小可用结构（不抛异常）。
     """
     # 兜底 lang（不支持的语言默认英文）
-    safe_lang: str = lang if lang in ("en", "vi", "th", "id", "zh") else "en"
+    safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "en"
 
     # 验货报告评判（domain 内部组合：evaluator → display）
     product_raw: dict[str, Any] = evaluate_product(mapped)
@@ -148,10 +148,11 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
 
 def _build_price(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
     cny: Any = mapped.get("priceCNY") or {}
+    cny_d = cast(dict[str, Any], cny) if isinstance(cny, dict) else {}
     raw_unit: str = _s(mapped.get("unit"))
     return {
-        "low": cny.get("low", 0) if isinstance(cny, dict) else 0,  # type: ignore[reportUnknownMemberType]
-        "high": cny.get("high", 0) if isinstance(cny, dict) else 0,  # type: ignore[reportUnknownMemberType]
+        "low": cny_d.get("low", 0),
+        "high": cny_d.get("high", 0),
         "moq": mapped.get("moq"),
         "unit": _glossary(f"unit_{raw_unit}", lang, raw_unit),  # type: ignore[reportUnknownMemberType]
     }
@@ -229,11 +230,12 @@ def _build_specs(mapped: dict[str, Any]) -> list[dict[str, str]]:
     if not isinstance(specs, list):
         return []
     result: list[dict[str, str]] = []
-    for s in specs:  # type: ignore[reportUnknownVariableType]
+    for s in cast(list[Any], specs):
         if isinstance(s, dict):
+            sd = cast(dict[str, Any], s)
             result.append({
-                "name": _s(s.get("name")),  # type: ignore[reportUnknownMemberType]
-                "value": _s(s.get("value")),  # type: ignore[reportUnknownMemberType]
+                "name": _s(sd.get("name")),
+                "value": _s(sd.get("value")),
             })
     return result
 
@@ -569,7 +571,7 @@ def _format_verdict(v: Any, lang: str) -> str:
         return v  # 向后兼容旧格式
     if not isinstance(v, dict):
         return ""
-    d: dict[str, Any] = v  # type: ignore[assignment]  # isinstance 已保证 dict
+    d: dict[str, Any] = cast(dict[str, Any], v)
     key: str = str(d.get("key", ""))
     if not key:
         return ""
@@ -615,7 +617,7 @@ def _format_verdict(v: Any, lang: str) -> str:
         gks: Any = params.pop("good_part_keys")
         if isinstance(gks, list) and gks:
             parts: list[str] = []
-            for gk in gks:
+            for gk in cast(list[Any], gks):
                 part_tpl: str = _glossary(str(gk), lang, str(gk))
                 try:
                     parts.append(part_tpl.format(**params))
@@ -630,7 +632,7 @@ def _format_verdict(v: Any, lang: str) -> str:
         bks: Any = params.pop("bad_part_keys")
         if isinstance(bks, list) and bks:
             parts: list[str] = []
-            for bk in bks:
+            for bk in cast(list[Any], bks):
                 part_tpl: str = _glossary(str(bk), lang, str(bk))
                 try:
                     parts.append(part_tpl.format(**params))

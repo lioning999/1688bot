@@ -15,14 +15,14 @@ from typing import Any
 
 from config import Config
 from adapters.apify_adapter import apify_adapter, get_apify_call_count
-from domain import cache as analysis_cache
-from domain.display_builder import build_display
-from domain.product_mapper import map_raw
-from domain.quota import refund as quota_refund
-from domain.translator import translate_display
+from domain.infra import cache as analysis_cache
+from domain.display.builder import build_display
+from domain.data.mapper import map_raw
 from domain.verdict_engine import judge_all
 from repositories.analysis_repo import AnalysisRepository
-from utils.exceptions import ExternalServiceError
+from repositories.user_repo import UserRepository
+from services.ai_verdict_svc import build_result_with_display, build_with_ai, get_display_cache
+from utils.exceptions import ExternalServiceError, InsufficientQuotaError
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -31,28 +31,24 @@ logger = get_logger(__name__)
 _pending: dict[str, asyncio.Task[dict[str, Any]]] = {}  # {offer_id: Task}  请求合并（风险 #2）
 _tasks: dict[str, dict[str, Any]] = {}        # {task_id: {status, result, ...}}  异步轮询（风险 #10）
 TASK_TTL = Config.TASK_TTL  # 任务结果保留时长（秒）
+_MAX_TASKS = 200  # 防止无界增长
+_MAX_PENDING = 50
 
 # ---- 失败重试上限（同一 offer_id 失败 ≥3 次 → 拒绝） ----
 _FAIL_TTL: float = 86400.0  # 失败计数 24h 后自动清零
 _fail_count: dict[str, tuple[int, float]] = {}  # {offer_id: (count, timestamp)}
+_MAX_FAIL_COUNT = 1000
+_user_repo = UserRepository()
 
 
-def _on_apify_fail(offer_id: str, quota_key: str) -> None:
-    """Apify 失败：递增失败计数 + 退还配额。"""
+def _on_apify_fail(offer_id: str) -> None:
+    """Apify 失败：递增失败计数（配额退还由 _run() 内联处理）。"""
     entry = _fail_count.get(offer_id)
     now = time.time()
     if entry is None or (now - entry[1]) > _FAIL_TTL:
         _fail_count[offer_id] = (1, now)
     else:
         _fail_count[offer_id] = (entry[0] + 1, entry[1])
-    if quota_key:
-        quota_refund(quota_key)
-
-# ---- display 缓存（key=offer_id:lang，纯内存，30min TTL） ----
-_display_cache: dict[str, tuple[float, dict[str, Any]]] = {}
-_DISPLAY_CACHE_TTL: int = 43200  # 12 小时
-_DISPLAY_CACHE_MAX: int = 500
-
 
 class AnalyzeService:
     """商品分析编排。依赖注入。"""
@@ -64,12 +60,13 @@ class AnalyzeService:
     # 公开接口：异步轮询模式（风险 #10）
     # ------------------------------------------------------------------
 
-    async def start(self, offer_id: str, user_id: int = 0, raw_url: str = "", lang: str = "", quota_key: str = "") -> str:
+    async def start(self, offer_id: str, user_id: int = 0, raw_url: str = "",
+                    lang: str = "") -> str:
         """启动分析，立即返回 task_id。
 
         后台执行：缓存检查 → Apify → 判词 → build_display → translate → 入库。
         前端每 2s 轮询 GET /api/analyze/{task_id}。
-        quota_key: 配额退款用（路由层传入的 IP 或 user:{id}）。
+        配额扣减已在 routes/analyze.py 中完成（读 DB → 懒重置 → 扣减）。
         """
         # 清理过期 task + 过期失败计数（每次新请求触发，无需后台定时器）
         _now = time.time()
@@ -85,7 +82,7 @@ class AnalyzeService:
         _fail_total = _fail_entry[0] if _fail_entry else 0
         if _fail_total >= 3:
             logger.warning(f"offer_id={offer_id} 连续失败 3 次，拒绝重试")
-            task_id = str(uuid.uuid4())[:8]
+            task_id = str(uuid.uuid4())
             _tasks[task_id] = {
                 "status": "failed",
                 "error": "该链接连续获取失败，请明天再试或联系 WhatsApp",
@@ -98,24 +95,50 @@ class AnalyzeService:
         if offer_id in _pending:
             logger.info(f"Request coalesced: offer_id={offer_id}")
             existing_task = _pending[offer_id]
-            task_id = str(uuid.uuid4())[:8]
+            task_id = str(uuid.uuid4())
             _tasks[task_id] = {"status": "pending", "result": None, "created_at": time.time()}
 
             async def _wait_existing():
                 try:
                     result = await existing_task
                     _tasks[task_id] = {"status": "done", "result": result, "created_at": time.time()}
-                except Exception as e:
-                    _tasks[task_id] = {"status": "failed", "error": str(e),
-                                       "error_msg_code": "INTERNAL_ERROR",
-                                       "error_http_status": 500, "created_at": time.time()}
+                except Exception:
+                    # 透传原始错误码，不让合并请求看到泛化500
+                    # 从 existing_task 对应的 _tasks 条目取错误详情
+                    err_info = None
+                    for _tid, _t in _tasks.items():
+                        if _t.get("status") == "failed" and _t.get("created_at", 0) >= time.time() - 300:
+                            err_info = _t
+                            break
+                    if err_info:
+                        _tasks[task_id] = {
+                            "status": "failed",
+                            "error": err_info.get("error", "请求失败"),
+                            "error_msg_code": err_info.get("error_msg_code", "INTERNAL_ERROR"),
+                            "error_http_status": err_info.get("error_http_status", 500),
+                            "created_at": time.time(),
+                        }
+                    else:
+                        _tasks[task_id] = {"status": "failed", "error": "请求失败",
+                                           "error_msg_code": "INTERNAL_ERROR",
+                                           "error_http_status": 500, "created_at": time.time()}
 
             asyncio.create_task(_wait_existing())
             return task_id
 
-        task_id = str(uuid.uuid4())[:8]
+        # 配额扣减（请求合并之后，同 offer_id 不重复扣）
+        if user_id:
+            ok = await _user_repo.decrement_quota(user_id)
+            if not ok:
+                logger.warning(f"配额扣减失败 user_id={user_id} offer_id={offer_id}")
+                raise InsufficientQuotaError(
+                    resource_type="今日分析次数",
+                    msg_code="QUOTA_EXHAUSTED",
+                )
+
+        task_id = str(uuid.uuid4())
         _tasks[task_id] = {"status": "pending", "result": None, "created_at": time.time()}
-        _pending[offer_id] = asyncio.create_task(self._run(task_id, offer_id, raw_url, lang, quota_key))
+        _pending[offer_id] = asyncio.create_task(self._run(task_id, offer_id, raw_url, lang, user_id))
         return task_id
 
     def get_task(self, task_id: str) -> dict[str, Any] | None:
@@ -170,7 +193,7 @@ class AnalyzeService:
         if not result:
             return None
 
-        safe_lang: str = lang if lang in ("en", "vi", "th", "id", "zh") else "en"
+        safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "en"
 
         # ① 查 display_i18n 缓存
         display_i18n_raw: str | None = await self.repo.get_display_i18n(offer_id, user_id)
@@ -185,13 +208,15 @@ class AnalyzeService:
             result["display"] = display_i18n[safe_lang]
             return result
 
-        # ② 构建 + 翻译 + 持久化
-        display = build_display(result, safe_lang)
+        # ② 构建 + AI判词/翻译 + 持久化
         if safe_lang != "zh":
             try:
-                display = await translate_display(display, safe_lang)
+                display = await build_with_ai(result, safe_lang)
             except Exception:
-                logger.exception("translate_display failed in get_saved_report, using untranslated display")
+                logger.exception("build_with_ai failed in get_saved_report, using template display")
+                display = build_display(result, safe_lang)
+        else:
+            display = build_display(result, safe_lang)
 
         # 仅持久化成功的翻译。翻译失败不缓存（下次请求可重试），zh 无需翻译直接缓存。
         if safe_lang == "zh" or display.get("_translatedLang"):
@@ -228,8 +253,8 @@ class AnalyzeService:
 
         # 取已翻译的 display（内存缓存中有几语言就写几语言）
         display_i18n: dict[str, Any] = {}
-        for lang in ("en", "vi", "th", "id"):
-            d = _display_cache_get(offer_id, lang)
+        for lang in ("en", "vi", "th"):
+            d = get_display_cache(offer_id, lang)
             if d is not None:
                 display_i18n[lang] = d
 
@@ -240,7 +265,7 @@ class AnalyzeService:
     # 后台分析流水线
     # ------------------------------------------------------------------
 
-    async def _run(self, task_id: str, offer_id: str, raw_url: str, lang: str = "", quota_key: str = "") -> dict[str, Any]:
+    async def _run(self, task_id: str, offer_id: str, raw_url: str, lang: str = "", user_id: int = 0) -> dict[str, Any]:
         """完整分析流水线（在后台 asyncio.Task 中执行）。"""
         t0 = time.time()
         apify_count_before = get_apify_call_count()
@@ -280,6 +305,8 @@ class AnalyzeService:
                         "warning_msg_code": "STALE_DATA_QUOTA_EXHAUSTED" if is_quota else "STALE_DATA_FETCH_FAILED",
                         "created_at": time.time(),
                     }
+                    await _user_repo.increment_quota(user_id)
+                    _on_apify_fail(offer_id)  # 配额已扣，过期兜底应退还
                     return result
                 # 无缓存 → 区分错误原因
                 if is_quota:
@@ -290,7 +317,8 @@ class AnalyzeService:
                     _tasks[task_id] = {"status": "failed", "error": "获取失败，请稍后重试。如持续失败请联系客服",
                                        "error_msg_code": "FETCH_FAILED_RETRY_LATER",
                                        "error_http_status": 502, "created_at": time.time()}
-                _on_apify_fail(offer_id, quota_key)
+                await _user_repo.increment_quota(user_id)
+                _on_apify_fail(offer_id)
                 raise
             except Exception as e:
                 logger.error(f"Apify fetch failed: {e}")
@@ -304,12 +332,15 @@ class AnalyzeService:
                         "warning_msg_code": "STALE_DATA_FETCH_FAILED",
                         "created_at": time.time(),
                     }
+                    await _user_repo.increment_quota(user_id)
+                    _on_apify_fail(offer_id)  # 配额已扣，过期兜底应退还
                     return result
                 # 无缓存（风险 #7 三级降级）
                 _tasks[task_id] = {"status": "failed", "error": "获取失败，请稍后重试。如持续失败请联系客服",
                                    "error_msg_code": "FETCH_FAILED_RETRY_LATER",
                                    "error_http_status": 502, "created_at": time.time()}
-                _on_apify_fail(offer_id, quota_key)
+                await _user_repo.increment_quota(user_id)
+                _on_apify_fail(offer_id)
                 raise ExternalServiceError(service_name="Apify", details={"reason": "fetch_failed"}) from e
 
             if raw is None:
@@ -330,7 +361,8 @@ class AnalyzeService:
                     "error_http_status": 404,
                     "created_at": time.time(),
                 }
-                _on_apify_fail(offer_id, quota_key)
+                await _user_repo.increment_quota(user_id)
+                _on_apify_fail(offer_id)
                 raise ExternalServiceError(service_name="Apify", details={"reason": "empty_result"})
 
             # ---- 3. 映射 + 判词 ----
@@ -420,63 +452,6 @@ class AnalyzeService:
 
 # ---- 单例 ----
 analyze_service = AnalyzeService(repo=AnalysisRepository())
-
-
-async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang: str) -> dict[str, Any]:
-    """并行运行策略：mapped（V1 底线）+ display（V2 新增）。
-
-    display 始终构建（不含 lang 时用中文原文）。
-    build_display 和 translate 各自独立 try/except，崩了不影响 mapped。
-    """
-    result: dict[str, Any] = {**mapped}
-
-    # 始终构建 display（即使无 lang，也给中文版 display）
-    try:
-        display = build_display(mapped, lang)
-        logger.info(f"[TRACE-DISPLAY-PRE] offer_id={offer_id} lang={lang} display={json.dumps(display, ensure_ascii=False, default=str)}")
-    except Exception:
-        logger.exception("build_display failed")
-        return result
-
-    # 有 lang 时查 display 缓存 + 翻译
-    if lang:
-        cached_display: dict[str, Any] | None = _display_cache_get(offer_id, lang)
-        if cached_display is not None:
-            result["display"] = cached_display
-            return result
-
-        try:
-            display = await translate_display(display, lang)
-            logger.info(f"[TRACE-DISPLAY-POST] offer_id={offer_id} lang={lang} display={json.dumps(display, ensure_ascii=False, default=str)}")
-        except Exception:
-            logger.exception("translate_display failed, using untranslated display")
-
-        _display_cache_set(offer_id, lang, display)
-
-    result["display"] = display
-    return result
-
-
-def _display_cache_get(offer_id: str, lang: str) -> dict[str, Any] | None:
-    """读 display 缓存。过期返回 None。"""
-    key: str = f"{offer_id}:{lang}"
-    entry: tuple[float, dict[str, Any]] | None = _display_cache.get(key)
-    if entry is None:
-        return None
-    ts, data = entry
-    if time.time() - ts < _DISPLAY_CACHE_TTL:
-        return data
-    del _display_cache[key]
-    return None
-
-
-def _display_cache_set(offer_id: str, lang: str, data: dict[str, Any]) -> None:
-    """写 display 缓存。超过上限淘汰最旧条目。"""
-    key: str = f"{offer_id}:{lang}"
-    _display_cache[key] = (time.time(), data)
-    if len(_display_cache) > _DISPLAY_CACHE_MAX:
-        oldest_key: str = min(_display_cache.keys(), key=lambda k: _display_cache[k][0])  # type: ignore[reportUnknownArgumentType]
-        del _display_cache[oldest_key]
 
 
 def _get_expired_cache(offer_id: str) -> dict[str, Any] | None:

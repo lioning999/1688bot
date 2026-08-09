@@ -50,7 +50,7 @@ def judge_product(data: dict[str, Any]) -> dict[str, Any]:
     unit: str = str(data.get("unit", "件"))
 
     try:
-        deposit: int = int(float(price) * int(moq) + 10)  # type: ignore[arg-type]
+        deposit: int = round(float(price) * int(moq) + 10)  # type: ignore[arg-type]
     except (ValueError, TypeError):
         deposit = 10
 

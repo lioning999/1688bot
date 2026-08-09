@@ -15,10 +15,6 @@
     "th": {
       "name": "Thai",
       "forbidden": "FORBIDDEN WORDS — ห้ามใช้:\n- \"พรีเมียม\", \"หรูหรา\", \"พิเศษ\", \"ชั้นนำ\"\n- \"เหนือชั้น\", \"น่าทึ่ง\", \"ยอดเยี่ยม\"\n- \"ขายดีที่สุด\", \"ต้องมี\"\n- \"รับประกัน\", \"100%\", \"สมบูรณ์แบบ\"\n- ภาษาโฆษณาหรือการตลาดที่ไม่มีในต้นฉบับภาษาจีน"
-    },
-    "id": {
-      "name": "Indonesian",
-      "forbidden": "FORBIDDEN WORDS — jangan gunakan:\n- \"premium\", \"mewah\", \"eksklusif\", \"kelas atas\"\n- \"luar biasa\", \"menakjubkan\", \"unggul\"\n- \"terlaris\", \"wajib punya\"\n- \"dijamin\", \"100%\", \"sempurna\"\n- Bahasa pemasaran atau promosi yang tidak ada dalam teks asli Mandarin"
     }
   }
 }

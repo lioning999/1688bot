@@ -51,7 +51,7 @@ class GoogleAuthAdapter:
             ExternalServiceError: Google token 端点调用失败或验证不通过
         """
         # 1. 用 code 换取 token
-        async with httpx.AsyncClient(timeout=15) as client:
+        async with httpx.AsyncClient(timeout=Config.OAUTH_TIMEOUT) as client:
             try:
                 resp = await client.post(
                     Config.GOOGLE_TOKEN_URL,
