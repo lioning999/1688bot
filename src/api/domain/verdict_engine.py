@@ -40,7 +40,7 @@ def judge_product(data: dict[str, Any]) -> dict[str, Any]:
     返回 {key, params}，key 对应 term_glossary.json 中的 verdict_product_* 条目。
     """
     cert: Any = data.get("certType")
-    sold: Any = data.get("sold", 0)
+    sold: Any = data.get("sold") or 0  # .get("sold", 0) 对 JSON null 无效（key 存在但值为 None）
     return_ok: bool = data.get("return7day") == "OK"
 
     price_cny_raw: Any = data.get("priceCNY") or {}

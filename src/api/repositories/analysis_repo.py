@@ -20,9 +20,9 @@ logger = get_logger(__name__)
 # V1.3：列字段只保留历史列表展示所需 + 系统字段。完整数据在 result_json + display_i18n。
 _INSERT_COLS = (
     "user_id, offer_id, status, title, image_url, "
-    "price_min, price_max, apify_task_id, result_json, display_i18n"
+    "price_min, price_max, apify_task_id, raw_json, display_i18n, favorited"
 )
-_INSERT_VALS = "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+_INSERT_VALS = "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 
 class AnalysisRepository:
@@ -39,15 +39,17 @@ class AnalysisRepository:
                        ON DUPLICATE KEY UPDATE
                         status=VALUES(status), title=VALUES(title), image_url=VALUES(image_url),
                         price_min=VALUES(price_min), price_max=VALUES(price_max),
-                        result_json=VALUES(result_json), display_i18n=VALUES(display_i18n),
+                        raw_json=VALUES(raw_json), display_i18n=VALUES(display_i18n),
+                        favorited=VALUES(favorited),
                         updated_at=NOW()""",
                     (
                         data["user_id"], data["offer_id"], data.get("status", "done"),
                         data.get("title"), data.get("image_url"),
                         data.get("price_min"), data.get("price_max"),
                         data.get("apify_task_id"),
-                        data.get("result_json"),
+                        data.get("raw_json"),
                         data.get("display_i18n"),
+                        data.get("favorited", 0),
                     ),
                 )
                 analysis_id = cur.lastrowid
@@ -74,6 +76,60 @@ class AnalysisRepository:
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 
+    async def toggle_favorite(self, analysis_id: int, user_id: int) -> bool | None:
+        """切换收藏状态。返回切换后的状态 True=已收藏/False=未收藏，记录不存在返回 None。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT favorited FROM analysis WHERE id=%s AND user_id=%s",
+                    (analysis_id, user_id),
+                )
+                row = await cur.fetchone()
+                if row is None:
+                    return None
+                new_state = 0 if row["favorited"] else 1
+                await cur.execute(
+                    "UPDATE analysis SET favorited=%s WHERE id=%s",
+                    (new_state, analysis_id),
+                )
+                await conn.commit()
+                return bool(new_state)
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def cleanup_excess(self, user_id: int, max_count: int) -> int:
+        """超出上限时清理最早未收藏记录。返回删除条数。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT COUNT(*) AS cnt FROM analysis WHERE user_id=%s AND status='done'",
+                    (user_id,),
+                )
+                row = await cur.fetchone()
+                total = row["cnt"] if row else 0
+                over = total - max_count
+                if over <= 0:
+                    return 0
+                await cur.execute(
+                    """DELETE FROM analysis
+                       WHERE user_id=%s AND favorited=0 AND status='done'
+                       ORDER BY created_at ASC LIMIT %s""",
+                    (user_id, over),
+                )
+                deleted = cur.rowcount
+                await conn.commit()
+                return deleted
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
     async def delete(self, analysis_id: int, user_id: int) -> bool:
         """删除一条分析记录。校验 user_id 归属，删除成功返回 True。"""
         conn = await AsyncDatabaseConnection.get_connection()
@@ -92,16 +148,17 @@ class AnalysisRepository:
             await AsyncDatabaseConnection.close_connection(conn)
 
     async def get_by_offer_id(self, offer_id: str, user_id: int) -> dict[str, Any] | None:
-        """从 DB 加载已保存的分析报告（Bug #1：历史→report 查 DB 不调 Apify）。
+        """从 DB 加载分析报告。
 
-        读 result_json（完整），异常时回退到列字段拼凑最小结构。
+        返回 {"raw": parsed_json, "display_i18n": str|None}。
+        raw_json 优先，result_json 降级（旧记录兼容）。
         """
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
                     """SELECT offer_id, title, image_url, price_min, price_max,
-                              result_json
+                              raw_json, result_json, display_i18n, created_at
                        FROM analysis
                        WHERE offer_id=%s AND user_id=%s AND status='done'
                        LIMIT 1""",
@@ -110,20 +167,33 @@ class AnalysisRepository:
                 row = await cur.fetchone()
                 if row is None:
                     return None
-                if row.get("result_json"):
+                # 优先 raw_json（新），降级 result_json（旧记录兼容）
+                source_json = row.get("raw_json") or row.get("result_json")
+                if source_json:
                     try:
-                        return json.loads(row["result_json"])
+                        created_at_raw = row.get("created_at")
+                        created_at_ts: float | None = None
+                        if created_at_raw is not None:
+                            created_at_ts = created_at_raw.timestamp()
+                        return {
+                            "raw": json.loads(source_json),
+                            "display_i18n": row.get("display_i18n"),
+                            "created_at": created_at_ts,
+                        }
                     except (json.JSONDecodeError, TypeError):
                         pass  # JSON 损坏，回退到列字段
                 # fallback：从列字段拼出最小可用结构
                 return {
-                    "title": row.get("title"),
-                    "image": row.get("image_url"),
-                    "offerId": row.get("offer_id"),
-                    "priceCNY": {
-                        "low": float(row["price_min"]) if row.get("price_min") else 0,
-                        "high": float(row["price_max"]) if row.get("price_max") else 0,
+                    "raw": {
+                        "title": row.get("title"),
+                        "image": row.get("image_url"),
+                        "offerId": row.get("offer_id"),
+                        "priceCNY": {
+                            "low": float(row["price_min"]) if row.get("price_min") else 0,
+                            "high": float(row["price_max"]) if row.get("price_max") else 0,
+                        },
                     },
+                    "display_i18n": row.get("display_i18n"),
                 }
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
@@ -168,7 +238,7 @@ class AnalysisRepository:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
                     """SELECT id, offer_id, title, image_url, price_min, price_max,
-                              created_at, display_i18n
+                              created_at, display_i18n, favorited
                        FROM analysis
                        WHERE user_id=%s AND status='done'
                        ORDER BY created_at DESC LIMIT %s""",

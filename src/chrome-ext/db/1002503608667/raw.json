@@ -1,0 +1,286 @@
+{
+  "offerId": "1002503608667",
+  "supplier": {
+    "memberId": "b2b-3937740830b3b90",
+    "flags": {
+      "isChtMember": false,
+      "isIndustrySeller": false,
+      "isEaseBuyDealer": false,
+      "isFactoryDealer": false,
+      "isSuperFactory": false,
+      "isTpFactory": false,
+      "isShiliFactory": false,
+      "isSiliCertifiedBrand": false,
+      "isFactory": false,
+      "isTp": true,
+      "isHyper": false,
+      "isBrandPlus": false,
+      "isProcessingTag": false,
+      "isSmt": false,
+      "isImall": false,
+      "isFullOnline": false,
+      "isTuoguan": false,
+      "isYuantouFlagship": false
+    },
+    "featureBadge": null,
+    "companyName": "义乌市速华贸易有限公司",
+    "loginId": "速华sokr",
+    "userId": "3937740830",
+    "videos": [],
+    "foundedYear": null,
+    "sellerType": "normal",
+    "isOnline": true,
+    "fans": "686",
+    "tpYear": 9,
+    "mainCategory": "服饰配件、饰品",
+    "address": "浙江江东街道青岩刘A区47号2单元202",
+    "coordinates": "120.08903,29.28704",
+    "rank": null,
+    "certification": {
+      "type": null,
+      "number": null,
+      "reportUrl": null
+    },
+    "legalCompanyName": "义乌市速华贸易有限公司",
+    "originMerchant": null,
+    "shopUrl": "https://winport.m.1688.com/page/index.html?newRender=true&memberId=b2b-3937740830b3b90&upstreamSource=share&__existtitle__=1",
+    "imUrl": "https://wangwang.m.1688.com/chat?siteid=cnalichn&clientid=速华sokr",
+    "factoryTags": [],
+    "stats": {
+      "repeatBuyers": null,
+      "crossBorderBuyers": null,
+      "brandPartner": null,
+      "repeatRate": null,
+      "positiveReviewRate": null,
+      "responseRate": null,
+      "factoryArea": null,
+      "employees": null,
+      "patents": null,
+      "mainDevices": null,
+      "scaleTier": null,
+      "certifications": null,
+      "ownBrand": null,
+      "rawCardDetail": [],
+      "totalOffers": 285
+    }
+  },
+  "sourceKeyword": "",
+  "specs": [
+    {
+      "name": "表壳材质",
+      "value": "塑料"
+    },
+    {
+      "name": "品牌",
+      "value": "SOK"
+    },
+    {
+      "name": "表带材质",
+      "value": "硅胶"
+    },
+    {
+      "name": "机芯种类",
+      "value": "太阳能"
+    },
+    {
+      "name": "适用人群",
+      "value": "通用"
+    },
+    {
+      "name": "镜面材质",
+      "value": "塑料镜面"
+    },
+    {
+      "name": "特殊功能",
+      "value": "S123"
+    },
+    {
+      "name": "防水",
+      "value": "不可以"
+    },
+    {
+      "name": "机芯产地",
+      "value": "中国"
+    },
+    {
+      "name": "表盘直径",
+      "value": "36-40MM"
+    },
+    {
+      "name": "表盘形状",
+      "value": "圆形"
+    },
+    {
+      "name": "售后服务",
+      "value": "店铺保修"
+    },
+    {
+      "name": "颜色",
+      "value": "黑色,白色,粉色"
+    },
+    {
+      "name": "上市年份/季节",
+      "value": "2022年春季"
+    },
+    {
+      "name": "风格",
+      "value": "无"
+    },
+    {
+      "name": "产地",
+      "value": "中国大陆"
+    },
+    {
+      "name": "风格分类",
+      "value": "无明显风格"
+    },
+    {
+      "name": "流行元素分类",
+      "value": "字母/数字/文字"
+    }
+  ],
+  "images": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01wSMc2f1I0BqR8rw4G_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01rHEpOg1I0BqPX4Zid_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN015MKxOA1I0BqQmAj3W_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01f2W2iK1I0BqQGpUgo_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01cmB4461I0BqQUbzbA_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01TZwYAS1I0BqQD0aLy_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01MQI9641I0BqQm9imf_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01ajlaMw1I0BqQJXrto_!!3937740830-0-cib.jpg"
+  ],
+  "videoUrl": "",
+  "dropship": {
+    "enabled": true,
+    "consignPrice": null,
+    "consignPriceTiers": [],
+    "channels": [],
+    "channelDetails": [],
+    "protections": [],
+    "downstreamPerformance": null,
+    "metrics": {
+      "orders30d": null,
+      "orders7d": null,
+      "pickupRate48h": null,
+      "pickupRate24h": null,
+      "distributorCount": null,
+      "downstreamStoreCount": null,
+      "publishDate": null
+    }
+  },
+  "shipping": {
+    "deliveryHours": 48,
+    "deliveryDays": 2,
+    "carrier": "中通快递",
+    "logisticsText": "承诺48小时发货·常发中通快递",
+    "unitWeight": 0.051,
+    "location": "浙江省金华市",
+    "postFee": 0,
+    "isFreeShipping": false,
+    "freeShippingThreshold": null,
+    "protectionInfos": [],
+    "templateRemark": null,
+    "locationCode": "330783"
+  },
+  "categoryId": "124272002",
+  "topCategoryId": "54",
+  "categoryName": "电子表",
+  "categoryPath": "服饰配件、饰品 > 表 > 电子表",
+  "unit": "个",
+  "saledCount": 2470,
+  "saledCountStr": "2400+",
+  "winportUrl": "https://winport.1688.com/page/index.html?memberId=b2b-3937740830b3b90&_tabId_=offerlist&upstreamSource=od&offerId=1002503608667",
+  "descriptionUrl": "https://air.1688.com/pages/od/app-desc/d7p56fw2w/index.html?url=https://itemcdn.tmall.com/1688offer/icoss271879268a10b60638c88f6fa&offerId=1002503608667&sellerLoginId=速华sokr",
+  "isOutOfStock": false,
+  "isCrossBorderTrade": false,
+  "wantBuyCount": 1542,
+  "recentSoldCount": 2470,
+  "soldDisplay": "已售2400+件",
+  "stock": 26665940,
+  "minOrderQuantity": 1,
+  "supportsMix": false,
+  "mixWholesale": null,
+  "serviceLabels": [
+    "品质不符包赔",
+    "7天无理由退货",
+    "严选晚发必赔"
+  ],
+  "skuImages": [],
+  "promotions": [],
+  "productFlags": {
+    "isSkuOffer": true,
+    "isPreSell": false,
+    "isConsignMarket": false,
+    "isFreeSample": false,
+    "isBuyerProtection": true,
+    "isWeChatSupply": false,
+    "isCrossBorder": true,
+    "isOnePiece": false,
+    "isWholesale": true,
+    "isToTikTok": false,
+    "isToKuaiShou": false,
+    "isSupportMix": false,
+    "hasRelationOffer": false,
+    "isChtSingleOffer": true,
+    "isDetailForbidden": false,
+    "supportsCustomization": false
+  },
+  "unitWeight": 0.051,
+  "purchaseLimits": {
+    "personalLimit": null,
+    "promotionLimit": null
+  },
+  "supportsSampling": false,
+  "customization": {
+    "supported": false,
+    "title": null,
+    "shortTitle": null
+  },
+  "title": "初高中学生手表青少年电子表男款运动高颜值ins学院风男女时间表",
+  "quantityPrices": [
+    {
+      "quantityRange": "≥1个",
+      "quantityMin": 1,
+      "quantityMax": null,
+      "price": 5.01
+    }
+  ],
+  "price": {
+    "min": 5.01,
+    "max": 5.01,
+    "currency": "CNY"
+  },
+  "detailUrl": "https://detail.1688.com/offer/1002503608667.html",
+  "services": [
+    {
+      "name": "品质不符包赔",
+      "code": "yxpzbf",
+      "description": "“品质不符包赔”服务是指当买家在1688x严选购买带有“品质不符包赔”标识的商品后，依照规范发起商品问题退货退款的，经平台认定可支持问题商品退货退款并支付部分赔偿，赔偿金额将以赔付红包的形式进行发放",
+      "linkUrl": "https://pages-fast.1688.com/wow/cbu/default/defaultv1/TQCfKypffJ/index.html?wh_pid=4305327"
+    },
+    {
+      "name": "7天无理由退货",
+      "code": "qtwlybt",
+      "description": "满足相应条件下，卖家需支持7天无理由，其中定制订单不支持“7天无理由退货”。",
+      "linkUrl": null
+    },
+    {
+      "name": "严选晚发必赔",
+      "code": "yxwfbp",
+      "description": "若商家未按订单约定的时间发货，您可以在订单详情申请赔付【享受升级赔付标准】（在通用理赔基础之上，特定违规场景额外加码：单笔可多赔，或赔付上限最高提升250元）",
+      "linkUrl": null
+    }
+  ],
+  "coupons": [],
+  "descriptionImages": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01ZGQiiR1I0BqQJa5Bl_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN0137N1Y71I0BqQD0Jns_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01f1ZNew1I0BqQry1gt_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01zJ9xsI1I0BqQD1KAf_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01lhpklq1I0BqQmCwOw_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01JHsZ8I1I0BqPr6MwE_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01pVxhj11I0BqQXAA7S_!!3937740830-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01vd8Exu1I0BqLDV4Al_!!3937740830-0-cib.jpg"
+  ],
+  "descriptionText": null
+}

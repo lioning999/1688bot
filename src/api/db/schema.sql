@@ -48,8 +48,10 @@ CREATE TABLE analysis (
   apify_task_id   VARCHAR(50) COMMENT 'Apify 任务 ID',
 
   -- 完整数据
-  result_json     TEXT COMMENT '完整分析结果 JSON',
-  display_i18n    TEXT COMMENT '翻译后 display JSON。按需单语言存储 {lang: display}，回看其他语言时懒加载追加',
+  raw_json        MEDIUMTEXT COMMENT 'Apify 原始返回 JSON（唯一数据源，不可丢）',
+  result_json     TEXT COMMENT '[已废弃] 完整分析结果 JSON — V2 由 raw_json 重跑 mapper 替代',
+  display_i18n    TEXT COMMENT '翻译后 display JSON {lang: display}。分析时只存当前语言，切语言时懒加载追加',
+  favorited       TINYINT(1) DEFAULT 0 COMMENT '收藏状态 0=未收藏 1=收藏（收藏后不参与 FIFO 自动清理）',
 
   -- 时间戳
   created_at      DATETIME DEFAULT NOW(),

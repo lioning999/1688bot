@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from fastapi import APIRouter, Request
+from pydantic import BaseModel, field_validator
 
 from services.analyze_svc import analyze_service
 from utils.exceptions import AppError, ValidationError
@@ -52,6 +53,37 @@ async def delete_history(analysis_id: int, request: Request) -> dict[str, Any]:
 
     logger.info(f"[History] 删除成功 id={analysis_id} user_id={user_id}")
     return {"code": 200, "msg_code": "DELETE_OK", "data": None, "message": "已删除"}
+
+
+class FavoriteRequest(BaseModel):
+    analysis_id: int
+
+    @field_validator("analysis_id")
+    @classmethod
+    def must_be_valid(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("无效的记录ID")
+        return v
+
+
+@router.post("/api/history/favorite")
+async def toggle_favorite(body: FavoriteRequest, request: Request) -> dict[str, Any]:
+    """切换历史记录的收藏状态。收藏后不参与 FIFO 自动清理。
+
+    需 JWT 认证。
+    """
+    user_id: int = getattr(request.state, "user_id", 0) or 0
+    if not user_id:
+        raise AppError(message="请先登录", code="LOGIN_REQUIRED", msg_code="LOGIN_REQUIRED",
+                       http_status=401)
+
+    result = await analyze_service.toggle_favorite(body.analysis_id, user_id)
+    if result is None:
+        raise AppError(message="记录不存在或无权操作", code="HISTORY_NOT_FOUND",
+                       msg_code="HISTORY_NOT_FOUND", http_status=404)
+
+    logger.info(f"[History] 收藏切换 id={body.analysis_id} user_id={user_id} → {'★' if result else '☆'}")
+    return {"code": 200, "msg_code": "OK", "data": {"favorited": result}, "message": "ok"}
 
 
 @router.get("/api/report/{offer_id}")

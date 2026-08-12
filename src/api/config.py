@@ -65,6 +65,9 @@ class Config:
     SIGNUP_BONUS_QUOTA: int = int(os.getenv("SIGNUP_BONUS_QUOTA", "10"))        # 注册一次性赠送
     DAILY_FREE_QUOTA: int = int(os.getenv("DAILY_FREE_QUOTA", "3"))              # free tier 每日地板
     DAILY_PAID_QUOTA: int = int(os.getenv("DAILY_PAID_QUOTA", "20"))             # paid tier 每日地板
+    # ---- 历史记录上限 ----
+    HISTORY_FREE_MAX: int = int(os.getenv("HISTORY_FREE_MAX", "20"))             # free tier 历史记录上限
+    HISTORY_PAID_MAX: int = int(os.getenv("HISTORY_PAID_MAX", "100"))            # paid tier 历史记录上限
     QWEN_TIMEOUT: float = float(os.getenv("QWEN_TIMEOUT", "20.0"))
     OAUTH_TIMEOUT: float = float(os.getenv("OAUTH_TIMEOUT", "15.0"))
     PROXY_TIMEOUT: float = float(os.getenv("PROXY_TIMEOUT", "15.0"))
@@ -77,6 +80,7 @@ class Config:
     # ---- 业务常量 ----
     CNY_USD_RATE: float = float(os.getenv("CNY_USD_RATE", "7.2"))
     TASK_TTL: int = int(os.getenv("TASK_TTL", "1800"))
+    DISPLAY_VERSION: int = 1  # display_i18n 版本号，改 prompt/glossary 后递增触发重建
 
     # ---- 汇率（1 USD = X 本地货币） ----
     FX_VND: float = float(os.getenv("FX_VND", "25450"))

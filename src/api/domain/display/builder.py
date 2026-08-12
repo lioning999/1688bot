@@ -27,9 +27,18 @@ def _glossary(key: str, lang: str, default: str = "") -> str:
     entry: Any = GL.get(key, {})
     if not isinstance(entry, dict):
         return default or key
+    if not entry:  # key 不在 glossary 中 → 返回 default，绝不泄漏 raw key
+        return default
     d: dict[str, str] = cast(dict[str, str], entry)
-    en_value: str = d.get("en", default or key)  # type: ignore[assignment]  # Pylance 无法识别 dict.get 的 default 重载
-    return d.get(lang, en_value)  # type: ignore[return-type]
+    # lang → en → zh 降级链；跳过 "TODO" 占位符
+    text: str = d.get(lang, "")
+    if (not text or text == "TODO") and lang != "en":
+        text = d.get("en", "")
+    if not text or text == "TODO":
+        text = d.get("zh", "")
+    if not text or text == "TODO":
+        text = default
+    return text
 
 # ====================================================================
 # Path 1: 星级符号（Unicode，不需要翻译）

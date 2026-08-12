@@ -22,11 +22,12 @@ callback_router = APIRouter(tags=["auth-callback"])
 
 
 @auth_router.get("/google/login")
-async def google_login(redirect: str = "", platform: str = ""):
+async def google_login(redirect: str = "", platform: str = "", ext_id: str = ""):
     """跳转到 Google OAuth 授权页。
 
     - redirect: Web 登录完成后返回的页面路径（如 /history）
     - platform: "extension" 时走 Chrome 插件流程（回调到 chromiumapp.org）
+    - ext_id: Chrome 插件 ID（本地开发 ID 不固定，由 service worker 动态传入）
 
     仅允许相对路径（以 / 开头且不含 ://），防止 Open Redirect 攻击（Bug #11）。
     """
@@ -36,9 +37,9 @@ async def google_login(redirect: str = "", platform: str = ""):
         if redirect not in ALLOWED_REDIRECT_PATHS:
             logger.warning(f"Blocked open redirect attempt: {redirect}")
             redirect = ""
-    # 构造 state：插件流用 "extension"，Web 流用 redirect 路径
+    # 构造 state：插件流用 "extension:" + ext_id，Web 流用 redirect 路径
     if platform == "extension":
-        state = "extension"
+        state = "extension:" + (ext_id or Config.CHROME_EXTENSION_ID)
     else:
         state = redirect
     url = auth_service.get_auth_url(state=state)
@@ -61,8 +62,8 @@ async def google_callback(code: str | None = None, state: str = "",
     if error or not code:
         reason = error or "no_code"
         logger.warning(f"[Auth] Google 回调缺少 code: reason={reason} state={state}")
-        if state == "extension":
-            ext_id = Config.CHROME_EXTENSION_ID
+        if state.startswith("extension:"):
+            ext_id = state.split(":", 1)[1]
             return RedirectResponse(url=f"https://{ext_id}.chromiumapp.org/?error=auth_failed", status_code=302)
         return RedirectResponse(url="/?error=auth_failed", status_code=302)
     try:
@@ -70,15 +71,15 @@ async def google_callback(code: str | None = None, state: str = "",
         logger.info(f"[Auth] Google 回调成功 user_id={result['user']['id']} state={state}")
     except ExternalServiceError as e:
         logger.warning(f"[Auth] Google 回调失败: {e} state={state}")
-        if state == "extension":
-            ext_id = Config.CHROME_EXTENSION_ID
+        if state.startswith("extension:"):
+            ext_id = state.split(":", 1)[1]
             return RedirectResponse(url=f"https://{ext_id}.chromiumapp.org/?error=auth_failed", status_code=302)
         return RedirectResponse(url="/?error=auth_failed", status_code=302)
 
     token = result["access_token"]
     # 插件流 → 302 到 chromiumapp.org（Chrome 拦截，不会真发网络请求）
-    if state == "extension":
-        ext_id = Config.CHROME_EXTENSION_ID
+    if state.startswith("extension:"):
+        ext_id = state.split(":", 1)[1]
         redirect_url = f"https://{ext_id}.chromiumapp.org/?token={token}"
         return RedirectResponse(url=redirect_url, status_code=302)
     # Web 流 → 302 到首页（cookie 传 token）

@@ -787,10 +787,10 @@
     "th": "🏭 โรงงานจำหน่ายตรง"
   },
   "supp_dim_d1_label_trader": {
-    "zh": "⚠️贸易商",
-    "en": "⚠️ Trader",
-    "vi": "⚠️ Công Ty",
-    "th": "⚠️ บริษัท"
+    "zh": "⚠️类型",
+    "en": "⚠️ Type",
+    "vi": "⚠️ Loại",
+    "th": "⚠️ ประเภท"
   },
   "supp_dim_d1_name": {
     "zh": "身份",

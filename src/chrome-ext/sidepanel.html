@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sourcely</title>
+<link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+
+<!-- ===== Tab 导航 ===== -->
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="report" data-i18n="tab.report">分析报告</button>
+  <button class="tab-btn" data-tab="history" data-i18n="tab.history">历史记录</button>
+  <button class="logout-btn" id="btnLogout" style="display:none;" title="退出登录">←</button>
+</nav>
+
+<!-- ================================================================== -->
+<!-- 分析报告页 -->
+<!-- ================================================================== -->
+<main id="tab-report" class="tab-content active">
+
+  <!-- 空态：非 1688 -->
+  <div class="empty-state" id="emptyNot1688" style="display:none">
+    <div class="empty-icon">🛒</div>
+    <p data-i18n="report.goto1688">请在 1688 产品页面使用此插件</p>
+    <a href="https://www.1688.com" target="_blank" data-i18n="report.goto1688Btn">打开 1688 →</a>
+  </div>
+
+  <!-- 空态：未登录 -->
+  <div class="empty-state" id="emptyNotLoggedIn" style="display:none">
+    <div class="empty-icon">🔐</div>
+    <p data-i18n="plugin.loginRequired">登录后即可分析该供应商</p>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn" data-lang="zh">中文</button>
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="vi">Tiếng Việt</button>
+      <button class="lang-btn" data-lang="th">ภาษาไทย</button>
+    </div>
+    <button class="btn-primary" id="btnLogin" data-i18n="plugin.loginBtn">Sign in with Google</button>
+  </div>
+
+  <!-- 空态：分析中 -->
+  <div class="empty-state" id="emptyLoading" style="display:none">
+    <div class="spinner"></div>
+    <p data-i18n="report.analyzing">正在分析该供应商...</p>
+    <p class="sub-text" data-i18n="report.analyzeTime">预计 10–15 秒</p>
+  </div>
+
+  <!-- 空态：分析失败 -->
+  <div class="empty-state" id="emptyError" style="display:none">
+    <div class="empty-icon">⚠️</div>
+    <p id="errorMessage" data-i18n="report.analyzeFailed">分析失败，请重试</p>
+    <button class="btn-secondary" id="btnRetry" data-i18n="report.retry">重试</button>
+  </div>
+
+  <!-- 等待分析 -->
+  <div class="empty-state" id="emptyIdle" style="display:none">
+    <button class="btn-primary" id="btnAnalyze" data-i18n="plugin.analyzeBtn">生成报告</button>
+    <div class="quota-info" id="quotaInfo">
+      <span data-i18n="plugin.quotaRemaining">今日剩余</span>: <strong id="quotaRemaining">—</strong>
+    </div>
+  </div>
+
+  <!-- ===== 报告内容（分析完成后显示） ===== -->
+  <div id="inspectContent" style="display:none;">
+
+    <!-- 切换检测条：切到不同1688商品时显示 -->
+    <div class="detect-bar" id="detectBar" style="display:none;">
+      <span class="detect-bar-text">🔍 检测到新商品</span>
+      <button class="detect-bar-btn" id="detectBarBtn">分析当前</button>
+    </div>
+
+    <!-- ① 产品确认 + ② 综合结论 -->
+    <section class="card">
+      <div class="p01" id="p01Card">
+        <div class="report-meta" id="reportMeta" style="display:none;"></div>
+        <img class="p01-img" id="p01Img" src="" alt="" referrerpolicy="no-referrer" loading="lazy">
+        <div class="p01-info">
+          <div class="p01-title" id="p01Title">—</div>
+          <div class="p01-price-hero">
+            <span class="p01-currency">¥</span><b id="p01Price">—</b>
+            <span class="p01-unit" id="p01Unit">/件</span>
+          </div>
+          <div class="p01-meta" id="p01Meta">
+            <span>📦 <span data-i18n="report.moqLabel">起订</span> <b id="p01Moq">—</b></span>
+            <span>📊 <span data-i18n="report.monthlySales">月销</span> <b id="p01Sales">—</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p01-tier" id="p01Tier" style="display:none;">
+        <span id="p01TierText">—</span>
+      </div>
+
+      <hr class="card-divider">
+
+      <div class="sec-label" data-i18n="report.summary">📋 综合结论</div>
+      <div class="s2-headline none" id="s2Headline">—</div>
+      <div class="s2-reason" id="s2Reason"></div>
+    </section>
+
+    <!-- ③ 产品验证 + ④ 供应商验证 -->
+    <section class="card">
+      <!-- 📦 产品验证 -->
+      <div class="eval-group open" id="productEvalGroup">
+        <div class="eval-group-header" data-action="toggleGroup">
+          <div class="eval-group-top">
+            <span class="eval-group-title" data-i18n="inspect.productEvalTitle">📦 产品验证</span>
+            <span class="eval-group-score none" id="productEvalScore">—/18 <span data-i18n="report.scoreUnit">分</span></span>
+            <span class="eval-group-chevron">▼</span>
+          </div>
+          <div class="eval-group-desc" id="productEvalDesc"></div>
+        </div>
+        <div class="eval-group-body" id="productEvalBody">
+          <!-- JS 动态填充 -->
+        </div>
+      </div>
+
+      <!-- 🏭 供应商验证 -->
+      <div class="eval-group open" id="supplierEvalGroup">
+        <div class="eval-group-header" data-action="toggleGroup">
+          <div class="eval-group-top">
+            <span class="eval-group-title" data-i18n="inspect.supplierEvalTitle">🏭 供应商验证</span>
+            <span class="eval-group-score none" id="supplierEvalScore">—/9 <span data-i18n="report.scoreUnit">分</span></span>
+            <span class="eval-group-chevron">▼</span>
+          </div>
+          <div class="eval-group-desc" id="supplierEvalDesc"></div>
+        </div>
+        <div class="eval-group-body" id="supplierEvalBody">
+          <!-- JS 动态填充 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑤ 拿样验货 -->
+    <section class="card">
+      <div class="sec-label" data-i18n="inspect.sampleTitle">📦 拿样验货</div>
+
+      <!-- 流程条 -->
+      <div class="sample-flow">
+        <span data-i18n="inspect.flowStep1">① 付定金</span>
+        <span class="sample-flow-arrow">→</span>
+        <span data-i18n="inspect.flowStep2">② 验货拍照</span>
+        <span class="sample-flow-arrow">→</span>
+        <span data-i18n="inspect.flowStep3">③ 付尾款</span>
+        <span class="sample-flow-arrow">→</span>
+        <span data-i18n="inspect.flowStep4">④ 国际发货</span>
+      </div>
+
+      <!-- 验货实拍 — 默认折叠 -->
+      <div class="inspect-section">
+        <div class="inspect-hero" data-action="toggleInspect">
+          <span class="inspect-hero-closed" data-i18n="inspect.viewSamplePhotos">📸 查看验货实拍样例 ▸</span>
+          <span class="inspect-hero-open" style="display:none;" data-i18n="inspect.whatWeCheck">📸 我们帮你验什么、拍什么 ▾</span>
+        </div>
+        <div class="inspect-body" style="display:none;">
+          <div class="photo-grid">
+            <div class="photo-item"><div class="photo-placeholder">
+              <span class="photo-icon">📷</span><span data-i18n="inspect.photoFront">正面全景</span>
+            </div></div>
+            <div class="photo-item"><div class="photo-placeholder">
+              <span class="photo-icon">📷</span><span data-i18n="inspect.photoSide">侧面细节</span>
+            </div></div>
+            <div class="photo-item"><div class="photo-placeholder">
+              <span class="photo-icon">📷</span><span data-i18n="inspect.photoBack">背面标签</span>
+            </div></div>
+            <div class="photo-item"><div class="photo-placeholder">
+              <span class="photo-icon">📷</span><span data-i18n="inspect.photoDefect">瑕疵特写</span>
+            </div></div>
+            <div class="photo-item"><div class="photo-placeholder">
+              <span class="photo-icon">📷</span><span data-i18n="inspect.photoPackage">包装外观</span>
+            </div></div>
+            <div class="photo-item"><div class="photo-placeholder">
+              <span class="photo-icon">📷</span><span data-i18n="inspect.photoSku">SKU 色卡</span>
+            </div></div>
+          </div>
+
+          <div class="inspect-checklist">
+            <div class="inspect-check-title" data-i18n="inspect.checkTitle">🔍 每件检查</div>
+            <div class="inspect-check-items">
+              <span class="check-tag" data-i18n="inspect.checkColor">颜色对版</span>
+              <span class="check-tag" data-i18n="inspect.checkDefect">做工缺陷</span>
+              <span class="check-tag" data-i18n="inspect.checkCount">数量准确</span>
+              <span class="check-tag" data-i18n="inspect.checkLabel">标签一致</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- 数量 -->
+      <div style="display:flex;align-items:center;margin-bottom:var(--s3);">
+        <span data-i18n="inspect.qtyLabel" style="font-size:var(--fs-sm);font-weight:600;color:var(--ink);margin-right:var(--s2);">数量</span>
+        <div class="qty-ctl">
+          <button id="qtyMinus">−</button>
+          <span id="qtyVal">2</span>
+          <button id="qtyPlus">+</button>
+        </div>
+        <span id="moqHint" style="font-size:var(--fs-xs);color:var(--ink-3);margin-left:var(--s2);">起订 1 件</span>
+      </div>
+
+      <!-- 费用明细 -->
+      <div class="fee-box">
+        <div class="fee-block">
+          <div class="fee-head"><span data-i18n="inspect.deposit">定金</span> <b id="depositTotal">¥—</b></div>
+          <div class="fee-item"><span class="fee-dot"></span><span data-i18n="inspect.productLabel">商品</span> ¥<b id="feeUnitPrice">—</b> × <b id="feeQty">2</b> <span data-i18n="inspect.piecesUnit">件</span></div>
+          <div class="fee-item"><span class="fee-dot"></span><span data-i18n="inspect.domesticFreight">国内运费</span> ¥10.00</div>
+        </div>
+        <div class="fee-block">
+          <div class="fee-head"><span data-i18n="inspect.balance">尾款</span> <b id="balanceTotal">$—</b></div>
+          <div class="fee-item fee-note" data-i18n="inspect.balanceNote">验货确认后付（国际运费 + 服务费）</div>
+        </div>
+        <div class="fee-total"><span data-i18n="inspect.totalEstimate">合计约</span> <b id="totalFee">$—</b></div>
+      </div>
+
+      <!-- 服务保障 -->
+      <div class="inspect-guarantee">
+        <div data-i18n="inspect.guarantee1">✅ 验货不满意 → 退全部定金</div>
+        <div data-i18n="inspect.guarantee2">✅ 缺货/不发货 → 全额退款，帮找同款</div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-top">
+        <a href="https://wa.me/8618561525786" class="btn cta-wa" target="_blank" data-i18n="inspect.ctaButton">💬 WhatsApp 拿样</a>
+      </div>
+    </section>
+
+  </div><!-- #inspectContent -->
+
+</main>
+
+<!-- ================================================================== -->
+<!-- 历史记录页 -->
+<!-- ================================================================== -->
+<main id="tab-history" class="tab-content">
+  <div class="history-search">
+    <input type="search" id="historySearch" data-i18n-placeholder="history.searchPlaceholder" placeholder="搜索历史记录...">
+  </div>
+  <div id="historyCounter" class="history-counter" style="display:none;"></div>
+  <div id="historyList" class="history-list">
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <p data-i18n="history.empty">暂无历史记录</p>
+    </div>
+  </div>
+</main>
+
+<script src="lib/i18n.js"></script>
+<script src="lib/api.js"></script>
+<script src="history.js"></script>
+<script src="sidepanel.js"></script>
+</body>
+</html>

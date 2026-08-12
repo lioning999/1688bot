@@ -4,6 +4,7 @@ __pycache__/
 .pid
 /tmp/
 *.log
+src/api/db/apify_usage.jsonl
 .claude/
 client_secret_*.json
 *.pyc

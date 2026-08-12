@@ -161,7 +161,7 @@ def _supplier_fatal(signals: dict[str, Any]) -> dict[str, Any] | None:
             "score": 0, "max_score": 9,
             "grade": "bad", "tier": "fatal_blackbox",
             "summary": verdict("supp_summary_fatal"),
-            "verdict": verdict("suppverdict_fatal_blackbox"),
+            "verdict": verdict("supp_verdict_fatal_blackbox"),
             "dimensions": [signals["d1"], signals["d2"], signals["d3"]],
             "fatal_reason": "blackbox", "skip_reason": None,
             "signals": signals,
@@ -247,21 +247,21 @@ def _supplierverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     # tier → (verdict_key, summary_key, grade)
     if tier == "skip":
         missing = (0 if signals["has_id"] else 1) + (0 if signals["has_years"] else 1)
-        v = verdict("suppverdict_skip_nodata", missing_count=str(missing))
+        v = verdict("supp_verdict_skip_nodata", missing_count=str(missing))
         summary_kv, grade = verdict("supp_summary_skip"), "none"
     elif tier == "fatal_blackbox":
-        v, summary_kv, grade = verdict("suppverdict_fatal_blackbox"), verdict("supp_summary_fatal"), "bad"
+        v, summary_kv, grade = verdict("supp_verdict_fatal_blackbox"), verdict("supp_summary_fatal"), "bad"
     elif tier == "trust_strong2":
-        v = verdict("suppverdict_trust_strong2",
+        v = verdict("supp_verdict_trust_strong2",
                      good_part_keys=good_keys, years=years_str, cert_text=cert_display)
         summary_kv, grade = verdict("supp_summary_trust"), "go"
     elif tier == "usable_ok":
-        v = verdict("suppverdict_usable_ok",
+        v = verdict("supp_verdict_usable_ok",
                      good_part_keys=good_keys, bad_part_keys=bad_keys,
                      years=years_str, cert_text=cert_type, action_key=action_key)
         summary_kv, grade = verdict("supp_summary_usable"), "ok"
     else:  # caution_weak2
-        v = verdict("suppverdict_caution_weak2",
+        v = verdict("supp_verdict_caution_weak2",
                      bad_part_keys=bad_keys, good_part_keys=good_keys,
                      years=years_str, cert_text=cert_type, action_key=action_key)
         summary_kv, grade = verdict("supp_summary_caution"), "bad"

@@ -13,7 +13,7 @@ from typing import Any
 # {offer_id: (timestamp, data)}
 cache: OrderedDict[str, tuple[float, dict[str, Any]]] = OrderedDict()
 MAX_SIZE = 500
-TTL = 43200  # 12 小时
+TTL = 108000  # 30 小时
 
 
 def get(offer_id: str) -> dict[str, Any] | None:

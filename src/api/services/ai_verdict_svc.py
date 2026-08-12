@@ -132,13 +132,12 @@ async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
         logger.exception("[AI判词] pack_ai_input 失败，降级模板")
         return display
 
-    # 5. 构建 system prompt
-    lang_names: dict[str, str] = {"en": "English", "vi": "Vietnamese", "th": "Thai"}
-    lang_name: str = lang_names.get(lang, "English")
-    market_note: str = str(_VP_AI.get("market_notes", {}).get(lang, ""))
-    system_prompt: str = _VP_AI["system"].replace("{lang_name}", lang_name).replace(
-        "{market_note}", market_note,
-    )
+    # 5. 构建 system prompt（每种语言独立的母语 prompt，杜绝翻译腔）
+    prompt_config: dict[str, Any] = _VP_AI.get(lang, _VP_AI.get("en", {}))
+    system_prompt: str = prompt_config.get("system", "")
+    if not system_prompt:
+        logger.warning(f"[AI判词] 语言 {lang} 无 system prompt，降级模板")
+        return display
 
     # 6. 调 Qwen（8s 超时）
     t0: float = time.time()
@@ -179,7 +178,7 @@ async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
     if not ai:
         return display
 
-    # 8. 逐字段合并（独立校验，单字段失败不影响其他）
+    # 8. 逐字段合并（title + supplierName + 判词，逐字段校验）
     _merge_ai_verdicts(display, ai, ai_input)
 
     # 9. 标记 AI 生成（translator 据此跳过翻译）
@@ -205,47 +204,11 @@ def _merge_ai_verdicts(
     ai: dict[str, Any],
     ai_input: dict[str, Any],
 ) -> None:
-    """逐字段独立校验 + 替换。单个字段失败不影响其他字段。
+    """AI 输出合并：翻译 title + supplierName + 判词语优化。
 
-    替换映射：
-      productEval.verdict    ← ai.product_verdict    (校验: must_mention)
-      supplierEval.verdict   ← ai.supplier_verdict   (校验: supplier_must_mention)
-      summaryLine.reason     ← ai.summary_verdict    (校验: 数字 + 禁止表述)
-      title                  ← ai.translated_title   (基础检查)
-      factory.supplierName   ← ai.translated_supplier_name (基础检查)
+    判词逐字段校验：数字必须与 dimensions 数据一致，禁止表述不得出现。
+    校验失败 → 该字段保留 glossary 模板，不阻塞其他字段。
     """
-    # productEval.verdict — 仅检查 product 维度数字
-    pv: str = str(ai.get("product_verdict", ""))
-    if pv and pv.strip():
-        pv = pv.strip()
-        if validate_ai_output(pv, ai_input.get("must_mention", []), ai_input,
-                              dimension_sections=("product",)):
-            if "productEval" in display:
-                display["productEval"]["verdict"] = pv
-        else:
-            logger.info("[AI判词] product_verdict 校验失败，保留模板")
-
-    # supplierEval.verdict — 仅检查 supplier 维度数字
-    sv: str = str(ai.get("supplier_verdict", ""))
-    if sv and sv.strip():
-        sv = sv.strip()
-        if validate_ai_output(sv, ai_input.get("supplier_must_mention", []), ai_input,
-                              dimension_sections=("supplier",)):
-            if "supplierEval" in display:
-                display["supplierEval"]["verdict"] = sv
-        else:
-            logger.info("[AI判词] supplier_verdict 校验失败，保留模板")
-
-    # summaryLine.reason — 检查所有维度数字（默认 product + supplier）
-    sum_v: str = str(ai.get("summary_verdict", ""))
-    if sum_v and sum_v.strip():
-        sum_v = sum_v.strip()
-        if validate_ai_output(sum_v, [], ai_input):
-            if "summaryLine" in display:
-                display["summaryLine"]["reason"] = sum_v
-        else:
-            logger.info("[AI判词] summary_verdict 校验失败，保留模板")
-
     # title（基础检查：非空 + 长度合理）
     title: str = str(ai.get("translated_title", ""))
     if title and title.strip() and len(title.strip()) > 3:
@@ -256,3 +219,22 @@ def _merge_ai_verdicts(
     if sname and sname.strip() and len(sname.strip()) > 1:
         if "factory" in display:
             display["factory"]["supplierName"] = sname.strip()
+
+    # 判词语优化（逐字段校验，失败 → 保留 glossary 模板）
+    _verdict_fields: list[tuple[str, str, tuple[str, ...]]] = [
+        ("product_verdict", "productEval", ("product",)),
+        ("supplier_verdict", "supplierEval", ("supplier",)),
+        ("summary_verdict", "summaryLine", ("product", "supplier")),
+    ]
+    for ai_key, display_key, dim_sections in _verdict_fields:
+        ai_text: str = str(ai.get(ai_key, ""))
+        if not ai_text or not ai_text.strip():
+            continue
+        if validate_ai_output(ai_text, [], ai_input, dim_sections):
+            if display_key in display and isinstance(display[display_key], dict):
+                display[display_key]["verdict"] = ai_text.strip()
+        else:
+            logger.warning(
+                f"[AI判词] {ai_key} 校验失败，降级 glossary | "
+                f"text={ai_text[:80]}..."
+            )

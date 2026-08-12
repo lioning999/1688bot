@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>源采 Sourcely — 1688 验货报告</title>
+<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="static/css/inspect.css">
+</head>
+<body>
+
+<div id="appNav"></div>
+
+<main class="view" id="inspectView">
+
+  <!-- ===== 骨架屏 ===== -->
+  <div id="skeleton">
+    <section class="card">
+      <div style="display:flex;gap:var(--s3);">
+        <div style="width:150px;height:150px;border-radius:var(--r);background:var(--line-soft);flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="height:20px;background:var(--line-soft);border-radius:4px;margin-bottom:var(--s2);width:80%;"></div>
+          <div style="height:28px;background:var(--line-soft);border-radius:4px;width:40%;margin-bottom:var(--s2);"></div>
+          <div style="height:14px;background:var(--line-soft);border-radius:4px;width:60%;"></div>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <div style="height:16px;background:var(--line-soft);border-radius:4px;margin-bottom:var(--s3);width:30%;"></div>
+      <div style="height:40px;background:var(--line-soft);border-radius:var(--r);margin-bottom:var(--s2);"></div>
+      <div style="height:14px;background:var(--line-soft);border-radius:4px;width:70%;"></div>
+    </section>
+    <section class="card">
+      <div style="height:40px;background:var(--line-soft);border-radius:var(--r);margin-bottom:var(--s3);"></div>
+      <div style="height:60px;background:var(--line-soft);border-radius:var(--r);margin-bottom:var(--s2);"></div>
+      <div style="height:60px;background:var(--line-soft);border-radius:var(--r);"></div>
+    </section>
+  </div>
+
+  <!-- ===== 错误态 ===== -->
+  <div id="inspectError" style="display:none;">
+    <section class="card" style="text-align:center;padding:var(--s6) var(--s4);">
+      <div style="font-size:48px;margin-bottom:var(--s3);">🔍</div>
+      <div id="errorTitle" data-i18n="inspect.errorTitle" style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;color:var(--ink);margin-bottom:var(--s2);">无法加载验货报告</div>
+      <div id="errorMsg" data-i18n="inspect.errorMsg" style="font-size:var(--fs-sm);color:var(--ink-3);margin-bottom:var(--s4);">请返回首页重新搜索</div>
+      <a href="/" data-i18n="inspect.backHome" style="display:inline-block;padding:var(--s2) var(--s5);background:var(--brand);color:#fff;border-radius:var(--r);text-decoration:none;font-weight:600;font-size:var(--fs-sm);">← 返回首页</a>
+    </section>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <input type="text" id="searchInput" data-i18n-placeholder="search.placeholder" placeholder="粘贴 1688 商品链接...">
+    <button id="searchBtn" data-i18n="search.button">分析</button>
+  </div>
+  <p class="search-hint" data-i18n="search.hint" style="margin-bottom:var(--s3);">每日免费 3 次 · 登陆后10次/日</p>
+
+  <!-- ===== 内容区（数据加载完成后显示） ===== -->
+  <div id="inspectContent" style="display:none;">
+
+  <!-- ===== ① 商品确认 + 综合结论 ===== -->
+  <section class="card">
+    <div class="p01">
+      <img class="p01-img"
+           src=""
+           alt="商品主图"
+           referrerpolicy="no-referrer"
+           loading="lazy">
+      <div class="p01-info">
+        <div class="p01-title"></div>
+        <div class="p01-price-hero"><span class="p01-currency">¥</span><b>—</b><span class="p01-unit">/件</span></div>
+        <div class="p01-meta">
+          <span>📦 <span data-i18n="inspect.moqShort">起订</span> <b>—</b> <span data-i18n="inspect.piecesUnit">件</span></span>
+          <span>📊 <span data-i18n="inspect.monthlySales">月销</span> <b>—</b></span>
+          <span>⭐ <b>—</b> <span data-i18n="inspect.rating">好评</span></span>
+          <span>🏆 —</span>
+        </div>
+        <a class="p01-url" href="#" target="_blank" data-i18n="inspect.link1688">1688 产品 →</a>
+      </div>
+    </div>
+
+    <div class="p01-tier" style="display:none;"></div>
+
+    <hr class="card-divider">
+
+    <div class="sec-label" data-i18n="inspect.summaryLabel">📋 综合结论</div>
+    <div class="s2-headline go">—</div>
+    <div class="s2-reason"></div>
+  </section>
+
+  <!-- Save + Share -->
+  <section class="card" id="saveBarCard" style="display:none;padding:var(--s3) var(--s4);">
+    <div class="save-bar" id="saveBar">
+      <button class="save-btn" id="saveBtn">💾 Save</button>
+      <button class="save-btn share-action" id="shareBtnMain">📤 Share</button>
+    </div>
+  </section>
+
+  <!-- ===== ② 工厂验证 ===== -->
+  <section class="card">
+
+    <!-- 📦 产品验证 — 默认展开 -->
+    <div class="eval-group open">
+      <div class="eval-group-header" data-action="toggleGroup">>
+        <div class="eval-group-top">
+          <span class="eval-group-title" data-i18n="inspect.productEvalTitle">📦 产品验证</span>
+          <span class="eval-group-score go">—/15 <span data-i18n="inspect.scoreUnit">分</span></span>
+          <span class="eval-group-chevron">▼</span>
+        </div>
+        <div class="eval-group-desc"></div>
+      </div>
+      <div class="eval-group-body">
+        <!-- JS 动态填充 -->
+      </div>
+    </div>
+
+    <!-- 🏭 供应商验证 — 默认展开 -->
+    <div class="eval-group open">
+      <div class="eval-group-header" data-action="toggleGroup">>
+        <div class="eval-group-top">
+          <span class="eval-group-title" data-i18n="inspect.supplierEvalTitle">🏭 供应商验证</span>
+          <span class="eval-group-score go">—/9 <span data-i18n="inspect.scoreUnit">分</span></span>
+          <span class="eval-group-chevron">▼</span>
+        </div>
+        <div class="eval-group-desc"></div>
+      </div>
+      <div class="eval-group-body">
+        <!-- JS 动态填充 -->
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== ③ 拿样验货 ===== -->
+  <section class="card">
+
+    <!-- 流程条 -->
+    <div class="sec" data-i18n="inspect.sampleTitle">📦 拿样验货</div>
+    <div class="sample-flow">
+      <span class="sample-flow-step" data-i18n="inspect.flowStep1">① 付定金</span>
+      <span class="sample-flow-arrow">→</span>
+      <span class="sample-flow-step" data-i18n="inspect.flowStep2">② 验货拍照</span>
+      <span class="sample-flow-arrow">→</span>
+      <span class="sample-flow-step" data-i18n="inspect.flowStep3">③ 付尾款</span>
+      <span class="sample-flow-arrow">→</span>
+      <span class="sample-flow-step" data-i18n="inspect.flowStep4">④ 国际发货</span>
+    </div>
+
+    <!-- 📸 验货实拍 — 默认折叠 -->
+    <div class="inspect-section">
+      <div class="inspect-hero" data-action="toggleInspect">
+        <span class="inspect-hero-closed" data-i18n="inspect.viewSamplePhotos">📸 查看验货实拍样例 ▸</span>
+        <span class="inspect-hero-open" data-i18n="inspect.whatWeCheck">📸 我们帮你验什么、拍什么 ▾</span>
+      </div>
+      <div class="inspect-body">
+
+      <div class="photo-grid">
+        <div class="photo-item"><div class="photo-placeholder">
+          <span class="photo-icon">📷</span><span class="photo-label" data-i18n="inspect.photoFront">正面全景</span>
+        </div></div>
+        <div class="photo-item"><div class="photo-placeholder">
+          <span class="photo-icon">📷</span><span class="photo-label" data-i18n="inspect.photoSide">侧面细节</span>
+        </div></div>
+        <div class="photo-item"><div class="photo-placeholder">
+          <span class="photo-icon">📷</span><span class="photo-label" data-i18n="inspect.photoBack">背面标签</span>
+        </div></div>
+        <div class="photo-item"><div class="photo-placeholder">
+          <span class="photo-icon">📷</span><span class="photo-label" data-i18n="inspect.photoDefect">瑕疵特写</span>
+        </div></div>
+        <div class="photo-item"><div class="photo-placeholder">
+          <span class="photo-icon">📷</span><span class="photo-label" data-i18n="inspect.photoPackage">包装外观</span>
+        </div></div>
+        <div class="photo-item"><div class="photo-placeholder">
+          <span class="photo-icon">📷</span><span class="photo-label" data-i18n="inspect.photoSku">SKU 色卡</span>
+        </div></div>
+      </div>
+
+      <div class="inspect-checklist">
+        <div class="inspect-check-title" data-i18n="inspect.checkTitle">🔍 每件检查</div>
+        <div class="inspect-check-items">
+          <span class="check-tag" data-i18n="inspect.checkColor">颜色对版</span>
+          <span class="check-tag" data-i18n="inspect.checkDefect">做工缺陷</span>
+          <span class="check-tag" data-i18n="inspect.checkCount">数量准确</span>
+          <span class="check-tag" data-i18n="inspect.checkLabel">标签一致</span>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <hr class="card-divider">
+
+    <!-- 数量 -->
+    <div style="display:flex;align-items:center;margin-bottom:var(--s3);">
+      <span data-i18n="inspect.qtyLabel" style="font-size:var(--fs-sm);font-weight:600;color:var(--ink);margin-right:var(--s2);">数量</span>
+      <div class="qty-ctl">
+        <button id="qtyMinus">−</button>
+        <span id="qtyVal">2</span>
+        <button id="qtyPlus">+</button>
+      </div>
+      <span id="moqHint" data-i18n="inspect.moqLabel" style="font-size:var(--fs-xs);color:var(--ink-3);margin-left:var(--s2);">起订 1 件</span>
+    </div>
+
+    <!-- 费用明细 -->
+    <div class="fee-box">
+      <!-- 定金 -->
+      <div class="fee-block">
+        <div class="fee-head"><span data-i18n="inspect.deposit">定金</span> <b id="depositTotal">¥—</b></div>
+        <div class="fee-item"><span class="fee-dot" data-i18n="inspect.productLabel">商品</span> ¥<b id="feeQtySmall">—</b> × <b id="feeQty">2</b> <span data-i18n="inspect.piecesUnit">件</span></div>
+        <div class="fee-item"><span class="fee-dot" data-i18n="inspect.domesticFreight">国内运费</span> ¥10.00</div>
+      </div>
+      <!-- 尾款 -->
+      <div class="fee-block">
+        <div class="fee-head"><span data-i18n="inspect.balance">尾款</span> <b id="balanceTotal">$13 – $15</b></div>
+        <div class="fee-item fee-note" data-i18n="inspect.balanceNote">验货确认后付（国际运费 + 服务费）</div>
+      </div>
+      <!-- 合计 -->
+      <div class="fee-total"><span data-i18n="inspect.totalEstimate">合计约</span> <b id="totalFee">$15 – $17</b></div>
+    </div>
+
+    <!-- 服务保障 -->
+    <div class="inspect-guarantee">
+      <div data-i18n="inspect.guarantee1">✅ 验货不满意 → 退全部定金</div>
+      <div data-i18n="inspect.guarantee2">✅ 缺货/不发货 → 全额退款，帮找同款</div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-top">
+      <a href="https://wa.me/8618561525786" class="btn cta-wa" target="_blank" data-i18n="inspect.ctaButton">💬 WhatsApp 拿样</a>
+    </div>
+  </section>
+
+  </div><!-- #inspectContent -->
+
+  <div id="appFooter"></div>
+
+</main>
+
+<script src="static/js/utils/lang-detect.js"></script>
+<script src="static/js/utils/i18n.js"></script>
+<script src="static/js/api/core.js"></script>
+<script src="static/js/utils/messages.js"></script>
+<script src="static/js/utils/components.js"></script>
+<script src="static/js/pages/inspect.js"></script>
+<script>I18N.init().then(function () { renderNav('inspect'); renderFooter(); I18N.apply(); });</script>
+
+</body>
+</html>

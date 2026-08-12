@@ -28,7 +28,8 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
     EXEMPT_PREFIXES = [
         "/api/analyze",  # 搜索 API 整体豁免（未登录用户也可搜索）
         "/api/config",   # 公开配置（汇率等，无需登录）
-        "/api/proxy",   # 图片代理（html2canvas 截图用，无需登录）
+        "/api/proxy",    # 图片代理（html2canvas 截图用，无需登录）
+        "/api/quota",    # 配额查询（前端未登录时也会调，无敏感数据）
     ]
 
     async def dispatch(

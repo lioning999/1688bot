@@ -174,7 +174,7 @@ def _product_fatal(signals: dict[str, Any]) -> dict[str, Any] | None:
     if signals["positive"] is not None and signals["positive"] < POSITIVE_BAD:
         return _make_result(0, "bad", "fatal_badrate",
                             verdict("prod_summary_fatal"),
-                            verdict("prodverdict_fatal_badrate",
+                            verdict("prod_verdict_fatal_badrate",
                                      positive=str(signals["positive"])),
                             signals, fatal_reason="badrate")
     return None
@@ -294,21 +294,21 @@ def _productverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
 
     # tier → (verdict_key, summary_key, grade, extra_params)
     mapping: dict[str, tuple[str, str, str, dict[str, Any]]] = {
-        "skip":            ("prodverdict_skip_nodata",    "prod_summary_watch",   "none", {"missing_count": str(_count_missing(signals))}),
-        "go_repurchase":   ("prodverdict_go_repurchase",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "go_hot_wanted":   ("prodverdict_go_hot_wanted",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "wanted": str(wanted or 0)}),
-        "go_hot_repeat":   ("prodverdict_go_hot_repeat",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "trial_hot_unknown": ("prodverdict_trial_hot_unknown", "prod_summary_trial", "ok", {"sold": str(sold or 0)}),
-        "trial_wanted_low":  ("prodverdict_trial_wanted_low",  "prod_summary_trial", "ok", {"wanted": str(wanted or 0), "sold": str(sold or 0)}),
-        "trial_rep_low":   ("prodverdict_trial_rep_low",  "prod_summary_trial",   "ok",   {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
-        "trial_medium3":   ("prodverdict_trial_medium3",  "prod_summary_trial",   "ok",   {"highlight_count": str(medium)}),
-        "caution_hot_low": ("prodverdict_caution_hot_low","prod_summary_caution",  "bad",  {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "caution_rep_low": ("prodverdict_caution_rep_low","prod_summary_caution",  "bad",  {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
-        "watch_medium12":  ("prodverdict_watch_medium12", "prod_summary_watch",   "none", {"highlight_count": str(medium)}),
-        "watch_flat":      ("prodverdict_watch_flat",     "prod_summary_watch",   "none", {}),
+        "skip":            ("prod_verdict_skip_nodata",    "prod_summary_watch",   "none", {"missing_count": str(_count_missing(signals))}),
+        "go_repurchase":   ("prod_verdict_go_repurchase",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
+        "go_hot_wanted":   ("prod_verdict_go_hot_wanted",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "wanted": str(wanted or 0)}),
+        "go_hot_repeat":   ("prod_verdict_go_hot_repeat",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
+        "trial_hot_unknown": ("prod_verdict_trial_hot_unknown", "prod_summary_trial", "ok", {"sold": str(sold or 0)}),
+        "trial_wanted_low":  ("prod_verdict_trial_wanted_low",  "prod_summary_trial", "ok", {"wanted": str(wanted or 0), "sold": str(sold or 0)}),
+        "trial_rep_low":   ("prod_verdict_trial_rep_low",  "prod_summary_trial",   "ok",   {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
+        "trial_medium3":   ("prod_verdict_trial_medium3",  "prod_summary_trial",   "ok",   {"highlight_count": str(medium)}),
+        "caution_hot_low": ("prod_verdict_caution_hot_low","prod_summary_caution",  "bad",  {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
+        "caution_rep_low": ("prod_verdict_caution_rep_low","prod_summary_caution",  "bad",  {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
+        "watch_medium12":  ("prod_verdict_watch_medium12", "prod_summary_watch",   "none", {"highlight_count": str(medium)}),
+        "watch_flat":      ("prod_verdict_watch_flat",     "prod_summary_watch",   "none", {}),
     }
 
-    v_key, s_key, grade, extra = mapping.get(tier, ("prodverdict_watch_flat", "prod_summary_watch", "none", {}))
+    v_key, s_key, grade, extra = mapping.get(tier, ("prod_verdict_watch_flat", "prod_summary_watch", "none", {}))
     v = verdict(v_key, **extra, **base)
     summary_kv = verdict(s_key)
 

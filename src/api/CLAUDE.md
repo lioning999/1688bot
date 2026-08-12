@@ -9,13 +9,15 @@
 ```
 1688链接
   → Apify 抓取原始数据（adapters/apify_adapter.py）
+  → 自动落库 raw_json（analysis 表）
   → 数据映射 map_raw（domain/data/mapper.py）
   → 规则引擎评判 judge_all（domain/verdict_engine.py → evaluate/）
-  → 写缓存（domain/infra/cache.py）
   → build_result_with_display（services/ai_verdict_svc.py）：
       ├─ zh → 模板 display（domain/display/builder.py）
-      └─ 非zh → Qwen 翻译（domain/translate/translator.py）
-              → AI 判词 build_with_ai（adapters/qwen_adapter.py）
+      └─ 非zh → build_with_ai（services/ai_verdict_svc.py）
+              → 母语 system prompt（domain/display/verdict_prompts.json）
+              → Qwen 一次调用出判词+翻译（adapters/qwen_adapter.py）
+  → display_i18n 落库（analysis 表，仅当前语言）
   → Display JSON → 前端渲染
 ```
 
@@ -196,7 +198,7 @@ CORS（最外层，OPTIONS 放行）→ JWT（内层，Bearer token 校验）
 | JWT 有效期 | 90 天 | `JWT_EXPIRE_MINUTES` |
 | Google OAuth Redirect | `GOOGLE_REDIRECT_URI` | `.env` |
 | Apify 超时 | 90 秒 | `config.py` `APIFY_WAIT_SECONDS` |
-| 分析缓存 TTL | 待确认：代码 12 小时 vs 文档 30 分钟 | `domain/infra/cache.py` |
+| 历史记录上限 | free=20 paid=100（自动落库，超限 FIFO 清理未收藏） | `Config.HISTORY_FREE_MAX` `HISTORY_PAID_MAX` |
 | 全局限流 | 30 次/分钟 | `domain/infra/rate_limiter.py` |
 | 用户分析配额 | 注册送10次 + 每日补地板（free=3 paid=20），懒重置 | `Config.SIGNUP_BONUS_QUOTA` `DAILY_FREE_QUOTA` `DAILY_PAID_QUOTA` |
 
