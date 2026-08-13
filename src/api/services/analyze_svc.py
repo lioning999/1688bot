@@ -182,6 +182,10 @@ class AnalyzeService:
         """删除一条分析记录。校验归属，删除成功返回 True。"""
         return await self.repo.delete(analysis_id, user_id)
 
+    async def toggle_favorite(self, analysis_id: int, user_id: int) -> bool | None:
+        """切换收藏状态。返回切换后的状态 True=已收藏/False=未收藏，记录不存在返回 None。"""
+        return await self.repo.toggle_favorite(analysis_id, user_id)
+
     async def get_saved_report(self, offer_id: str, user_id: int, lang: str = "") -> dict[str, Any] | None:
         """从 DB 读已保存的报告。display_i18n 懒加载。
 
