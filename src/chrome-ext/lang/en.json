@@ -72,5 +72,15 @@
   "inspect.totalEstimate": "Est. Total",
   "inspect.guarantee1": "✅ Not satisfied → full deposit refund",
   "inspect.guarantee2": "✅ Out of stock → full refund, we'll find alternatives",
-  "inspect.ctaButton": "💬 WhatsApp Order"
+  "inspect.ctaButton": "💬 WhatsApp Order",
+
+  "compare.btn": "Compare",
+  "compare.title": "Compare Products",
+  "compare.price": "Price",
+  "compare.moq": "MOQ",
+  "compare.product": "Product",
+  "compare.supplier": "Supplier",
+  "compare.sales": "Sales",
+  "compare.repurchase": "Repurchase",
+  "compare.maxHint": "Max 3 products to compare"
 }

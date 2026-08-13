@@ -72,5 +72,15 @@
   "inspect.totalEstimate": "合计约",
   "inspect.guarantee1": "✅ 验货不满意 → 退全部定金",
   "inspect.guarantee2": "✅ 缺货/不发货 → 全额退款，帮找同款",
-  "inspect.ctaButton": "💬 WhatsApp 拿样"
+  "inspect.ctaButton": "💬 WhatsApp 拿样",
+
+  "compare.btn": "对比",
+  "compare.title": "商品对比",
+  "compare.price": "价格",
+  "compare.moq": "起批",
+  "compare.product": "产品评分",
+  "compare.supplier": "供应商评分",
+  "compare.sales": "销量",
+  "compare.repurchase": "复购率",
+  "compare.maxHint": "最多选择 3 个商品进行对比"
 }

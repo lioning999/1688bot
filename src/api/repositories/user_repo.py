@@ -19,7 +19,7 @@ class UserRepository:
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
-                    "SELECT id, google_id, email, name, avatar_url, tier, quota, last_reset_date, created_at, last_login FROM users WHERE google_id=%s",
+                    "SELECT id, google_id, email, name, avatar_url, tier, quota, last_reset_date, default_lang, created_at, last_login FROM users WHERE google_id=%s",
                     (google_id,),
                 )
                 return await cur.fetchone()
@@ -27,16 +27,17 @@ class UserRepository:
             await AsyncDatabaseConnection.close_connection(conn)
 
     async def create(self, google_id: str, email: str | None = None,
-                     name: str | None = None, avatar_url: str | None = None) -> int:
+                     name: str | None = None, avatar_url: str | None = None,
+                     default_lang: str | None = None) -> int:
         """创建新用户，返回自增 ID。quota = Config.SIGNUP_BONUS_QUOTA（注册赠送）。"""
         from config import Config
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
-                    "INSERT INTO users (google_id, email, name, avatar_url, quota, last_reset_date) "
-                    "VALUES (%s, %s, %s, %s, %s, CURDATE())",
-                    (google_id, email, name, avatar_url, Config.SIGNUP_BONUS_QUOTA),
+                    "INSERT INTO users (google_id, email, name, avatar_url, quota, default_lang, last_reset_date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, CURDATE())",
+                    (google_id, email, name, avatar_url, Config.SIGNUP_BONUS_QUOTA, default_lang),
                 )
                 await conn.commit()
                 return cur.lastrowid  # type: ignore[return-value]
@@ -147,6 +148,22 @@ class UserRepository:
                 await cur.execute("SELECT quota FROM users WHERE id=%s", (user_id,))
                 row = await cur.fetchone()
                 return row["quota"] if row else 0
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def update_default_lang(self, user_id: int, lang: str) -> None:
+        """更新用户默认语言。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "UPDATE users SET default_lang=%s WHERE id=%s",
+                    (lang, user_id),
+                )
+                await conn.commit()
         except Exception:
             await conn.rollback()
             raise

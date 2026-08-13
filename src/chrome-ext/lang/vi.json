@@ -72,5 +72,15 @@
   "inspect.totalEstimate": "Tổng ~",
   "inspect.guarantee1": "✅ Không hài lòng → hoàn toàn bộ tiền cọc",
   "inspect.guarantee2": "✅ Hết hàng → hoàn tiền, tìm hàng khác",
-  "inspect.ctaButton": "💬 WhatsApp Đặt mẫu"
+  "inspect.ctaButton": "💬 WhatsApp Đặt mẫu",
+
+  "compare.btn": "So sánh",
+  "compare.title": "So sánh sản phẩm",
+  "compare.price": "Giá",
+  "compare.moq": "MOQ",
+  "compare.product": "Sản phẩm",
+  "compare.supplier": "Nhà cung cấp",
+  "compare.sales": "Đã bán",
+  "compare.repurchase": "Tỷ lệ mua lại",
+  "compare.maxHint": "Tối đa 3 sản phẩm để so sánh"
 }

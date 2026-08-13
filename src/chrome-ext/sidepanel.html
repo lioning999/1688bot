@@ -245,6 +245,20 @@
       <p data-i18n="history.empty">暂无历史记录</p>
     </div>
   </div>
+
+  <!-- 对比浮条 -->
+  <div id="compareBar" class="compare-bar" style="display:none">
+    <button id="btnCompare" class="compare-btn" data-i18n="compare.btn">对比</button>
+  </div>
+
+  <!-- 对比弹窗 -->
+  <div id="compareModal" class="compare-modal" style="display:none">
+    <div class="compare-modal-header">
+      <button class="compare-back-btn" id="compareBackBtn">← <span data-i18n="compare.title">商品对比</span></button>
+      <button class="compare-close-btn" id="compareCloseBtn">✕</button>
+    </div>
+    <div class="compare-table-wrap" id="compareTableWrap"></div>
+  </div>
 </main>
 
 <script src="lib/i18n.js"></script>

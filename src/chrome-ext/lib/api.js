@@ -73,6 +73,10 @@ var API = (function () {
     return send('API_CONFIG', {});
   }
 
+  function setLang(lang) {
+    return send('SET_LANG', { lang: lang });
+  }
+
   function getQuota() {
     return send('API_QUOTA', {});
   }
@@ -93,6 +97,7 @@ var API = (function () {
     toggleFavorite: toggleFavorite,
     deleteHistory: deleteHistory,
     getConfig: getConfig,
+    setLang: setLang,
     getQuota: getQuota,
     getCurrentTabUrl: getCurrentTabUrl
   };

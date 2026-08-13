@@ -70,6 +70,7 @@ var I18N = (function () {
     if (!LOCALES[lang]) return;
     sessionStorage.setItem('sourcely_lang', lang);
     chrome.storage.local.set({ sourcely_lang: lang });
+    API.setLang(lang);  // 异步同步后端 default_lang
     load(lang);
   }
 

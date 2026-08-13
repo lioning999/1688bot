@@ -26,17 +26,19 @@ class AuthService:
         """获取 Google OAuth 授权 URL（委托 adapter）。"""
         return self.google_auth.get_auth_url(state=state)
 
-    async def login_with_google(self, code: str) -> dict[str, Any]:
+    async def login_with_google(self, code: str, default_lang: str | None = None) -> dict[str, Any]:
         """Google OAuth 登录/注册（自动判断）。
 
         流程：
         1. code 换 id_token → 验证 → 拿到 Google 用户信息
         2. 查 users 表：无记录 → 注册（INSERT）；有记录 → 更新 last_login
-        3. 签发自签 JWT（HS256，7 天）
-        4. 返回 access_token + user
+        3. 如果传了 lang 且与 DB 不同 → 更新 DB（PUT 失败的保底纠正）
+        4. 签发自签 JWT（HS256，90 天）
+        5. 返回 access_token + user
 
         Args:
             code: Google 回调的一次性授权码
+            default_lang: 插件当前语言，首次登录写入，后续登录与 DB 比对更新
 
         Returns:
             {"access_token": "...", "user": {...}}
@@ -57,13 +59,20 @@ class AuthService:
         if existing:
             await self.user_repo.update_last_login(google_id, name=name, avatar_url=avatar_url)
             user_id = existing["id"]
+            # 老用户：如果传了 lang 且与 DB 不同 → UPDATE（PUT 失败的保底）
+            if default_lang and default_lang != (existing.get("default_lang") or ""):
+                await self.user_repo.update_default_lang(user_id, default_lang)
+                logger.info(f"User lang corrected on login: id={user_id}, {existing.get('default_lang')} -> {default_lang}")
+            else:
+                default_lang = existing.get("default_lang")
             logger.info(f"User logged in: id={user_id}, email={email}")
         else:
-            user_id = await self.user_repo.create(google_id, email=email, name=name, avatar_url=avatar_url)
+            user_id = await self.user_repo.create(google_id, email=email, name=name, avatar_url=avatar_url,
+                                                   default_lang=default_lang)
             logger.info(f"User registered: id={user_id}, email={email}")
 
         # 3. 签发 JWT
-        access_token = create_token(user_id=user_id, email=email)
+        access_token = create_token(user_id=user_id, email=email, default_lang=default_lang)
 
         return {
             "access_token": access_token,

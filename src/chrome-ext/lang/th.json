@@ -72,5 +72,15 @@
   "inspect.totalEstimate": "รวมประมาณ",
   "inspect.guarantee1": "✅ ไม่พอใจ → คืนมัดจำเต็มจำนวน",
   "inspect.guarantee2": "✅ สินค้าหมด → คืนเงินเต็มจำนวน หาของแทนให้",
-  "inspect.ctaButton": "💬 WhatsApp สั่งตัวอย่าง"
+  "inspect.ctaButton": "💬 WhatsApp สั่งตัวอย่าง",
+
+  "compare.btn": "เปรียบเทียบ",
+  "compare.title": "เปรียบเทียบสินค้า",
+  "compare.price": "ราคา",
+  "compare.moq": "MOQ",
+  "compare.product": "สินค้า",
+  "compare.supplier": "ผู้ขาย",
+  "compare.sales": "ยอดขาย",
+  "compare.repurchase": "ซื้อซ้ำ",
+  "compare.maxHint": "เปรียบเทียบได้สูงสุด 3 รายการ"
 }

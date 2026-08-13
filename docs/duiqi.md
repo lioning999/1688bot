@@ -235,3 +235,59 @@
 │ status=failed  → error 里有错误信息                          │
 └─────────────────────────────────────────────────────────────┘
 
+---
+
+## 节点 5 — 用户默认语言（default_lang）
+
+> ⚠️ 本节点与节点 1-4 的分析管线独立，互不影响。
+
+### 规则（一句话）
+
+**改语言就写 DB，不改就不写。** DB 和 JWT 永远一致。
+
+### 流程
+
+```
+用户首次登录（Google OAuth）
+  ├─ 新用户 → INSERT users.default_lang = 插件当前语言
+  ├─ 老用户 → 不冲突不改（已有 default_lang）
+  └─ 签发 JWT，payload 含 default_lang
+        │
+        ▼
+  SW 解码 JWT → chrome.storage.local { sourcely_lang }
+        │
+        ▼
+  I18N.detect() → 恢复语言
+
+─────
+
+用户切语言（插件 UI 点语言切换）
+  └─ PUT /api/user/lang { lang: "vi" }
+       └─ UPDATE users SET default_lang = 'vi'
+            └─ 下次登录 JWT 自然是 'vi'
+
+─────
+
+用户不切语言
+  └─ 什么都不动
+       └─ 下次登录 JWT 还是原值
+```
+
+### 涉及文件
+
+| 层 | 文件 | 改动 |
+|----|------|------|
+| DB | `schema.sql` | `users` 表加 `default_lang VARCHAR(5)` |
+| 后端 | `utils/jwt.py` | `create_token()` payload 加 `default_lang` |
+| 后端 | `repositories/user_repo.py` | `create()` 接受 `default_lang`；`get_by_google_id()` SELECT 加列 |
+| 后端 | `services/auth_svc.py` | `login_with_google()` 新用户写 default_lang，JWT 带出 |
+| 后端 | `routes/auth.py` | `google_login` 收 `lang` 参数编码进 state |
+| 后端 | `routes/auth.py` | 新增 `PUT /api/user/lang` |
+| 插件 | `service-worker.js` | LOGIN 前传 lang，LOGIN 后解码 JWT 恢复语言；新增 `SET_LANG` 消息 |
+| 插件 | `lib/api.js` | 加 `setLang(lang)` |
+| 插件 | `lib/i18n.js` | `switchTo()` 加 `API.setLang(lang)` |
+
+### 与节点 1-4 的关系
+
+**零影响。** 语言偏好存储不改分析管线的任何逻辑。节点 1 的 `lang` 参数来自插件当前语言（`I18N.getLang()`），与 `default_lang` 无关。`default_lang` 只决定「下次登录后插件初始语言是什么」。
+

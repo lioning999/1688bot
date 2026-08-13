@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from config import Config
 from database import AsyncDatabaseConnection
 from middleware import JWTAuthMiddleware
-from routes.auth import auth_router, callback_router
+from routes.auth import auth_router, callback_router, user_router
 from routes.analyze import router as analyze_router
 from routes.history import router as history_router
 from routes.proxy import router as proxy_router
@@ -140,6 +140,7 @@ app.include_router(callback_router)
 app.include_router(analyze_router)
 app.include_router(history_router)
 app.include_router(proxy_router)
+app.include_router(user_router)
 
 
 # ---- 前端静态文件（最后注册，作为 fallback） ----

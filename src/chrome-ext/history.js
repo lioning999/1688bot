@@ -5,6 +5,7 @@ var HistoryPage = (function () {
   'use strict';
 
   var _items = [];
+  var _selected = {};  // {offer_id: true} 对比勾选状态
 
   function getEls() {
     return {
@@ -115,7 +116,9 @@ var HistoryPage = (function () {
       var gradeEmoji = { go:'🟢', ok:'🟡', bad:'🔴', none:'⬜' };
       var favOn = item.favorited;
 
-      html += '<div class="history-item" data-offer-id="' + escHtml(String(item.offer_id || '')) + '">';
+      var oid = String(item.offer_id || '');
+      html += '<div class="history-item" data-offer-id="' + escHtml(oid) + '">';
+      html += '<input type="checkbox" class="history-item-check" data-offer-id="' + escHtml(oid) + '"' + (_selected[oid] ? ' checked' : '') + '>';
       if (thumb) {
         html += '<img class="history-item-thumb" src="' + escHtml(thumb) +
                 '" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display=\'none\'">';
@@ -144,8 +147,32 @@ var HistoryPage = (function () {
 
     els.list.innerHTML = html;
 
+    // 复选框 — 阻止冒泡（不触发 item 点击跳转报告）
+    els.list.querySelectorAll('.history-item-check').forEach(function (cb) {
+      cb.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var oid = cb.getAttribute('data-offer-id');
+        if (cb.checked) {
+          // 最多 3 个
+          var cnt = Object.keys(_selected).filter(function (k) { return _selected[k]; }).length;
+          if (cnt >= 3) {
+            cb.checked = false;
+            showToast(I18N.t('compare.maxHint') || '最多选择 3 个商品进行对比', 'warning');
+            return;
+          }
+          _selected[oid] = true;
+        } else {
+          _selected[oid] = false;
+        }
+        updateCompareBar();
+      });
+    });
+
+    // item 点击 → 跳转报告（点复选框不触发）
     els.list.querySelectorAll('.history-item').forEach(function (el) {
-      el.addEventListener('click', function () {
+      el.addEventListener('click', function (e) {
+        // 不拦截复选框
+        if (e.target.tagName === 'INPUT') return;
         var offerId = el.getAttribute('data-offer-id');
         if (offerId) switchToReport(offerId);
       });
@@ -171,7 +198,6 @@ var HistoryPage = (function () {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         var id = btn.getAttribute('data-id');
-        // 从 _items 中找到对应项
         var found = null;
         (_items || []).forEach(function (it) {
           if (String(it.analysis_id || it.id || '') === id) found = it;
@@ -197,6 +223,150 @@ var HistoryPage = (function () {
     });
   }
 
+  // ====================================================================
+  // 对比功能
+  // ====================================================================
+
+  function updateCompareBar() {
+    var bar = document.getElementById('compareBar');
+    var btn = document.getElementById('btnCompare');
+    if (!bar || !btn) return;
+    var ids = Object.keys(_selected).filter(function (k) { return _selected[k]; });
+    if (ids.length >= 2) {
+      bar.style.display = 'flex';
+      btn.textContent = (I18N.t('compare.btn') || '对比') + ' (' + ids.length + ')';
+      btn.disabled = false;
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  function showToast(msg, type) {
+    var t = document.createElement('div');
+    t.className = 'toast ' + (type || '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2000);
+  }
+
+  function showCompareModal(ids) {
+    var modal = document.getElementById('compareModal');
+    if (!modal) return;
+    // 并行拉取 report
+    var promises = ids.map(function (oid) {
+      return API.getReport(oid).then(function (res) {
+        if (res && res.code === 200 && res.data && res.data.result) {
+          return { offerId: oid, display: res.data.result.display || res.data.result };
+        }
+        return { offerId: oid, display: null };
+      }).catch(function () {
+        return { offerId: oid, display: null };
+      });
+    });
+    Promise.all(promises).then(function (results) {
+      renderCompareTable(results);
+      modal.style.display = 'flex';
+    });
+  }
+
+  function hideCompareModal() {
+    var modal = document.getElementById('compareModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function renderCompareTable(results) {
+    var wrap = document.getElementById('compareTableWrap');
+    if (!wrap) return;
+
+    // 每行对比项：{label, extract(display)}
+    var ROWS = [
+      { label: I18N.t('compare.price') || '价格',    fn: function (d) { return d && d.price ? (d.price.low || 0) + '-' + (d.price.high || 0) : '-'; } },
+      { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' 件' : '-'; } },
+      { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 15) : '-'; } },
+      { label: '',                                     fn: function (d) { var s = d && d.summaryLine ? (d.summaryLine.short || '') : ''; return '<span class="cmp-verdict-short">' + escHtml(s) + '</span>'; }, isHtml: true },
+      { label: I18N.t('compare.supplier') || '供应商评分', fn: function (d) { return d && d.supplierEval ? (d.supplierEval.grade || '') + ' ' + (d.supplierEval.score || 0) + '/' + (d.supplierEval.max_score || 9) : '-'; } },
+      { label: '',                                     fn: function (d) { return _extractSupplierMeta(d); }, isHtml: true },
+      { label: I18N.t('compare.sales') || '销量',      fn: function (d) { return d && d.sales && d.sales.sold ? d.sales.sold : '-'; } },
+      { label: I18N.t('compare.repurchase') || '复购率', fn: function (d) { return _extractDim(d, 'repurchaseRate'); } }
+    ];
+
+    // 标题行
+    var html = '<table class="compare-table"><thead><tr><th></th>';
+    results.forEach(function (r) {
+      var title = r.display && r.display.title ? r.display.title : r.offerId;
+      html += '<th><div class="cmp-title" title="' + escHtml(title) + '">' + escHtml(String(title).slice(0, 16)) + '</div></th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    // 数据行
+    ROWS.forEach(function (row, ri) {
+      html += '<tr>';
+      html += '<td>' + escHtml(row.label) + '</td>';
+      results.forEach(function (r, ci) {
+        var val = row.fn(r.display);
+        if (row.isHtml) {
+          html += '<td>' + val + '</td>';
+        } else {
+          html += '<td>' + escHtml(String(val)) + '</td>';
+        }
+      });
+      html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }
+
+  // 从 display 提取供应商身份标签（类型/认证/年限）
+  function _extractSupplierMeta(d) {
+    if (!d) return '<span class="cmp-identity">-</span>';
+    var parts = [];
+    // 身份类型
+    var label = d.trustBar && d.trustBar.label ? d.trustBar.label : '';
+    if (label) parts.push(label);
+    // 认证 + 年限 从 supplierEval dimensions 取
+    var dims = d.supplierEval && d.supplierEval.dimensions ? d.supplierEval.dimensions : [];
+    dims.forEach(function (dim) {
+      if (dim.key === 'd2' && dim.data) parts.push(dim.data);  // 认证
+      if (dim.key === 'd3' && dim.data) parts.push(dim.data);  // 年限
+    });
+    var text = parts.length ? parts.join(' · ') : '-';
+    return '<span class="cmp-identity">' + escHtml(text) + '</span>';
+  }
+
+  // 从 productEval dimensions 提取数值字段
+  function _extractDim(d, field) {
+    if (!d || !d.productEval || !d.productEval.dimensions) return '-';
+    var found = null;
+    d.productEval.dimensions.forEach(function (dim) {
+      var data = dim.data || '';
+      if (field === 'repurchaseRate' && data.indexOf('%') !== -1) found = data;
+    });
+    return found || '-';
+  }
+
+  function initCompare() {
+    var bar = document.getElementById('compareBar');
+    var btn = document.getElementById('btnCompare');
+    var closeBtn = document.getElementById('compareCloseBtn');
+    var backBtn = document.getElementById('compareBackBtn');
+
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var ids = Object.keys(_selected).filter(function (k) { return _selected[k]; });
+        if (ids.length < 2) return;
+        showCompareModal(ids);
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideCompareModal);
+    }
+    if (backBtn) {
+      backBtn.addEventListener('click', hideCompareModal);
+    }
+  }
+
   function initSearch() {
     var els = getEls();
     if (!els.search) return;
@@ -211,7 +381,7 @@ var HistoryPage = (function () {
     });
   }
 
-  function init() { initSearch(); }
+  function init() { initSearch(); initCompare(); }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

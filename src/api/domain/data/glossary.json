@@ -654,11 +654,23 @@
     "vi": "TODO",
     "th": "TODO"
   },
+  "summary_headline_conditional_short": {
+    "zh": "可考虑",
+    "en": "Maybe",
+    "vi": "Cân nhắc",
+    "th": "พอใช้"
+  },
   "summary_headline_go": {
     "zh": "🟢 可以出手",
     "en": "TODO",
     "vi": "TODO",
     "th": "TODO"
+  },
+  "summary_headline_go_short": {
+    "zh": "推荐",
+    "en": "Go",
+    "vi": "Nên",
+    "th": "แนะนำ"
   },
   "summary_headline_no": {
     "zh": "🔴 不建议",
@@ -666,11 +678,23 @@
     "vi": "TODO",
     "th": "TODO"
   },
+  "summary_headline_no_short": {
+    "zh": "不推荐",
+    "en": "Skip",
+    "vi": "Bỏ qua",
+    "th": "ข้าม"
+  },
   "summary_headline_wait": {
     "zh": "⬜ 等一等",
     "en": "TODO",
     "vi": "TODO",
     "th": "TODO"
+  },
+  "summary_headline_wait_short": {
+    "zh": "数据不足",
+    "en": "No Data",
+    "vi": "Thiếu DL",
+    "th": "รอข้อมูล"
   },
   "summary_no_product_fatal": {
     "zh": "硬伤在品，换品。别在这一单上花钱",

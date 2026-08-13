@@ -557,10 +557,14 @@ def _build_summary_line(product_raw: dict[str, Any], supplier_raw: dict[str, Any
     """综合结论：产品 + 供应商 → 拿样建议（inspect.html Card ①）。"""
     try:
         summary: dict[str, Any] = evaluate_summary(product_raw, supplier_raw)
+        # 提取 headline key 用于 short 字段（前端对比表用）
+        headline_kv: dict[str, Any] = cast(dict[str, Any], summary.get("headline", {})) if isinstance(summary.get("headline"), dict) else {}
+        headline_key: str = str(headline_kv.get("key", ""))
         return {
             "headline": _format_verdict(summary.get("headline"), lang),
             "reason": _format_verdict(summary.get("reason"), lang),
             "verdict": _format_verdict(summary.get("verdict"), lang),
+            "short": _glossary(headline_key + "_short", lang),
             "product_score": summary.get("product_score", ""),
             "supplier_score": summary.get("supplier_score", ""),
         }

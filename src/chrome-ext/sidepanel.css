@@ -718,3 +718,151 @@ body {
 .toast.warning { background:var(--warn-bg);color:var(--warn); }
 .toast.error   { background:var(--bad-bg);color:var(--bad); }
 @keyframes toast-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+/* ---- 历史列表复选框 ---- */
+.history-item-check {
+  flex-shrink:0;
+  width:18px; height:18px;
+  margin-right:8px;
+  accent-color:var(--brand);
+  cursor:pointer;
+}
+
+/* ---- 对比浮条 ---- */
+.compare-bar {
+  position:sticky;
+  bottom:0;
+  left:0; right:0;
+  padding:8px 12px;
+  background:var(--brand);
+  z-index:20;
+  display:flex;
+  justify-content:center;
+  animation:compare-bar-in .2s;
+}
+@keyframes compare-bar-in { from{transform:translateY(100%)} to{transform:none} }
+.compare-btn {
+  padding:8px 24px;
+  border:none;
+  border-radius:var(--r);
+  background:#fff;
+  color:var(--brand-deep);
+  font-size:var(--fs-md);
+  font-weight:700;
+  font-family:var(--font-body);
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.compare-btn:disabled { opacity:.5; cursor:not-allowed; }
+.compare-btn:hover { opacity:.9; }
+
+/* ---- 对比弹窗 ---- */
+.compare-modal {
+  position:fixed;
+  inset:0;
+  background:var(--paper);
+  z-index:50;
+  display:flex;
+  flex-direction:column;
+  animation:compare-modal-in .2s;
+}
+@keyframes compare-modal-in { from{opacity:0} to{opacity:1} }
+.compare-modal-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  background:var(--paper-2);
+  flex-shrink:0;
+}
+.compare-back-btn {
+  border:none;
+  background:none;
+  font-size:var(--fs-md);
+  font-weight:600;
+  color:var(--brand);
+  cursor:pointer;
+  font-family:var(--font-body);
+}
+.compare-close-btn {
+  border:none;
+  background:none;
+  font-size:16px;
+  color:var(--ink-3);
+  cursor:pointer;
+  padding:4px 8px;
+}
+.compare-table-wrap {
+  flex:1;
+  overflow-x:auto;
+  overflow-y:auto;
+  padding:12px;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ---- 对比表格 ---- */
+.compare-table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:var(--fs-sm);
+  min-width:320px;
+}
+.compare-table th,
+.compare-table td {
+  padding:8px 10px;
+  text-align:center;
+  border-bottom:1px solid var(--line-soft);
+  vertical-align:middle;
+}
+.compare-table th {
+  font-weight:600;
+  color:var(--ink);
+  background:var(--paper-2);
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+/* 第一列固定 */
+.compare-table td:first-child,
+.compare-table th:first-child {
+  position:sticky;
+  left:0;
+  background:var(--paper);
+  text-align:left;
+  font-weight:600;
+  color:var(--ink-2);
+  min-width:72px;
+  max-width:80px;
+  white-space:nowrap;
+  z-index:2;
+}
+.compare-table th:first-child {
+  background:var(--paper-2);
+  z-index:3;
+}
+/* 标题列截断 */
+.compare-table .cmp-title {
+  max-width:120px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--fs-xs);
+  color:var(--ink-2);
+}
+/* 高亮：最佳值 */
+.compare-table .cmp-best {
+  color:var(--ok);
+  font-weight:700;
+}
+/* 判词short 小字灰 */
+.compare-table .cmp-verdict-short {
+  font-size:var(--fs-xs);
+  color:var(--ink-3);
+}
+/* 身份标签行 小字 */
+.compare-table .cmp-identity {
+  font-size:var(--fs-xs);
+  color:var(--ink-3);
+  line-height:1.3;
+}

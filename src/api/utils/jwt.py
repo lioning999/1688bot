@@ -8,12 +8,13 @@ import jwt
 from config import Config
 
 
-def create_token(user_id: int, email: str | None = None) -> str:
-    """签发 JWT access token（HS256，默认 7 天过期）。
+def create_token(user_id: int, email: str | None = None, default_lang: str | None = None) -> str:
+    """签发 JWT access token（HS256，90 天过期）。
 
     Args:
         user_id: 用户 ID
         email: 用户邮箱，可选
+        default_lang: 用户默认语言，可选
 
     Returns:
         encoded JWT 字符串
@@ -22,6 +23,7 @@ def create_token(user_id: int, email: str | None = None) -> str:
     payload: dict[str, Any] = {
         "user_id": user_id,
         "email": email or "",
+        "default_lang": default_lang or "",
         "iat": now,
         "exp": now + timedelta(minutes=Config.JWT_EXPIRE_MINUTES),
     }

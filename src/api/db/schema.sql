@@ -23,7 +23,8 @@ CREATE TABLE users (
   last_login  DATETIME DEFAULT NOW() COMMENT '每次登录更新',
   tier        VARCHAR(20) NOT NULL DEFAULT 'free' COMMENT 'free|paid',
   quota       INT NOT NULL DEFAULT 10 COMMENT '剩余分析次数',
-  last_reset_date DATE DEFAULT NULL COMMENT '上次配额补充日期，用于懒重置'
+  last_reset_date DATE DEFAULT NULL COMMENT '上次配额补充日期，用于懒重置',
+  default_lang VARCHAR(5) DEFAULT NULL COMMENT '用户默认语言 en/vi/th/id'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   COMMENT='Google 登录用户';
 
