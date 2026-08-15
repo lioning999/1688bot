@@ -81,8 +81,6 @@ async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang:
             logger.info(f"[TRACE-DISPLAY-AI] offer_id={offer_id} lang={lang} "
                         f"aiGenerated={display.get('_aiGenerated', '')} "
                         f"display={json.dumps(display, ensure_ascii=False, default=str)}")
-            # 剥离内部标记，不泄漏到前端
-            display.pop("_aiGenerated", None)
             set_display_cache(offer_id, lang, display)
         else:
             # 模板路径（zh / 空 lang）
@@ -233,6 +231,9 @@ def _merge_ai_verdicts(
         if validate_ai_output(ai_text, [], ai_input, dim_sections):
             if display_key in display and isinstance(display[display_key], dict):
                 display[display_key]["verdict"] = ai_text.strip()
+                # summary_verdict 同时写 reason：前端 s2Reason 显示 reason，verdict 不渲染
+                if ai_key == "summary_verdict":
+                    display[display_key]["reason"] = ai_text.strip()
         else:
             logger.warning(
                 f"[AI判词] {ai_key} 校验失败，降级 glossary | "

@@ -16,11 +16,10 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel, field_validator
 
 from config import Config
-from domain.infra import cache as analysis_cache, rate_limiter
+from domain.infra import rate_limiter
 from domain.infra.urls import extract_offer_id, is_valid_1688_url
 from repositories.user_repo import UserRepository
 from services.analyze_svc import analyze_service
-from services.ai_verdict_svc import build_result_with_display
 from utils.exceptions import ValidationError, InsufficientQuotaError, ResourceNotFoundError, AppError
 from utils.logger import get_logger
 
@@ -64,30 +63,15 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
     # ---- 2. 全局限流（风险 #14 L3） ----
     if not await rate_limiter.check():
         logger.warning(f"Global rate limit hit from IP={request.client.host if request.client else '?'}")
-        raise InsufficientQuotaError(
-            resource_type="系统繁忙",
+        raise AppError(
+            message="系统繁忙，请稍后重试",
+            code="GLOBAL_RATE_LIMIT",
             msg_code="GLOBAL_RATE_LIMIT",
+            http_status=429,
             details={"retry_after": "60秒"},
         )
 
-    # ---- 3. 缓存前置：命中直接返回 task_id，不扣配额 ----
-    cached: dict[str, Any] | None = analysis_cache.get(offer_id)
-    if cached:
-        t_elapsed = time.time() - t_req_start
-        logger.info(
-            f"[请求] POST /api/analyze offer_id={offer_id} lang={body.lang or 'zh'} "
-            f"缓存命中 | 耗时={t_elapsed:.2f}s | 配额0 Apify✗ Qwen✗"
-        )
-        result: dict[str, Any] = await build_result_with_display(cached, offer_id, body.lang)
-        task_id: str = analyze_service.create_done_task(result)
-        display_size = len(str(result.get("display", {})))
-        logger.info(
-            f"[请求] ✓ 返回 offer_id={offer_id} task_id={task_id} "
-            f"总耗时={time.time() - t_req_start:.2f}s displaySize={display_size}B"
-        )
-        return {"code": 200, "msg_code": "OK", "data": {"task_id": task_id, "status": "pending"}, "message": "ok"}
-
-    # ---- 4. 用户配额检查（JWT 中间件已校验，user_id 一定存在）----
+    # ---- 3. 用户配额检查（JWT 中间件已校验，user_id 一定存在）----
     user_id: int = getattr(request.state, "user_id", 0) or 0
     if not user_id:
         raise AppError(message="请先登录", msg_code="LOGIN_REQUIRED", http_status=401)
@@ -114,7 +98,7 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
             details={"daily_limit": daily_floor},
         )
 
-    # ---- 5. 启动后台分析（扣减在 start() 内，请求合并后执行）----
+    # ---- 4. 启动后台分析（扣减在 start() 内，请求合并后执行）----
     task_id = await analyze_service.start(offer_id=offer_id, user_id=user_id, raw_url=body.url, lang=body.lang)
     t_elapsed = time.time() - t_req_start
     logger.info(

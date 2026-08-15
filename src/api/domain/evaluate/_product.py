@@ -225,27 +225,30 @@ def _product_tier(signals: dict[str, Any]) -> str:
             and repurchase is None
             and (wanted is None or wanted <= WANTED_HIGH)):
         return "trial_hot_unknown"
-    # Rule 7: 热销 + 已知低复购
-    if (sold is not None and sold > SOLD_HOT
-            and repurchase is not None and repurchase <= REPURCHASE_MID):
-        return "caution_hot_low"
-    # Rule 8: 高关注 + 低销量
+    # Rule 7: 高关注 + 低销量
     if (wanted is not None and wanted > WANTED_HIGH
             and (sold is None or sold <= SOLD_POTENTIAL)):
         return "trial_wanted_low"
-    # Rule 9: 高复购 + 销量少（按门槛拆两档）
+    # Rule 8: 高复购 + 销量少 + 门槛低
     if (repurchase is not None and repurchase > REPURCHASE_HIGH
-            and (sold is None or sold <= SOLD_POTENTIAL)):
-        if signals["d3"]["score"] >= 2:
-            return "trial_rep_low"     # 门槛低 → 值得试
-        return "caution_rep_low"       # 门槛高 → 先算账
-    # Rule 10: 中等亮点 ≥ 3
+            and (sold is None or sold <= SOLD_POTENTIAL)
+            and signals["d3"]["score"] >= 2):
+        return "trial_rep_low"          # 门槛低 → 值得试
+    # Rule 9: 中等亮点 ≥ 3
     if medium >= 3:
         return "trial_medium3"
-    # Rule 11: 中等亮点 1-2
+    # Rule 10: 热销 + 已知低复购
+    if (sold is not None and sold > SOLD_HOT
+            and repurchase is not None and repurchase <= REPURCHASE_MID):
+        return "caution_hot_low"
+    # Rule 11: 高复购 + 销量少 + 门槛高
+    if (repurchase is not None and repurchase > REPURCHASE_HIGH
+            and (sold is None or sold <= SOLD_POTENTIAL)):
+        return "caution_rep_low"        # 门槛高 → 先算账
+    # Rule 12: 中等亮点 1-2
     if medium >= 1:
         return "watch_medium12"
-    # Rule 12: 全维度平平 / 新品无销量
+    # Rule 13: 全维度平平 / 新品无销量
     return "watch_flat"
 
 
@@ -285,9 +288,9 @@ def _common_params(signals: dict[str, Any]) -> dict[str, Any]:
 
 def _productverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     """根据 tier 组装完整 verdict dict。"""
-    sold = signals["sold"]
-    repurchase = signals["repurchase"]
-    wanted = signals["wanted"]
+    sold: int | None = signals["sold"]
+    repurchase: float | None = signals["repurchase"]
+    wanted: int | None = signals["wanted"]
     medium = _count_medium(signals)
 
     base = _common_params(signals)
@@ -312,9 +315,9 @@ def _productverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     v = verdict(v_key, **extra, **base)
     summary_kv = verdict(s_key)
 
-    total = sum(signals[d]["score"] for d in ("d1", "d2", "d3", "d4", "d5", "d6"))
+    total_score = sum(signals[d]["score"] for d in ("d1", "d2", "d3", "d4", "d5", "d6"))
 
-    return _make_result(total, grade, tier, summary_kv, v, signals,
+    return _make_result(total_score, grade, tier, summary_kv, v, signals,
                         skip_reason="missing_data" if tier == "skip" else None)
 
 
@@ -331,8 +334,9 @@ def _make_result(score: int, grade: str, tier: str,
                  fatal_reason: str | None = None,
                  skip_reason: str | None = None) -> dict[str, Any]:
     """组装统一的 result dict。"""
-    dims = [signals["d1"], signals["d2"], signals["d3"],
-            signals["d4"], signals["d5"], signals["d6"]]
+    # 维度展示顺序拨正：销量 → 门槛 → 退货 → 好评 → 复购 → 关注
+    dims = [signals["d1"], signals["d3"], signals["d6"],
+            signals["d4"], signals["d2"], signals["d5"]]
     return {
         "score": score, "max_score": 18,
         "grade": grade, "tier": tier,

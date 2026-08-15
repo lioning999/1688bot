@@ -254,21 +254,21 @@
   },
   "prod_barrier_tip_high": {
     "zh": "试错成本偏高（¥{price}/{moq}件起），先算账再决定",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Trial cost runs high (¥{price}, {moq}-unit MOQ) — run the numbers before committing",
+    "vi": "",
+    "th": ""
   },
   "prod_barrier_tip_low": {
     "zh": "试错成本极低（¥{price}/{moq}件起），拿样基本不亏",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Trial cost is minimal (¥{price}, {moq}-unit MOQ) — sampling is basically risk-free",
+    "vi": "",
+    "th": ""
   },
   "prod_barrier_tip_mid": {
     "zh": "试错成本适中（¥{price}/{moq}件起），拿样不贵",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Trial cost is manageable (¥{price}, {moq}-unit MOQ) — sampling won't break the bank",
+    "vi": "",
+    "th": ""
   },
   "prod_dim_d1_data_fmt": {
     "zh": "月销 {n}",
@@ -458,123 +458,51 @@
   },
   "prod_summary_caution": {
     "zh": "产品信号偏弱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Weak product signals",
+    "vi": "Tín hiệu sản phẩm yếu",
+    "th": "สัญญาณสินค้าอ่อน"
   },
   "prod_summary_fatal": {
     "zh": "产品有硬伤",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Product has fatal flaws",
+    "vi": "Sản phẩm có lỗi nghiêm trọng",
+    "th": "สินค้ามีข้อบกพร่องร้ายแรง"
   },
   "prod_summary_go": {
     "zh": "产品验证过，值得做",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Verified product, worth it",
+    "vi": "Sản phẩm đã kiểm chứng, đáng làm",
+    "th": "สินค้าผ่านการตรวจสอบ คุ้มค่า"
   },
   "prod_summary_trial": {
     "zh": "产品有支撑，需验证",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Promising, needs verification",
+    "vi": "Có tiềm năng, cần kiểm chứng",
+    "th": "มีศักยภาพ ต้องตรวจสอบ"
   },
   "prod_summary_watch": {
     "zh": "产品数据不足",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_caution_hot_low": {
-    "zh": "谨慎。卖得火（{sold}件）但复购仅{repurchase}%——可能是冲动消费或一次性款。先小批试，卖得动再追。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_caution_rep_low": {
-    "zh": "谨慎。复购高（{repurchase}%）但销量少（{sold}件）——复购好但客户群还小。先拿样测需求。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Insufficient product data",
+    "vi": "Thiếu dữ liệu sản phẩm",
+    "th": "ข้อมูลสินค้าไม่เพียงพอ"
   },
   "prod_verdict_fatal_badrate": {
     "zh": "换品。好评率仅{positive}%——差评太多会拖垮店铺。别碰这个品{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_fatal_return": {
-    "zh": "换品。不支持退货——卖出去退不回来，差评降权你扛不住。别碰这个品{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_go_hot_repeat": {
-    "zh": "值得做。热销（{sold}件）+ 有复购（{repurchase}%）——卖得动且有人回头。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_go_hot_wanted": {
-    "zh": "值得做。卖得火（{sold}件）+ 当前热度高（{wanted}人想看）——需求被两次验证过。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_go_repurchase": {
-    "zh": "值得做。有销量打底（{sold}件）+ 买过的人会回来补货（{repurchase}%复购）——品稳、有需求。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Skip this one. Only {positive}% positive reviews — too many bad reviews will drag down your store. Don't touch it.{risk_note}",
+    "vi": "",
+    "th": ""
   },
   "prod_verdict_skip_nodata": {
     "zh": "跳过。核心数据不够（{missing_count}项缺失）——判断不了这个品能不能做。先收藏蹲数据{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_trial_hot_unknown": {
-    "zh": "小批量试。卖得火（{sold}件）但复购数据缺失——不确定买过的人会不会回来。先少量拿，卖动了再追。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_trial_medium3": {
-    "zh": "小批量试。{highlight_count}个维度有亮点——有支撑但不够强。少量试试。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_trial_rep_low": {
-    "zh": "值得试。复购率高（{repurchase}%）说明产品被反复验证过——不是一次性冲动消费。虽然当前销量少（{sold}件），但门槛低，拿样试错基本不亏。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_trial_wanted_low": {
-    "zh": "小批量试。很多人想看（{wanted}人）但还没怎么卖（{sold}件）——需求在但没被验证。拿少量试水。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_watch_flat": {
-    "zh": "观望。全维度平平——没看到足够亮点。先收藏蹲数据。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
-  },
-  "prod_verdict_watch_medium12": {
-    "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。先收藏蹲数据，别急着下手。{barrier_tip}{risk_note}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Skip. Core data is missing ({missing_count} items) — can't judge whether this product works. Save it and wait for data.{risk_note}",
+    "vi": "",
+    "th": ""
   },
   "prod_risk_note_no_return": {
     "zh": "⚠️ 该商品不支持7天无理由退货——买家无法无理由退换，需自行承担退货风险。",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "⚠️ This item does not support 7-day unconditional returns — buyers can't return it without a reason and bear the return risk themselves.",
+    "vi": "",
+    "th": ""
   },
   "sales_sold_fmt": {
     "zh": "{n} 已售",
@@ -618,41 +546,47 @@
     "vi": "Hàng Không Công Khai ⚠️",
     "th": "ไม่เปิดเผยสต็อก ⚠️"
   },
-  "summary_conditional_both_mid": {
-    "zh": "品要测，厂要验。拿最少批量试水，同时验货——两件事一起做别分开花钱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+  "summary_conditional_ok": {
+    "zh": "货能卖、厂也能用，可以试。先拿样验质量，再谈批量",
+    "en": "Product sells and supplier works — worth a try. Sample first to check quality, then talk bulk.",
+    "vi": "",
+    "th": ""
+  },
+  "summary_conditional_careful": {
+    "zh": "两边都有短板，悠着点。先少量试、盯紧质量，别急着铺量",
+    "en": "Both sides have weak spots — go easy. Start small, watch quality closely, don't rush to scale.",
+    "vi": "",
+    "th": ""
   },
   "summary_conditional_factory_strong": {
     "zh": "厂靠得住，但品还没完全验证。先少量拿，卖动了厂能跟上",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Supplier is solid, but the product isn't fully proven. Start small — once it moves, the factory can keep up.",
+    "vi": "",
+    "th": ""
   },
   "summary_conditional_supplier_weak": {
     "zh": "品没问题。但厂拖后腿——拿样验货，确认质量再批量",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Product's fine, but the supplier drags it down — sample and inspect, confirm quality before bulk.",
+    "vi": "",
+    "th": ""
   },
   "summary_go_both": {
     "zh": "品验证过，厂靠得住。拿样确认，可以放心做",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Product's proven, supplier checks out. Sample it to confirm, then go with confidence.",
+    "vi": "",
+    "th": ""
   },
   "summary_go_product_ok": {
     "zh": "品没问题。厂基本面OK但缺顶级背书——拿样时多留个心眼验货",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Product's fine. Supplier fundamentals are OK but lack top-tier backing — inspect carefully when sampling.",
+    "vi": "",
+    "th": ""
   },
   "summary_headline_conditional": {
     "zh": "🟡 有条件做",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "🟡 Conditional",
+    "vi": "🟡 Có điều kiện",
+    "th": "🟡 มีเงื่อนไข"
   },
   "summary_headline_conditional_short": {
     "zh": "可考虑",
@@ -662,9 +596,9 @@
   },
   "summary_headline_go": {
     "zh": "🟢 可以出手",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "🟢 Go for It",
+    "vi": "🟢 Nên mua",
+    "th": "🟢 ซื้อได้เลย"
   },
   "summary_headline_go_short": {
     "zh": "推荐",
@@ -674,9 +608,9 @@
   },
   "summary_headline_no": {
     "zh": "🔴 不建议",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "🔴 Not Recommended",
+    "vi": "🔴 Không nên",
+    "th": "🔴 ไม่แนะนำ"
   },
   "summary_headline_no_short": {
     "zh": "不推荐",
@@ -686,9 +620,9 @@
   },
   "summary_headline_wait": {
     "zh": "⬜ 等一等",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "⬜ Wait for Data",
+    "vi": "⬜ Chờ thêm dữ liệu",
+    "th": "⬜ รอข้อมูล"
   },
   "summary_headline_wait_short": {
     "zh": "数据不足",
@@ -698,69 +632,69 @@
   },
   "summary_no_product_fatal": {
     "zh": "硬伤在品，换品。别在这一单上花钱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "The product is the problem — switch products. Don't spend money on this one.",
+    "vi": "",
+    "th": ""
   },
   "summary_no_supplier_fatal": {
     "zh": "硬伤在厂，换厂。别在这一单上花钱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "The supplier is the problem — switch suppliers. Don't spend money on this one.",
+    "vi": "",
+    "th": ""
   },
   "summary_wait_data": {
     "zh": "数据不够——判断不了。先收藏，别急着花钱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Not enough data to judge. Save it, don't spend yet.",
+    "vi": "",
+    "th": ""
   },
   "supp_action_check_delivery": {
     "zh": "拿样确认交期稳不稳",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Sample to confirm delivery lead times are reliable",
+    "vi": "",
+    "th": ""
   },
   "supp_action_compare": {
     "zh": "拿样后先比价，确认有价格优势再合作",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Compare prices after sampling — lock in a price advantage before committing",
+    "vi": "",
+    "th": ""
   },
   "supp_action_compare_inspect": {
     "zh": "先比价再拿样，别急着批量",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Compare prices first, then sample — don't rush to bulk",
+    "vi": "",
+    "th": ""
   },
   "supp_action_inspect": {
     "zh": "拿样时仔细验货",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Inspect carefully when sampling",
+    "vi": "",
+    "th": ""
   },
   "supp_action_ok": {
     "zh": "拿样确认款式后可放心合作",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Sample to confirm the specs, then partner with confidence",
+    "vi": "",
+    "th": ""
   },
   "supp_bad_cert_none": {
     "zh": "没人验过厂——品质靠你自己判断",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "No one has audited the factory — quality is on your own judgment",
+    "vi": "",
+    "th": ""
   },
   "supp_bad_id_trader": {
     "zh": "贸易商拿货，不是源头——价格有加价",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Sourcing from a trader, not the source — expect a markup",
+    "vi": "",
+    "th": ""
   },
   "supp_bad_years_new": {
     "zh": "新店——稳定性还没被验证",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "New shop — stability not yet proven",
+    "vi": "",
+    "th": ""
   },
   "supp_cert_deep_audit": {
     "zh": "深度验厂",
@@ -926,33 +860,33 @@
   },
   "supp_good_cert_basic": {
     "zh": "有{cert_text}认证，基本面过关",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Has {cert_text} certification — fundamentals pass",
+    "vi": "",
+    "th": ""
   },
   "supp_good_cert_deep": {
     "zh": "{cert_text}认证——有第三方背书",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "{cert_text} certified — third-party backing",
+    "vi": "",
+    "th": ""
   },
   "supp_good_id_factory": {
     "zh": "工厂直供——跳过中间商",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Factory-direct — no middleman",
+    "vi": "",
+    "th": ""
   },
   "supp_good_id_super": {
     "zh": "实力工厂——有实体可追溯",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Established factory — traceable entity",
+    "vi": "",
+    "th": ""
   },
   "supp_good_years_old": {
     "zh": "干了{years}年——能活下来的不会太差",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "{years} years in business — anyone still standing can't be too bad",
+    "vi": "",
+    "th": ""
   },
   "supp_help_no_cert": {
     "zh": "第三方机构（如 TUV、SGS、BV）实地审核工厂。该供应商未经第三方验厂——在1688平台，中小工厂无此认证属于常态。",
@@ -992,63 +926,63 @@
   },
   "supp_summary_caution": {
     "zh": "供应商信号偏弱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Weak supplier signals",
+    "vi": "Tín hiệu nhà cung cấp yếu",
+    "th": "สัญญาณซัพพลายเออร์อ่อน"
   },
   "supp_summary_fatal": {
     "zh": "供应商有硬伤",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Supplier has fatal flaws",
+    "vi": "Nhà cung cấp có lỗi nghiêm trọng",
+    "th": "ซัพพลายเออร์มีข้อบกพร่องร้ายแรง"
   },
   "supp_summary_skip": {
     "zh": "供应商信息不足",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Insufficient supplier info",
+    "vi": "Thiếu thông tin nhà cung cấp",
+    "th": "ข้อมูลซัพพลายเออร์ไม่เพียงพอ"
   },
   "supp_summary_trust": {
     "zh": "供应商可信",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Trusted supplier",
+    "vi": "Nhà cung cấp đáng tin",
+    "th": "ซัพพลายเออร์น่าเชื่อถือ"
   },
   "supp_summary_usable": {
     "zh": "供应商可用，留意短板",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Usable, watch the gaps",
+    "vi": "Dùng được, lưu ý điểm yếu",
+    "th": "ใช้ได้ ระวังจุดอ่อน"
   },
   "supp_verdict_caution_weak2": {
     "zh": "谨慎。{bad_parts}——{action}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Proceed with caution. {bad_parts} — {action}",
+    "vi": "",
+    "th": ""
   },
   "supp_verdict_fatal_blackbox": {
     "zh": "别碰。对面是谁都不知道——身份、认证、年限全空。没法追溯，出了事你连人都找不到",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Don't touch it. You don't even know who's on the other side — no identity, no certification, no history. Can't trace them; if something goes wrong you can't even find them.",
+    "vi": "",
+    "th": ""
   },
   "supp_verdict_skip_nodata": {
     "zh": "跳过。关键信息不够（{missing_count}项缺失）——判断不了这个厂靠不靠谱",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Skip. Key info is missing ({missing_count} items) — can't judge whether this supplier is reliable.",
+    "vi": "",
+    "th": ""
   },
   "supp_verdict_trust_strong2": {
     "zh": "可信。{good_parts}。拿样确认款式，可放心合作",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Trustworthy. {good_parts}. Sample to confirm the specs, then partner with confidence.",
+    "vi": "",
+    "th": ""
   },
   "supp_verdict_usable_ok": {
     "zh": "可用。{good_parts}。但{bad_parts}。{action}",
-    "en": "TODO",
-    "vi": "TODO",
-    "th": "TODO"
+    "en": "Usable. {good_parts}. But {bad_parts}. {action}",
+    "vi": "",
+    "th": ""
   },
   "supplier_grade_caution": {
     "zh": "🔴 谨慎",
@@ -1493,5 +1427,71 @@
     "en": "Non-Manufacturer",
     "vi": "Không Phải Nhà Sản Xuất",
     "th": "ไม่ใช่ผู้ผลิต"
+  },
+  "prod_verdict_go_repurchase": {
+    "zh": "值得做。有销量打底（{sold}件）+ 买过的人会回来补货（{repurchase}%复购）——品稳、有需求。{barrier_tip}{risk_note}",
+    "en": "Worth doing. Sales volume backs it up ({sold} units) and buyers come back to restock ({repurchase}% repurchase) — the product holds up and demand is there. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_go_hot_wanted": {
+    "zh": "值得做。卖得火（{sold}件）+ 当前热度高（{wanted}人想看）——需求被两次验证过。{barrier_tip}{risk_note}",
+    "en": "Worth doing. Selling hot ({sold} units) with strong current interest ({wanted} want-buys) — demand verified twice over. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_go_hot_repeat": {
+    "zh": "值得做。热销（{sold}件）+ 有复购（{repurchase}%）——卖得动且有人回头。{barrier_tip}{risk_note}",
+    "en": "Worth doing. Hot seller ({sold} units) with repeat buyers ({repurchase}%) — it moves and people come back. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_trial_hot_unknown": {
+    "zh": "小批量试。卖得火（{sold}件）但复购数据缺失——不确定买过的人会不会回来。先少量拿，卖动了再追。{barrier_tip}{risk_note}",
+    "en": "Test with a small batch. Selling hot ({sold} units) but repurchase data is missing — unsure if buyers come back. Start small, scale if it keeps moving. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_trial_wanted_low": {
+    "zh": "小批量试。很多人想看（{wanted}人）但还没怎么卖（{sold}件）——需求在但没被验证。拿少量试水。{barrier_tip}{risk_note}",
+    "en": "Test with a small batch. Lots of interest ({wanted} want-buys) but low sales so far ({sold} units) — demand is there but unproven. Order a small trial. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_trial_rep_low": {
+    "zh": "值得试。复购率高（{repurchase}%）说明产品被反复验证过——不是一次性冲动消费。虽然当前销量少（{sold}件），但门槛低，拿样试错基本不亏。{barrier_tip}{risk_note}",
+    "en": "Worth trying. High repurchase ({repurchase}%) means the product has been re-validated — not a one-time impulse buy. Sales are low ({sold} units) but the barrier is low, so sampling is basically risk-free. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_trial_medium3": {
+    "zh": "小批量试。{highlight_count}个维度有亮点——有支撑但不够强。少量试试。{barrier_tip}{risk_note}",
+    "en": "Test with a small batch. {highlight_count} dimensions show promise — enough to support it, not enough to go all in. Try a little. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_caution_hot_low": {
+    "zh": "谨慎。卖得火（{sold}件）但复购仅{repurchase}%——可能是冲动消费或一次性款。先小批试，卖得动再追。{barrier_tip}{risk_note}",
+    "en": "Be careful. Hot seller ({sold} units) but only {repurchase}% repurchase — could be impulse buys or a one-off. Start small, scale only if it keeps moving. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_caution_rep_low": {
+    "zh": "谨慎。复购高（{repurchase}%）但销量少（{sold}件）——复购好但客户群还小。先拿样测需求。{barrier_tip}{risk_note}",
+    "en": "Be careful. High repurchase ({repurchase}%) but low sales ({sold} units) — loyal buyers but a small base. Sample first to test demand. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_watch_medium12": {
+    "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。先收藏蹲数据，别急着下手。{barrier_tip}{risk_note}",
+    "en": "Hold off. Only {highlight_count} dimension(s) show promise — not enough to build on. Save it and wait for more data. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
+  },
+  "prod_verdict_watch_flat": {
+    "zh": "观望。全维度平平——没看到足够亮点。先收藏蹲数据。{barrier_tip}{risk_note}",
+    "en": "Hold off. Nothing stands out across the board — no strong signals yet. Save it and wait for more data. {barrier_tip}{risk_note}",
+    "vi": "",
+    "th": ""
   }
 }

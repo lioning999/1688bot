@@ -429,7 +429,7 @@ def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lan
 
         result: dict[str, Any] = {
             "score": product_raw.get("score", 0),
-            "max_score": product_raw.get("max_score", 15),
+            "max_score": product_raw.get("max_score", 18),
             "grade": product_raw.get("grade", ""),
             "summary": _format_verdict(product_raw.get("summary"), lang),
             "verdict": _format_verdict(product_raw.get("verdict"), lang),

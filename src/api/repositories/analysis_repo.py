@@ -62,20 +62,6 @@ class AnalysisRepository:
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 
-    async def count_by_user(self, user_id: int) -> int:
-        """统计某用户的分析记录总数（仅 done 状态）。"""
-        conn = await AsyncDatabaseConnection.get_connection()
-        try:
-            async with conn.cursor(aiomysql.DictCursor) as cur:
-                await cur.execute(
-                    "SELECT COUNT(*) AS cnt FROM analysis WHERE user_id=%s AND status='done'",
-                    (user_id,),
-                )
-                row = await cur.fetchone()
-                return row["cnt"] if row else 0  # type: ignore[return-value]
-        finally:
-            await AsyncDatabaseConnection.close_connection(conn)
-
     async def toggle_favorite(self, analysis_id: int, user_id: int) -> bool | None:
         """切换收藏状态。返回切换后的状态 True=已收藏/False=未收藏，记录不存在返回 None。"""
         conn = await AsyncDatabaseConnection.get_connection()
@@ -195,22 +181,6 @@ class AnalysisRepository:
                     },
                     "display_i18n": row.get("display_i18n"),
                 }
-        finally:
-            await AsyncDatabaseConnection.close_connection(conn)
-
-    async def get_display_i18n(self, offer_id: str, user_id: int) -> str | None:
-        """读 display_i18n 列（原始 JSON 字符串）。不存在返回 None。"""
-        conn = await AsyncDatabaseConnection.get_connection()
-        try:
-            async with conn.cursor(aiomysql.DictCursor) as cur:
-                await cur.execute(
-                    "SELECT display_i18n FROM analysis WHERE offer_id=%s AND user_id=%s AND status='done' LIMIT 1",
-                    (offer_id, user_id),
-                )
-                row = await cur.fetchone()
-                if row and row.get("display_i18n"):
-                    return row["display_i18n"]  # type: ignore[return-value]
-                return None
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 

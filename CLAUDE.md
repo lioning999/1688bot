@@ -29,7 +29,6 @@
 ```
 src/api/       — FastAPI 后端（routes/services/adapters/repositories/domain/utils）
 src/chrome-ext/ — Chrome 插件（MV3，side panel + service worker）
-docs/web/      — 原生 HTML/CSS/JS 前端（无框架，i18n + samples）
 docs/          — 项目文档（README.md 入口）
 db/            — MySQL schema
 ```
@@ -111,7 +110,7 @@ db/            — MySQL schema
 
 | 层 | 判断标准 | 文件 |
 |----|---------|------|
-| 🖥️ 前端i18n | 每种商品一样 | `docs/web/lang/i18n/{lang}.json` |
+| 🖥️ 前端i18n | 每种商品一样 | `src/chrome-ext/lang/{lang}.json` |
 | 📖 字典查表 | 中文由我们产出、可穷举 | `src/api/domain/data/glossary.json` |
 | 🤖 Qwen翻译 | 中文来自1688、不可穷举 | translator.py，无固定配置 |
 | ➖ 不翻译 | 数字/URL/图片 | 无 |

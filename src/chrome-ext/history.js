@@ -23,7 +23,7 @@ var HistoryPage = (function () {
   function formatTime(isoStr) {
     if (!isoStr) return '';
     var d = new Date(isoStr);
-    if (isNaN(d.getTime())) return isoStr;
+    if (isNaN(d.getTime())) return '';
     var now = new Date();
     var diff = now - d;
     if (diff < 60000) return '刚刚';
@@ -76,7 +76,7 @@ var HistoryPage = (function () {
           var els = getEls();
           els.list.insertAdjacentHTML('afterbegin',
             '<div class="empty-state" style="padding:12px;"><div class="empty-icon">⚠️</div><p>' +
-            (I18N.t('msg.analyzeFailed') || '删除失败') + '</p></div>');
+            (I18N.msg(res && res.msg_code, res && res.message) || '删除失败') + '</p></div>');
         }
       }).catch(function () {
         overlay.remove();
@@ -127,7 +127,7 @@ var HistoryPage = (function () {
       }
       html += '<div class="history-item-info">' +
               '<div class="history-item-title">' + escHtml(title) + '</div>' +
-              '<div class="history-item-time">' + time + '</div>' +
+              '<div class="history-item-time">' + escHtml(time) + '</div>' +
               '</div>';
       html += '<span class="history-item-grade ' + grade + '">' + (gradeEmoji[grade] || '⬜') + '</span>';
       html += '<button class="history-item-fav' + (favOn ? ' on' : '') + '" data-id="' + escHtml(String(item.analysis_id || item.id || '')) + '" title="' + (I18N.t('history.favorite') || '收藏') + '">' + (favOn ? '⭐' : '☆') + '</button>';
@@ -282,7 +282,7 @@ var HistoryPage = (function () {
     var ROWS = [
       { label: I18N.t('compare.price') || '价格',    fn: function (d) { return d && d.price ? (d.price.low || 0) + '-' + (d.price.high || 0) : '-'; } },
       { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' 件' : '-'; } },
-      { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 15) : '-'; } },
+      { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 18) : '-'; } },
       { label: '',                                     fn: function (d) { var s = d && d.summaryLine ? (d.summaryLine.short || '') : ''; return '<span class="cmp-verdict-short">' + escHtml(s) + '</span>'; }, isHtml: true },
       { label: I18N.t('compare.supplier') || '供应商评分', fn: function (d) { return d && d.supplierEval ? (d.supplierEval.grade || '') + ' ' + (d.supplierEval.score || 0) + '/' + (d.supplierEval.max_score || 9) : '-'; } },
       { label: '',                                     fn: function (d) { return _extractSupplierMeta(d); }, isHtml: true },

@@ -78,6 +78,11 @@ var I18N = (function () {
     return messages[key] || '';
   }
 
+  // msg_code → 翻译，找不到降级后端 message（N2）
+  function msg(code, fallback) {
+    return t('msg.' + code) || fallback || '';
+  }
+
   function getLang() { return current.lang; }
 
   return {
@@ -86,6 +91,7 @@ var I18N = (function () {
     apply: apply,
     switchTo: switchTo,
     t: t,
+    msg: msg,
     getLang: getLang,
     LOCALES: LOCALES
   };

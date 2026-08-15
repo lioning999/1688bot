@@ -152,7 +152,7 @@
     API.analyze(url, lang).then(function (res) {
       if (!res || res.code !== 200) {
         _searching = false;
-        EL.errorMessage.textContent = (res && res.message) ? res.message : I18N.t('report.analyzeFailed');
+        EL.errorMessage.textContent = I18N.msg(res && res.msg_code, res && res.message) || I18N.t('report.analyzeFailed');
         showEmpty('error');
         return;
       }
@@ -184,7 +184,7 @@
         if (taskId !== _activeTaskId) return;
         if (!res || res.code !== 200) {
           _searching = false; stopPolling();
-          EL.errorMessage.textContent = (res && res.message) ? res.message : I18N.t('report.analyzeFailed');
+          EL.errorMessage.textContent = I18N.msg(res && res.msg_code, res && res.message) || I18N.t('report.analyzeFailed');
           showEmpty('error'); return;
         }
         if (res.data.status === 'done') {
@@ -193,7 +193,7 @@
           render(res.data.result || res.data);
         } else if (res.data.status === 'failed') {
           _searching = false; stopPolling();
-          EL.errorMessage.textContent = res.data.error || res.message || I18N.t('report.analyzeFailed');
+          EL.errorMessage.textContent = I18N.msg(res.msg_code, res.data.error || res.message) || I18N.t('report.analyzeFailed');
           showEmpty('error');
         } else { pollTask(taskId, count + 1); }
       }).catch(function () { _searching = false; stopPolling(); showEmpty('error'); });
@@ -510,9 +510,9 @@
 
     EL.btnLogin.addEventListener('click', function () {
       console.log('[SidePanel] LOGIN button clicked');
-      // MV3 标准：登录委托给 service worker 的 launchWebAuthFlow
-      chrome.runtime.sendMessage({ type: 'LOGIN', payload: {} }, function (res) {
-        console.log('[SidePanel] LOGIN response:', res);
+      // MV3 标准：登录委托给 service worker 的 launchWebAuthFlow；lang 随消息传入，SW 同步读避免异步丢手势
+      chrome.runtime.sendMessage({ type: 'LOGIN', payload: { lang: I18N.getLang() } }, function (res) {
+        console.log('[SidePanel] LOGIN response received, code=' + (res && res.code));
         if (res && res.code === 200 && res.data && res.data.token) {
           console.log('[SidePanel] LOGIN success, token saved');
           API.setToken(res.data.token);
@@ -520,7 +520,7 @@
           showCard(EL.btnLogout, true);
           handleTabChange(null);
         } else {
-          var msg = (res && res.message) || 'Login failed';
+          var msg = I18N.msg(res && res.msg_code, res && res.message) || 'Login failed';
           console.error('[SidePanel] LOGIN failed:', msg);
           showToast(msg, 'error');
         }

@@ -1,4 +1,4 @@
-"""供应商评判引擎 — 3 维信号强度 → 黑箱检查 → 6 规则信号计数 → 判词。
+"""供应商评判引擎 — 3 维信号强度 → 黑箱检查 → 信号强度计数 → 6 规则 → 4 档 grade → 判词。
 
 纯函数模块，零外部依赖。被 evaluator.py 导入，外部代码不应直接引用此文件。
 
@@ -179,21 +179,33 @@ def _supplier_missing(signals: dict[str, Any]) -> bool:
 # ====================================================================
 
 def _supplier_tier(signals: dict[str, Any]) -> str:
-    """信号强度计数 → 档位。
+    """身份硬门槛 + 强-弱净分 → 档位。
 
-    - 强信号 ≥ 2 → trust_strong2
-    - 强信号 = 1 ∨ 中等信号 ≥ 2 → usable_ok
-    - 其余 → caution_weak2（含弱信号≥2）
+    拨正后：身份弱（贸易商）一票警惕，不管认证年限多好；
+    强/中/弱都计入，弱信号不再被「强=1 或 中≥2」吞掉。
     """
-    strong = medium = 0
-    for s in (signals["identity_strength"], signals["cert_strength"], signals["years_strength"]):
+    identity: str = signals["identity_strength"]
+    cert: str = signals["cert_strength"]
+    years: str = signals["years_strength"]
+
+    # 身份硬门槛：贸易商赚差价、品控不可控，一票警惕
+    if identity == "weak":
+        return "caution_weak2"
+
+    strong = medium = weak = 0
+    for s in (identity, cert, years):
         if s == "strong":
             strong += 1
         elif s == "medium":
             medium += 1
-    if strong >= 2:
+        elif s == "weak":
+            weak += 1
+
+    # 真工厂 + 深度验厂 → 信任
+    if identity == "strong" and cert == "strong":
         return "trust_strong2"
-    if strong == 1 or medium >= 2:
+    # 强-弱净分 ≥ 1 → 还行（弱信号已计入，不再漏）
+    if strong - weak >= 1:
         return "usable_ok"
     return "caution_weak2"
 

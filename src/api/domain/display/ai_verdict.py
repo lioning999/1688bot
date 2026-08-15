@@ -88,7 +88,7 @@ def pack_ai_input(
             "product_tier": p_tier,
             "supplier_tier": s_tier,
             "summary_tier": summary_tier,
-            "tone": _derive_tone(p_tier, s_tier),
+            "tone": _derive_tone(p_tier),
         },
         "must_mention": _pack_product_must_mention(product_raw, mapped),
         "supplier_must_mention": _pack_supplier_must_mention(supplier_raw),
@@ -104,17 +104,19 @@ def pack_ai_input(
     }
 
 
-def _derive_tone(p_tier: str, s_tier: str) -> str:
-    """从产品 + 供应商 tier 推导判词语气。"""
-    if p_tier.startswith("go_"):
+def _derive_tone(p_tier: str) -> str:
+    """从产品 tier 推导判词语气。
+
+    拨正后 tone 只看产品档（销量×门槛/退货）：trial 统一 positive_but_cautious，
+    供应商强弱在综合层体现，不再影响产品判词语气。
+    """
+    if p_tier.startswith("go"):
         return "positive"
-    if p_tier.startswith("trial_"):
-        if s_tier.startswith(("trust_", "usable_")):
-            return "positive"
+    if p_tier.startswith("trial"):
         return "positive_but_cautious"
-    if p_tier.startswith("caution_"):
+    if p_tier.startswith("caution"):
         return "cautious"
-    if p_tier.startswith("fatal_"):
+    if p_tier.startswith("fatal"):
         return "negative"
     return "neutral"
 
@@ -199,12 +201,12 @@ def _pack_product_must_not_say(p_tier: str, product_raw: dict[str, Any]) -> list
     """根据产品 tier 生成禁止表述列表。"""
     items: list[str] = []
 
-    if p_tier.startswith("fatal_"):
+    if p_tier.startswith("fatal"):
         items.extend(["this product is recommended", "worth trying", "good product"])
-    elif p_tier.startswith("watch_"):
+    elif p_tier.startswith("watch"):
         items.extend(["strongly recommended", "proven bestseller", "go for it",
                        "confidently order"])
-    elif p_tier.startswith("caution_"):
+    elif p_tier.startswith("caution"):
         items.extend(["completely risk-free", "buy with full confidence", "no concerns"])
 
     signals: dict[str, Any] = product_raw.get("signals", {})
@@ -248,9 +250,8 @@ def _pack_supplier_must_not_say(s_tier: str, supplier_raw: dict[str, Any]) -> li
 # ---- action ----
 
 def _pack_action(product_raw: dict[str, Any], supplier_raw: dict[str, Any]) -> str:
-    """根据产品和供应商 tier 推导推荐行动。"""
+    """根据产品 tier 推导推荐行动（供应商短板通过 action_key 在上方优先处理）。"""
     p_tier: str = str(product_raw.get("tier", "watch"))
-    s_tier: str = str(supplier_raw.get("tier", "caution"))
 
     s_verdict: Any = supplier_raw.get("verdict", {})
     if isinstance(s_verdict, dict):
@@ -271,21 +272,18 @@ def _pack_action(product_raw: dict[str, Any], supplier_raw: dict[str, Any]) -> s
         if action_key and action_key in action_map:
             return action_map[action_key]
 
-    if p_tier.startswith("go_") and s_tier.startswith(("trust_", "usable_")):
-        return ("Order samples to verify quality, then proceed with confidence. "
-                "Both product signals and supplier credentials are solid.")
-    if p_tier.startswith("go_"):
-        return ("Product signals are strong but supplier has gaps — "
-                "sample first, verify supplier before bulk order.")
-    if p_tier.startswith("trial_"):
-        return ("Order 2-3 samples to test product quality. "
-                "Low trial cost makes this a reasonable bet.")
-    if p_tier.startswith("caution_"):
-        return ("Calculate total landed cost carefully. "
-                "Order minimum quantity to verify quality before committing.")
-    if p_tier.startswith("watch_"):
-        return "Consider waiting for more data or checking similar products with better signals."
-    if p_tier.startswith("fatal_"):
+    if p_tier.startswith("go"):
+        return ("Product and supplier both check out — "
+                "sample to confirm, then scale with confidence.")
+    if p_tier.startswith("trial"):
+        return ("Order 2-3 samples to verify quality before committing to bulk. "
+                "Confirm the goods match the photos first.")
+    if p_tier.startswith("caution"):
+        return ("Watch the sales trend or find a similar product with a lower "
+                "minimum order before committing.")
+    if p_tier.startswith("watch"):
+        return "Wait for more data — current signals aren't enough to act on."
+    if p_tier.startswith("fatal"):
         return "Skip this product — look for alternatives with better fundamentals."
     return "Verify with a small sample order before committing to larger quantities."
 

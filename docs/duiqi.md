@@ -1,23 +1,73 @@
+## 节点索引
+
+> 排查/改代码时先查这张表，再跳到对应节点。节点名在正文里可直接搜索。
+
+| 节点 | 职责 | 文件 · 方法 | 关键动作 |
+|------|------|-------------|---------|
+| 节点 1 | 启动分析 | routes/analyze.py · `analyze_start` | 校验URL → 提取offer_id → 全局限流 → 配额 → 启动后台 |
+| 节点 2 | 后台任务编排 | services/analyze_svc.py · `start()` | 失败检查 → 请求合并 → 扣配额 → 建 Task |
+| 节点 3 | 后台流水线 | services/analyze_svc.py · `_run()` | ↓ 见子节点 |
+| 　3.1 | DB 检查复用 | repositories/analysis_repo.py · `get_by_offer_id` | 查 raw_json + display_i18n |
+| 　3.2 | Apify 抓取 | adapters/apify_adapter.py · `fetch_product_by_url` | 90s 超时 |
+| 　3.3 | 清洗+标准化 | domain/data/mapper.py · `map_raw` | 字段级容错 |
+| 　3.4 | 规则引擎 | domain/verdict_engine.py · `judge_all` | 出 3 个判词 KEY |
+| 　3.5 | 构建 Display+翻译 | services/ai_verdict_svc.py · `build_result_with_display` | zh 模板 / 非zh AI |
+| 　3.6 | 自动落库 | services/analyze_svc.py · `_save_to_db_upsert` | INSERT ... ON DUPLICATE |
+| 　3.7 | 超限清理 | repositories/analysis_repo.py · `cleanup_excess` | FIFO 删未收藏 |
+| 节点 4 | 轮询状态 | routes/analyze.py · `analyze_status` | pending/done/failed |
+| 节点 5 | 默认语言 | routes/auth.py · `PUT /api/user/lang` | 改语言写 DB |
+
+> 📖 判词定档规则（产品 12 规则→4 档 · 供应商 5 档 · 综合 9 档）见文末「判词档位设计」。
+
+---
+
 用户输入 1688 链接 + 选语言（如 en）
         │
         ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 节点 1 — routes/analyze.py  POST /api/analyze               │
 │                                                             │
-│ 做什么：                                                     │
-│   1. 校验 URL 是 1688 链接                                   │
-│   2. 提取 offer_id                                           │
-│   3. 全局限流检查（rate_limiter.py）                          │
-│   4. 用户配额检查（user_repo.py → 查 quota 字段 + 懒重置）     │
+│ 目的：门卫 + 放行                                            │
+│   校验请求合法 +全局限流+ 配额够 → 立刻返回 task_id，不等分析结果      │
 │                                                             │
-│ 返回：{ task_id, status: "pending" }  ← 立即返回，不等结果    │
+│ 输入：                                                       │
+│   url   = 1688 商品链接（必填，Pydantic 校验格式）            │
+│   lang  = 目标语言 en/vi/th/id，空串 = zh（V1 不翻译）       │
+│                                                             │
+│ 做了什么：                                                   │
+│   1. 校验 URL 是 1688 链接（Pydantic validator，进路由前）    │
+│      → is_valid_1688_url() 拦截非法格式                      │
+│   2. 提取 offer_id（extract_offer_id）                       │
+│      → 校验纯数字 + 长度 ≥ 8，否则 ValidationError            │
+│        （OFFER_ID_NOT_FOUND / OFFER_ID_INVALID）             │
+│   3. 全局限流检查（rate_limiter.check()）                     │
+│      → 超限 → GLOBAL_RATE_LIMIT（retry_after 60秒）          │
+│   4. 用户配额检查（user_repo.get_quota_info）                 │
+│      → 取 user_id（request.state.user_id，JWT 中间件注入）    │
+│      → 查 quota / tier / last_reset_date                     │
+│      → 懒重置补地板：为空/过期 → lazy_reset_daily_quota       │
+│        （补到 Config.DAILY_FREE_QUOTA / DAILY_PAID_QUOTA）   │
+│      → quota ≤ 0 → QUOTA_EXHAUSTED                           │
+│   5. 启动后台分析（analyze_service.start）                    │
+│      → 扣配额在 start() 内执行，请求合并后统一处理            │
+│                                                             │
+│ 输出：{ task_id, status: "pending" }  ← 立即返回，不等结果    │
 └─────────────────────────────────────────────────────────────┘
         │
         ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 节点 2 — services/analyze_svc.py  AnalyzeService.start()    │
 │                                                             │
-│ 做什么：                                                     │
+│ 目的：编排后台任务                                            │
+│   立即返回 task_id，分析扔后台跑，不卡住前端                  │
+│                                                             │
+│ 输入：                                                       │
+│   offer_id = 节点1 提取的商品编号                            │
+│   user_id  = JWT 注入的用户 ID                              │
+│   raw_url  = 原始 1688 链接                                  │
+│   lang     = 目标语言 en/vi/th/id                           │
+│                                                             │
+│ 做了什么：                                                   │
 │   1. 失败次数检查（同 offer_id 连续失败 ≥3 次 → 拒绝）        │
 │   2. 请求合并检查（同 offer_id 正在跑 → 复用旧 Task）         │
 │      → 防止：用户等 Apify 返回期间（10-90秒）重复点击          │
@@ -28,7 +78,7 @@
 │         不能卡住等 Apify 跑完。把 _run() 扔后台异步执行，      │
 │         前端拿 task_id 每 2 秒轮询，Task 跑完状态变 done       │
 │                                                             │
-│ 返回：task_id                                                │
+│ 输出：task_id                                                │
 └─────────────────────────────────────────────────────────────┘
         │
         ▼  （后台异步执行）
@@ -40,19 +90,23 @@
 │   │ 文件：repositories/analysis_repo.py                  │   │
 │   │ 方法：get_by_offer_id(offer_id, user_id)             │   │
 │   │                                                     │   │
-│   │ SQL: SELECT raw_json, display_i18n                   │   │
-│   │      FROM analysis                                  │   │
-│   │      WHERE offer_id=? AND user_id=? AND status='done'│   │
+│   │ 目的：复用已分析商品，避免重复调 Apify（花钱）         │   │
 │   │                                                     │   │
-│   │ 三级判断：                                            │   │
-│   │ ① 没查到 → 走 3.2 Apify 抓取                          │   │
-│   │ ② 查到 raw_json + display_i18n 有当前语言              │   │
-│   │    → 直接返回display_i18n，0 次 AI。
-           跳过 Apify + mapper + judge    │   │
-│   │    → 原因：同用户同商品同语言，上次已翻好，没必要重跑   │   │
-│   │ ③ 查到 raw_json 但 display_i18n 没有当前语言           │   │
-│   │    → 跳过 Apify，走 3.3 mapper+judge+翻译              │   │
-│   │    → 原因：语言不同，需要从 raw_json 重建 + 追加翻译    │   │
+│   │ 输入：offer_id + user_id（per-user 隔离）            │   │
+│   │                                                     │   │
+│   │ 做了什么：                                           │   │
+│   │   SQL: SELECT raw_json, display_i18n                 │   │
+│   │        FROM analysis                                │   │
+│   │        WHERE offer_id=? AND user_id=?                │   │
+│   │          AND status='done'                           │   │
+│   │                                                     │   │
+│   │ 输出（三级判断，三选一）：                            │   │
+│   │   ① 没查到 → 走 3.2 Apify 抓取                       │   │
+│   │   ② 有当前语言 → 直接返回 display_i18n                │   │
+│   │      （0 次 AI，跳过 Apify+mapper+judge）  退配额           │   │
+│   │      → 同用户同商品同语言，上次已翻好，没必要重跑     │   │
+│   │   ③ 有 raw_json 无当前语言 → 跳过 Apify  退配额             │   │
+│   │      → 走 3.3 mapper+judge+翻译，重建 + 追加语言      │   │
 │   └─────────────────────────────────────────────────────┘   │
 │                                                             │
 │ 子节点 3.2 — Apify 抓取（仅 DB 无 raw_json 时）              │
@@ -60,10 +114,16 @@
 │   │ 文件：adapters/apify_adapter.py                      │   │
 │   │ 方法：fetch_product_by_url(1688链接)                  │   │
 │   │                                                     │   │
+│   │ 目的：抓取商品原始数据（唯一数据源）                   │   │
+│   │                                                     │   │
 │   │ 输入：1688 商品链接                                   │   │
-│   │ 输出：原始 raw_json（标题/价格/图片/供应商/规格/SKU/销量）  │   │
-│   │ 超时：90 秒                                          │   │
-│   │ 失败 → 退配额 + 记录失败次数                          │   │
+│   │                                                     │   │
+│   │ 做了什么：                                           │   │
+│   │   fetch_product_by_url 抓取，超时 90 秒              │   │
+│   │   失败 → 退配额 + 记录失败次数                        │   │
+│   │                                                     │   │
+│   │ 输出：原始 raw_json                                  │   │
+│   │   （标题/价格/图片/供应商/规格/SKU/销量）             │   │
 │   └─────────────────────────────────────────────────────┘   │
 │                                                             │
 │ 子节点 3.3 — 数据清洗 + 标准化                                │
@@ -291,3 +351,68 @@
 
 **零影响。** 语言偏好存储不改分析管线的任何逻辑。节点 1 的 `lang` 参数来自插件当前语言（`I18N.getLang()`），与 `default_lang` 无关。`default_lang` 只决定「下次登录后插件初始语言是什么」。
 
+
+
+## 判词档位设计（最终版，2026-08-15）
+
+> 产品 12 规则→4 档 · 供应商 5 档 · 综合 9 档。改判词逻辑前先看这里。代码权威源：domain/evaluate/_product.py、_supplier.py、evaluator.py。
+
+0. 先看子维度（判断的原料）
+产品 6 维，每个判断啥、怎么分档：
+
+子维度	判断的是啥	强(3)	中(2)	弱(1)
+D1 销量	卖得动吗	>1000	100~1000	<100
+D2 复购	买过的还回来吗	>30%	10~30%	≤10%
+D3 门槛	试单成本低吗	价<20 且 起订≤10	价<50 且 起订≤100	其他
+D4 好评	口碑好吗	≥98%	≥95%	<95%
+D5 关注	多少人想买	>100	30~100	≤30
+D6 退货	有7天无理由吗	有	—	无
+供应商 3 维：
+
+子维度	判断的是啥	强	中	弱
+身份	是不是真工厂	超级工厂/旗舰/实力	自称工厂	贸易商
+认证	第三方验过吗	深度验厂/SGS/TUV	基础认证	无
+年限	开了几年	≥3年	1~3年	<1年
+1. 产品 12 个结果 → 给 AI
+#	结果	判定条件（用哪些子维度）	给 AI 的 tier	AI 据此的语气(tone)
+1	出手·复购好	D2复购强 + D1销量中上	go_repurchase	positive 积极
+2	出手·卖爆+关注高	D1销量强 + D5关注强	go_hot_wanted	positive
+3	出手·卖爆+有复购	D1销量强 + D2复购中上	go_hot_repeat	positive
+4	试·卖爆但啥未知	D1销量强 + D2无 + D5不高	trial_hot_unknown	positive→偏谨慎
+5	试·关注高没卖起来	D5关注强 + D1销量弱	trial_wanted_low	positive→偏谨慎
+6	试·复购好没量+门槛低	D2复购强 + D1销量弱 + D3门槛中上	trial_rep_low	positive→偏谨慎
+7	试·3个中等	任意3维=中	trial_medium3	positive→偏谨慎
+8	警·卖爆没人回头	D1销量强 + D2复购弱	caution_hot_low	cautious 提醒
+9	警·复购好没量+门槛高	D2复购强 + D1销量弱 + D3门槛低	caution_rep_low	cautious
+10	观·1-2个中等	任意1-2维=中	watch_medium12	neutral 中性
+11	观·全平平	其余全掉这	watch_flat	neutral
+12	跳过·数据不足	销量+复购+退货 缺≥2	skip	neutral
+外加「致命·好评<80%」→ tier=fatal_badrate，tone=negative 否定。
+
+2. 供应商 5 个 → 给 AI
+#	结果	判定条件	给 AI 的 tier	tone
+1	信任	身份强 + 认证强	trust_strong2	(配合产品定)
+2	还行	强-弱净分 ≥ 1	usable_ok	—
+3	警惕	身份弱（贸易商）一票警惕，或其余	caution_weak2	—
+4	致命	身份+认证+年限全空	fatal_blackbox	negative
+5	跳过	身份+年限 缺≥2	skip	neutral
+3. 综合 9 个 → 给 AI
+#	结果	判定条件（产品档 × 供应商档）	给 AI 的 tier
+1	出手	产品go + 供应商信任	go_both
+2	出手(产品为主)	产品go + 供应商还行	go_product_ok
+3	有条件(供应商弱)	产品go + 供应商警惕	conditional_supplier_weak
+4	有条件(工厂强)	产品试/警 + 供应商信任	conditional_factory_strong
+5	有条件(还行)	产品试/警 + 供应商还行	conditional_ok
+6	有条件(谨慎)	产品试/警 + 供应商警惕	conditional_careful
+7	不碰(供应商致命)	供应商致命	no_supplier_fatal
+8	不碰(产品致命)	产品致命	no_product_fatal
+9	等数据	数据不足	wait_data
+4. 每个结果额外还喂给 AI 什么（都一样，不分结果）
+除了上面的 tier，pack_ai_input 还给 AI 塞这些共享内容：
+
+字段	是啥	作用
+must_mention	销量 X 件、复购 Y%、价格/MOQ、好评、关注、退货警告	AI 写判词必须提到这些数字
+must_not_say	按 tier 生成的禁词（如 fatal 禁"值得买"、watch 禁"爆款"）	AI 禁止说，防止越档乱夸
+action	一句话行动（拿样/算成本/等数据/跳过）	AI 写"下一步该干啥"
+context	试错成本（¥最低下单额）、供应商摘要	AI 写话的参考背景
+dimensions	6+3 维的 signal(正/中/负)+label+数据	AI 校验数字用

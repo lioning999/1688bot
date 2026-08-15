@@ -73,7 +73,7 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 | display 路径 | 类型 | 前端取值 | 数据来源 |
 |-------------|------|---------|---------|
 | `productEval.score` | number | `pe.score` | evaluate_product() |
-| `productEval.max_score` | number(15) | `pe.max_score` | 固定值 |
+| `productEval.max_score` | number(18) | `pe.max_score` | 固定值 |
 | `productEval.grade` | "go"\|"ok"\|"bad"\|"none" | `pe.grade` | evaluate_product() |
 | `productEval.summary` | string | `pe.summary` | glossary(prod_summary_*, lang) |
 | `productEval.verdict` | string | `pe.verdict` | glossary(prod_verdict_*, lang) 或 Qwen AI |

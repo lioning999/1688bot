@@ -8,6 +8,10 @@
 
 ```
 1688链接
+  → DB 检查复用（repositories/analysis_repo.py · get_by_offer_id）
+      命中 raw_json + 当前语言 display_i18n → 直接返回，跳过后续全部
+      命中 raw_json 但缺当前语言 → 跳过 Apify，走 map_raw 重建 + 追加翻译
+      未命中 → 走 Apify
   → Apify 抓取原始数据（adapters/apify_adapter.py）
   → 自动落库 raw_json（analysis 表）
   → 数据映射 map_raw（domain/data/mapper.py）
@@ -152,7 +156,6 @@ CORS（最外层，OPTIONS 放行）→ JWT（内层，Bearer token 校验）
 | 资源 | 清理方式 |
 |------|---------|
 | DB 连接池 | 应用关闭时 `close_pool()`（main.py lifespan） |
-| 全局 dict 缓存 | 大小上限 + LRU 淘汰 |
 | asyncio.Task | 创建前先 cancel 旧任务 |
 
 ---

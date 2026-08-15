@@ -7,8 +7,8 @@
 
 内部实现拆分：
   _base.py      — 共享工具 + 阈值常量
-  _product.py   — 产品 6 维 → 致命检查 → 12 规则档位匹配 → 判词
-  _supplier.py  — 供应商 3 维 → 黑箱检查 → 6 规则信号计数 → 判词
+  _product.py   — 产品 6 维 → 致命检查 → 12 规则 → 4 档 grade → 判词
+  _supplier.py  — 供应商 3 维 → 黑箱检查 → 6 规则 → 4 档 grade → 判词
 
 依据：docs/技术-评分标准与标签体系.md
 """
@@ -37,12 +37,12 @@ SUMMARY_MATRIX: dict[str, dict[str, str]] = {
     },
     "trial": {
         "trust": "conditional_factory_strong",
-        "usable": "conditional_both_mid", "caution": "conditional_both_mid",
+        "usable": "conditional_ok", "caution": "conditional_careful",
         "fatal": "no_supplier_fatal", "skip": "wait_data",
     },
     "caution": {
         "trust": "conditional_factory_strong",
-        "usable": "conditional_both_mid", "caution": "conditional_both_mid",
+        "usable": "conditional_ok", "caution": "conditional_careful",
         "fatal": "no_supplier_fatal", "skip": "wait_data",
     },
     "watch": {
@@ -64,17 +64,12 @@ SUMMARY_MATRIX: dict[str, dict[str, str]] = {
 def _tier_group(tier: str) -> str:
     """产品/供应商 tier → 档位组名（用于矩阵查找）。
 
-    产品 tier 前缀 → group:
-      go_* → go, trial_* → trial, caution_* → caution,
-      watch_* → watch, fatal_* → fatal, skip → skip
-    供应商 tier 前缀 → group:
-      trust_* → trust, usable_* → usable,
-      caution_* / fatal_* / skip → 对应名
+    产品 tier：go / trial / caution / watch / fatal_badrate / skip
+    供应商 tier：trust_strong2 / usable_ok / caution_weak2 / fatal_blackbox / skip
     """
-    for prefix in ("go_", "trial_", "caution_", "watch_", "fatal_",
-                   "trust_", "usable_"):
+    for prefix in ("go", "trial", "caution", "watch", "fatal", "trust", "usable"):
         if tier.startswith(prefix):
-            return prefix.rstrip("_")
+            return prefix
     if tier.startswith("skip"):
         return "skip"
     return "caution"
@@ -109,7 +104,7 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         "verdict": verdict(f"summary_{summary_tier}"),
         "headline": headline_kv,
         "reason": reason_kv,
-        "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 15)}",
+        "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 18)}",
         "supplier_score": f"{supplier_result.get('score', 0)}/{supplier_result.get('max_score', 9)}",
         "tier": summary_tier,
     }

@@ -94,48 +94,46 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 
     case 'LOGIN':
       // Google OAuth 登录 — 从 service worker 调用 launchWebAuthFlow（MV3 标准）
+      // ⚠️ launchWebAuthFlow 必须在用户手势的同步调用栈触发，前面不能有 await/异步回调
       var extId = chrome.runtime.id;
-      // 读当前语言 → 传后端写入 default_lang
-      chrome.storage.local.get('sourcely_lang', function (langItems) {
-        var currentLang = langItems.sourcely_lang || '';
-        var authUrl = API_BASE + '/api/auth/google/login?platform=extension&ext_id=' + extId;
-        if (currentLang) authUrl += '&lang=' + currentLang;
-        console.log('[SW] LOGIN: extId=' + extId + ' lang=' + currentLang);
-        chrome.identity.launchWebAuthFlow({ url: authUrl, interactive: true }, function (redirectUrl) {
-          console.log('[SW] LOGIN callback: redirectUrl=' + redirectUrl + ' lastError=' + JSON.stringify(chrome.runtime.lastError));
-          if (chrome.runtime.lastError || !redirectUrl) {
-            console.error('[SW] LOGIN failed:', chrome.runtime.lastError);
-            sendResponse({ code: 401, data: null, message: 'Login cancelled or failed', msg_code: 'LOGIN_FAILED' });
-            return;
-          }
-          if (redirectUrl.indexOf('error=') !== -1) {
-            console.error('[SW] LOGIN error in redirect:', redirectUrl);
-            sendResponse({ code: 401, data: null, message: 'Login failed', msg_code: 'LOGIN_FAILED' });
-            return;
-          }
-          var m = redirectUrl.match(/[?&]token=([^&]+)/);
-          console.log('[SW] LOGIN token match:', m ? 'YES' : 'NO');
-          if (m && m[1]) {
-            var token = decodeURIComponent(m[1]);
-            // 解码 JWT 提取 default_lang → 恢复语言
-            try {
-              var payload = JSON.parse(atob(token.split('.')[1]));
-              if (payload.default_lang) {
-                chrome.storage.local.set({ sourcely_lang: payload.default_lang });
-                console.log('[SW] LOGIN: restored lang=' + payload.default_lang + ' from JWT');
-              }
-            } catch (e) {
-              console.log('[SW] LOGIN: JWT decode failed for lang restore, skipping');
+      var currentLang = payload.lang || '';  // sidepanel 随消息传入，避免异步读 storage 丢手势
+      var authUrl = API_BASE + '/api/auth/google/login?platform=extension&ext_id=' + extId;
+      if (currentLang) authUrl += '&lang=' + currentLang;
+      console.log('[SW] LOGIN: extId=' + extId + ' lang=' + currentLang);
+      chrome.identity.launchWebAuthFlow({ url: authUrl, interactive: true }, function (redirectUrl) {
+        console.log('[SW] LOGIN callback received, lastError=' + JSON.stringify(chrome.runtime.lastError));
+        if (chrome.runtime.lastError || !redirectUrl) {
+          console.error('[SW] LOGIN failed:', chrome.runtime.lastError);
+          sendResponse({ code: 401, data: null, message: 'Login cancelled or failed', msg_code: 'LOGIN_FAILED' });
+          return;
+        }
+        if (redirectUrl.indexOf('error=') !== -1) {
+          console.error('[SW] LOGIN error in redirect:', redirectUrl);
+          sendResponse({ code: 401, data: null, message: 'Login failed', msg_code: 'LOGIN_FAILED' });
+          return;
+        }
+        var m = redirectUrl.match(/[?&]token=([^&]+)/);
+        console.log('[SW] LOGIN token match:', m ? 'YES' : 'NO');
+        if (m && m[1]) {
+          var token = decodeURIComponent(m[1]);
+          // 解码 JWT 提取 default_lang → 恢复语言（此处在回调内，已非手势路径，可异步）
+          try {
+            var jwtPayload = JSON.parse(atob(token.split('.')[1]));
+            if (jwtPayload.default_lang) {
+              chrome.storage.local.set({ sourcely_lang: jwtPayload.default_lang });
+              console.log('[SW] LOGIN: restored lang=' + jwtPayload.default_lang + ' from JWT');
             }
-            chrome.storage.local.set({ sourcely_token: token }, function () {
-              console.log('[SW] LOGIN success: token saved');
-              sendResponse({ code: 200, data: { token: token }, message: 'ok', msg_code: 'OK' });
-            });
-          } else {
-            console.error('[SW] LOGIN: no token in redirect URL');
-            sendResponse({ code: 401, data: null, message: 'No token in redirect', msg_code: 'LOGIN_FAILED' });
+          } catch (e) {
+            console.log('[SW] LOGIN: JWT decode failed for lang restore, skipping');
           }
-        });
+          chrome.storage.local.set({ sourcely_token: token }, function () {
+            console.log('[SW] LOGIN success: token saved');
+            sendResponse({ code: 200, data: { token: token }, message: 'ok', msg_code: 'OK' });
+          });
+        } else {
+          console.error('[SW] LOGIN: no token in redirect URL');
+          sendResponse({ code: 401, data: null, message: 'No token in redirect', msg_code: 'LOGIN_FAILED' });
+        }
       });
       return true;
 
