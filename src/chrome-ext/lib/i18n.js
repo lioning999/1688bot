@@ -15,17 +15,17 @@ var I18N = (function () {
   var messages = {};
   var _initialized = false;
 
-  function detect() {
+  function detect(cb) {
     var navLang = (navigator.language || 'en').slice(0, 2).toLowerCase();
     var supported = ['zh', 'en', 'vi', 'th'];
     var detected = supported.indexOf(navLang) !== -1 ? navLang : 'en';
 
     chrome.storage.local.get('sourcely_lang', function (items) {
-      load(items.sourcely_lang || detected);
+      load(items.sourcely_lang || detected, cb);
     });
   }
 
-  function load(lang) {
+  function load(lang, cb) {
     if (!LOCALES[lang]) lang = 'zh';
     current = LOCALES[lang];
     current.lang = lang;
@@ -33,6 +33,7 @@ var I18N = (function () {
     if (lang === 'zh') {
       _initialized = true;
       apply();
+      if (cb) cb();
       return;
     }
 
@@ -42,9 +43,11 @@ var I18N = (function () {
         messages = dict;
         _initialized = true;
         apply();
+        if (cb) cb();
       })
       .catch(function () {
         _initialized = true;
+        if (cb) cb();
       });
   }
 
@@ -68,7 +71,6 @@ var I18N = (function () {
 
   function switchTo(lang) {
     if (!LOCALES[lang]) return;
-    sessionStorage.setItem('sourcely_lang', lang);
     chrome.storage.local.set({ sourcely_lang: lang });
     API.setLang(lang);  // 异步同步后端 default_lang
     load(lang);

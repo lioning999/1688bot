@@ -10,14 +10,15 @@
 | 　3.1 | DB 检查复用 | repositories/analysis_repo.py · `get_by_offer_id` | 查 raw_json + display_i18n |
 | 　3.2 | Apify 抓取 | adapters/apify_adapter.py · `fetch_product_by_url` | 90s 超时 |
 | 　3.3 | 清洗+标准化 | domain/data/mapper.py · `map_raw` | 字段级容错 |
-| 　3.4 | 规则引擎 | domain/verdict_engine.py · `judge_all` | 出 3 个判词 KEY |
+| 　3.4 | 规则引擎 | domain/evaluate/ · `evaluate_product/supplier/summary` | 12 规则 → 4 档 grade |
 | 　3.5 | 构建 Display+翻译 | services/ai_verdict_svc.py · `build_result_with_display` | zh 模板 / 非zh AI |
 | 　3.6 | 自动落库 | services/analyze_svc.py · `_save_to_db_upsert` | INSERT ... ON DUPLICATE |
 | 　3.7 | 超限清理 | repositories/analysis_repo.py · `cleanup_excess` | FIFO 删未收藏 |
 | 节点 4 | 轮询状态 | routes/analyze.py · `analyze_status` | pending/done/failed |
 | 节点 5 | 默认语言 | routes/auth.py · `PUT /api/user/lang` | 改语言写 DB |
 
-> 📖 判词定档规则（产品 12 规则→4 档 · 供应商 5 档 · 综合 9 档）见文末「判词档位设计」。
+> 📖 判词定档规则（产品 12 规则→4 档 · 供应商 6 规则→4 档 · 综合 9 档）见文末「判词档位设计」。
+> 💾 缓存规则：DB `display_i18n` 是唯一缓存，全项目禁止内存缓存层（DB 命中检查在前，内存缓存永远读不到）。
 
 ---
 
@@ -32,7 +33,7 @@
 │                                                             │
 │ 输入：                                                       │
 │   url   = 1688 商品链接（必填，Pydantic 校验格式）            │
-│   lang  = 目标语言 en/vi/th/id，空串 = zh（V1 不翻译）       │
+│   lang  = 目标语言 en/vi/th/zh，空串 = zh（V1 不翻译）       │
 │                                                             │
 │ 做了什么：                                                   │
 │   1. 校验 URL 是 1688 链接（Pydantic validator，进路由前）    │
@@ -65,7 +66,7 @@
 │   offer_id = 节点1 提取的商品编号                            │
 │   user_id  = JWT 注入的用户 ID                              │
 │   raw_url  = 原始 1688 链接                                  │
-│   lang     = 目标语言 en/vi/th/id                           │
+│   lang     = 目标语言 en/vi/th/zh                           │
 │                                                             │
 │ 做了什么：                                                   │
 │   1. 失败次数检查（同 offer_id 连续失败 ≥3 次 → 拒绝）        │
@@ -164,32 +165,30 @@
 │   │ 纯函数，零外部依赖，不调 DB 不调 API                    │   │
 │   └─────────────────────────────────────────────────────┘   │
 │                                                             │
-│ 子节点 3.4 — 规则引擎打分 + 判词（不产文案，只出 KEY）      │
+│ 子节点 3.4 — 规则引擎评判（验货报告三卡片，程序定档）        │
 │   ┌─────────────────────────────────────────────────────┐   │
-│   │ 文件：domain/verdict_engine.py                        │   │
-│   │ 方法：judge_all(mapped)                               │   │
+│   │ 文件：domain/evaluate/                                │   │
+│   │   _product.py    evaluate_product（6 维 → 12 规则）    │   │
+│   │   _supplier.py   evaluate_supplier（3 维 → 6 规则）    │   │
+│   │   evaluator.py   evaluate_summary（9 档矩阵）          │   │
 │   │                                                     │   │
 │   │ 输入：3.3 mapper 产出的 mapped dict（~50字段）         │   │
 │   │                                                     │   │
-│   │ 做什么：根据 mapped 数据做判断，产出 3 个判词 KEY        │   │
-│   │   ① 产品判词：认证 + 销量 + 7天退货 → 4档               │   │
-│   │   ② 工厂判词：身份 + 认证 + 年限 → 5档                  │   │
-│   │   ③ 拿样判词：固定（两段付款）                          │   │
+│   │ 做什么：程序定档（规则引擎判断），不产最终文案           │   │
+│   │   ① 产品：6 维信号 → 12 规则 → tier → grade            │   │
+│   │   ② 供应商：3 维信号 → 6 规则 → tier → grade            │   │
+│   │   ③ 综合：产品档 × 供应商档 → 9 档矩阵 → headline       │   │
 │   │                                                     │   │
-│   │ 输出：3 个 KEY + 参数                                  │   │
-│   │   {"product": {key:"verdict_product_recommend",        │   │
-│   │                params:{price:"5",moq:"1",unit:"件"}},  │   │
-│   │    "factory": {key:"verdict_factory_reliable",         │   │
-│   │                params:{years:"5",cert:"SGS"}},         │   │
-│   │    "sample":  {key:"verdict_sample_two_payment"}}      │   │
+│   │ 输出（验货报告三卡片，塞进 display JSON）：             │   │
+│   │   productEval  {score, grade, dimensions[6], verdict} │   │
+│   │   supplierEval {score, grade, dimensions[3], verdict} │   │
+│   │   summaryLine  {headline, reason, verdict}            │   │
 │   │                                                     │   │
-│   │ 然后塞进 mapped dict，一起传给 3.5：                    │   │
-│   │   mapped["verdict_product"] = verdicts["product"]      │   │
-│   │   mapped["verdict_factory"] = verdicts["factory"]      │   │
-│   │   mapped["verdict_sample"]  = verdicts["sample"]       │   │
+│   │ 三层「档」：规则（产品12 / 供应商6）→ tier（细分档）     │   │
+│   │   → grade（粗档 go/ok/bad/none，给前端染色）           │   │
 │   │                                                     │   │
-│   │ 最终文案由 3.5 builder.py 查 glossary.json 填入参数，   │   │
-│   │ 5 语言预翻译，不调 AI                                   │   │
+│   │ 由 3.5 build_display 调用；grade 前端染色，            │   │
+│   │ 判词文字 zh 走 glossary、非 zh 走 Qwen 润色             │   │
 │   └─────────────────────────────────────────────────────┘   │
 │                                                             │
 │ 子节点 3.5 — 构建 Display + 翻译                             │
@@ -201,7 +200,7 @@
 │   │                                                     │   │
 │   │ 输出：mapped dict + display 字段                       │   │
 │   │   display = {title, images, price, trustBar, badges,  │   │
-│   │              specs, sales, priceTiers, verdictProduct, │   │
+│   │              specs, sales, priceTiers,                 │   │
 │   │              factory, productEval, supplierEval,       │   │
 │   │              summaryLine}  ← 前端 5 卡片结构            │   │
 │   │                                                     │   │
@@ -355,7 +354,7 @@
 
 ## 判词档位设计（最终版，2026-08-15）
 
-> 产品 12 规则→4 档 · 供应商 5 档 · 综合 9 档。改判词逻辑前先看这里。代码权威源：domain/evaluate/_product.py、_supplier.py、evaluator.py。
+> 产品 12 规则→4 档 · 供应商 6 规则→4 档 · 综合 9 档。改判词逻辑前先看这里。代码权威源：domain/evaluate/_product.py、_supplier.py、evaluator.py。
 
 0. 先看子维度（判断的原料）
 产品 6 维，每个判断啥、怎么分档：
@@ -389,7 +388,7 @@ D6 退货	有7天无理由吗	有	—	无
 12	跳过·数据不足	销量+复购+退货 缺≥2	skip	neutral
 外加「致命·好评<80%」→ tier=fatal_badrate，tone=negative 否定。
 
-2. 供应商 5 个 → 给 AI
+2. 供应商 6 规则 → 5 tier → 4 档 → 给 AI
 #	结果	判定条件	给 AI 的 tier	tone
 1	信任	身份强 + 认证强	trust_strong2	(配合产品定)
 2	还行	强-弱净分 ≥ 1	usable_ok	—

@@ -34,8 +34,8 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 ```
 1688 URL → API.analyze(url, lang) → SW: POST /api/analyze
   → 后端 analyze_svc._run()
-    → Apify 抓取 → map_raw() → judge_all()
-    → build_result_with_display(mapped, offer_id, lang)
+    → Apify 抓取 → map_raw()
+    → build_result_with_display(mapped, offer_id, lang) → evaluate 判词
       ├─ lang=zh: build_display(mapped) → 模板路径
       └─ lang=en/vi/th: build_with_ai(mapped, lang) → Qwen AI 路径
   → display JSON → SW → sidepanel.js: render()
@@ -67,6 +67,7 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 | `summaryLine.headline` | string | 直接取 `s.headline` | glossary(verdict key, lang) |
 | `summaryLine.reason` | string | 直接取 `s.reason` | glossary 或 Qwen AI |
 | `summaryLine.verdict` | string | 直接取 `s.verdict` | glossary(verdict key, lang) |
+| `summaryLine.grade` | "go"\|"ok"\|"bad"\|"none" | `s.grade` | evaluate_summary() 4 档 |
 
 #### ③ 产品验证 productEval
 
@@ -142,14 +143,23 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 |------|------|---------|
 | `_currentOfferId` | 当前渲染报告的 offerId | 用户点「生成报告」分析新产品 / 退出登录 |
 | `_activeTaskId` | 正在轮询的 taskId | 任务完成 / 失败 / 超时 / 页面离开 |
-| `_searching` | 分析进行中防重 | `resetSearchBtn()` / 失败路径 |
-| `_pollTimer` | 轮询定时器引用 | `stopPolling()` / `beforeunload` |
+| `_searching` | 分析进行中防重 | 任务完成 / 失败 / 超时 / 退出登录 / 渲染历史报告 |
+| `_pollTimer` | 轮询定时器引用 | `stopPolling()` / `pagehide` |
 | `_currentPriceLow` | 当前产品最低价 | 新报告渲染时覆盖 |
 | `_currentMoq` | 当前产品起订量 | 新报告渲染时覆盖 |
 
+### 持久化存储 key（chrome.storage.local）
+
+| key | 内容 | 写 | 读 | 清除 |
+|-----|------|----|----|------|
+| `sourcely_token` | JWT（90 天） | 登录回调（service-worker.js）+ `API.setToken()` | `API.getToken()` / SW 自读 | `API.clearToken()`（退出登录） |
+| `sourcely_lang` | 用户默认语言 | `I18N.switchTo()` + 登录回调恢复 default_lang | `I18N.detect()` 初始化 | 登录时覆盖 |
+
+> `sourcely_token` 另镜像到 `sessionStorage`（`API.getToken()` 同步快读判断登录态，避免每次异步 `chrome.storage.local.get`）；持久以 `chrome.storage.local` 为准。
+
 ### 铁律
 
-1. **`beforeunload` 必须清理 `_pollTimer`** — 页面关闭时 clearTimeout
+1. **`pagehide` 必须清理 `_pollTimer`** — 页面关闭时 clearTimeout
 2. **`_searching` 防重** — 所有分析入口必须 `if (_searching) return;`
 3. **轮询上限** — 最多 60 次（2 分钟），超时显示错误
 4. **Tab 切换不丢报告** — `_currentOfferId` 有值时，`processUrl()` 不重置状态；检测到不同 1688 商品时显示检测条
@@ -217,6 +227,7 @@ src/chrome-ext/
 ├── history.js            # 历史记录页（独立模块，window.HistoryPage）
 ├── lib/
 │   ├── api.js            # Promise 消息通道（API.xxx() → SW）
+│   ├── toast.js          # 统一 toast 提示（Toast.show()）
 │   └── i18n.js           # 多语言加载 + I18N.t()
 └── lang/
     ├── zh.json           # 中文（源语言）
@@ -233,7 +244,7 @@ src/chrome-ext/
 | ❌ 凭训练数据推测 display 字段名 | 对照本文 §二 映射表 |
 | ❌ `innerHTML` 不经 `escHtml()` | XSS |
 | ❌ HTML 内联 `onclick=` | 统一 `addEventListener` |
-| ❌ 未清理的 `setTimeout`/`setInterval` | beforeunload 清理 |
-| ❌ 手写 toast HTML | 用 `showToast()` |
+| ❌ 未清理的 `setTimeout`/`setInterval` | pagehide 清理 |
+| ❌ 手写 toast HTML | 用 `Toast.show()` |
 | ❌ console.log 打印 token | 安全 |
 | ❌ 从 verdict 文本提取数字渲染 | 用 dimensions[].data |

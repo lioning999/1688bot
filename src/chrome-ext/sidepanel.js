@@ -106,14 +106,6 @@
   // ---- 登录 ----
   function checkLoginState() { return !!API.getToken(); }
 
-  function showToast(msg, type) {
-    var toast = document.createElement('div');
-    toast.className = 'toast ' + (type || 'info');
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(function () { toast.remove(); }, 3000);
-  }
-
   // ---- Tab 切换 ----
   function switchTab(tab) {
     // 未登录 → 不允许切到历史记录，直接回报告页显示登录态
@@ -244,8 +236,8 @@
         title: data.title || '',
         price: { low: data.priceCNY ? data.priceCNY.low : 0, high: data.priceCNY ? data.priceCNY.high : 0, unit: '', moq: 0 },
         sales: data.sales || {},
-        productEval: { verdict: data.verdict_product || '', score: 0, max_score: 18, grade: 'none', dimensions: [] },
-        supplierEval: { verdict: data.verdict_factory || '', score: 0, max_score: 9, grade: 'none', dimensions: [] },
+        productEval: { verdict: '', score: 0, max_score: 18, grade: 'none', dimensions: [] },
+        supplierEval: { verdict: '', score: 0, max_score: 9, grade: 'none', dimensions: [] },
         summaryLine: {}
       };
     }
@@ -291,7 +283,7 @@
       EL.p01Price.textContent = '—';
       _currentPriceLow = 0;
     }
-    EL.p01Unit.textContent = '/' + (p.unit ? escHtml(p.unit) : '件');
+    EL.p01Unit.textContent = '/' + (p.unit ? escHtml(p.unit) : (I18N.t('inspect.piecesUnit') || '件'));
 
     EL.p01Moq.textContent = p.moq != null ? String(p.moq) : '—';
     _currentMoq = p.moq || 1;
@@ -309,7 +301,7 @@
       for (var i = 0; i < Math.min(tiers.length, 3); i++) {
         var t = tiers[i];
         var range = t.qty_min != null ? (escHtml(t.qty_min) + (t.qty_max != null ? ('-' + escHtml(t.qty_max)) : '+')) : '';
-        parts.push(range + '件 ¥' + (t.unit_price != null ? escHtml(Number(t.unit_price).toFixed(2)) : '—'));
+        parts.push(range + (I18N.t('inspect.piecesUnit') || '件') + ' ¥' + (t.unit_price != null ? escHtml(Number(t.unit_price).toFixed(2)) : '—'));
       }
       EL.p01Tier.style.display = '';
       EL.p01TierText.innerHTML = parts.join(' │ ');
@@ -321,16 +313,7 @@
   // ② 综合结论
   function renderSummary(display) {
     var summary = display.summaryLine || {};
-    var grade = summary.grade || (display.productEval && display.productEval.grade) || 'none';
-
-    if (display.productEval && display.supplierEval) {
-      var pg = display.productEval.grade || 'none';
-      var sg = display.supplierEval.grade || 'none';
-      if (pg === 'go' && (sg === 'go' || sg === 'ok')) grade = 'go';
-      else if (pg === 'bad' || sg === 'bad') grade = 'bad';
-      else if (pg === 'none' || sg === 'none') grade = 'none';
-      else grade = 'ok';
-    }
+    var grade = summary.grade || 'none';
 
     var headline = typeof summary.headline === 'object' ? (summary.headline.key || '') : (summary.headline || '');
     // "TODO" 或空 → 用 grade 生成兜底标题
@@ -470,7 +453,7 @@
   // ⑤ 拿样验货
   function renderSample(price) {
     _currentMoq = price.moq || 1;
-    EL.moqHint.textContent = '起订 ' + _currentMoq + ' 件';
+    EL.moqHint.textContent = (I18N.t('report.moqLabel') || '起订') + ' ' + _currentMoq + ' ' + (I18N.t('inspect.piecesUnit') || '件');
     updateFee();
   }
 
@@ -516,13 +499,13 @@
         if (res && res.code === 200 && res.data && res.data.token) {
           console.log('[SidePanel] LOGIN success, token saved');
           API.setToken(res.data.token);
-          showToast('登录成功', 'success');
+          Toast.show(I18N.t('plugin.loginSuccess') || '登录成功', 'success');
           showCard(EL.btnLogout, true);
           handleTabChange(null);
         } else {
-          var msg = I18N.msg(res && res.msg_code, res && res.message) || 'Login failed';
+          var msg = I18N.msg(res && res.msg_code, res && res.message) || I18N.t('plugin.loginFailed') || 'Login failed';
           console.error('[SidePanel] LOGIN failed:', msg);
-          showToast(msg, 'error');
+          Toast.show(msg, 'error');
         }
       });
     });
@@ -530,11 +513,12 @@
     // 退出登录
     EL.btnLogout.addEventListener('click', function () {
       API.clearToken();
+      stopPolling(); _activeTaskId = null; _searching = false;  // 停掉进行中的分析轮询，否则会 401 回来覆盖界面
       _currentOfferId = null;  // 清除报告状态，允许 tab 切换重新检测
       hideDetectBar();
       showCard(EL.btnLogout, false);
       showEmpty('notLoggedIn');
-      showToast('已退出登录', 'info');
+      Toast.show(I18N.t('plugin.logoutSuccess') || '已退出登录', 'info');
     });
 
     EL.btnAnalyze.addEventListener('click', function () {
@@ -672,13 +656,15 @@
   function init() {
     cacheDom();
     bindEvents();
-    API.loadTokenFromStorage();
-    I18N.detect();
-
-    setTimeout(function () {
-      highlightLang(I18N.getLang());
-      handleTabChange(null);
-    }, 300);
+    var ready = 0;
+    function onReady() {
+      if (++ready === 2) {
+        highlightLang(I18N.getLang());
+        handleTabChange(null);
+      }
+    }
+    API.loadTokenFromStorage(onReady);
+    I18N.detect(onReady);
 
     // 监听 tab URL 变化
     if (chrome && chrome.tabs) {
@@ -697,6 +683,7 @@
   window._renderReport = function (displayData) {
     var display = displayData.display || displayData;
     if (!display) return;
+    stopPolling(); _activeTaskId = null; _searching = false;  // 停掉进行中的轮询，避免历史报告被分析结果顶掉
     showEmpty('ready');
     render({ display: display });
   };

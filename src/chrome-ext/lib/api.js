@@ -11,12 +11,12 @@ var API = (function () {
       chrome.runtime.sendMessage({ type: type, payload: payload || {} }, function (res) {
         if (chrome.runtime.lastError) {
           console.error('[API] sendMessage error:', chrome.runtime.lastError.message);
-          resolve({ code: 500, data: null, message: '通信失败，请重载插件', msg_code: 'IPC_ERROR' });
+          resolve({ code: 500, data: null, message: 'Communication failed. Please reload the extension.', msg_code: 'IPC_ERROR' });
           return;
         }
         console.log('[API] recv:', type, res);
         // SW 返回就是标准 {code, data, message} 格式，直接透传
-        resolve(res || { code: 500, data: null, message: '空响应', msg_code: 'EMPTY_RESPONSE' });
+        resolve(res || { code: 500, data: null, message: 'Empty response.', msg_code: 'EMPTY_RESPONSE' });
       });
     });
   }
@@ -36,11 +36,12 @@ var API = (function () {
     chrome.storage.local.remove('sourcely_token');
   }
 
-  function loadTokenFromStorage() {
+  function loadTokenFromStorage(cb) {
     chrome.storage.local.get('sourcely_token', function (items) {
       if (items.sourcely_token) {
         sessionStorage.setItem('sourcely_token', items.sourcely_token);
       }
+      if (cb) cb();
     });
   }
 

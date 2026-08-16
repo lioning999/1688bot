@@ -3,12 +3,10 @@
 从 analyze_svc.py 拆分（Phase 2 重构）。包含：
   - AI 判词输入打包 + Qwen 调用 + 输出校验 + 逐字段合并
   - build_result_with_display（lang≠zh → AI 路径，lang=zh → 模板路径）
-  - display 内存缓存（12h TTL，LRU 淘汰）
 """
 
 import json
 import time
-from collections import OrderedDict
 from pathlib import Path
 from typing import Any
 
@@ -25,35 +23,6 @@ logger = get_logger(__name__)
 _HERE = Path(__file__).parent.parent / "domain" / "display"
 with open(_HERE / "verdict_prompts.json", "r", encoding="utf-8") as _f:
     _VP_AI = json.load(_f)
-
-# ---- display 缓存（key=offer_id:lang，纯内存，12h TTL，O(1) LRU 淘汰） ----
-_display_cache: OrderedDict[str, tuple[float, dict[str, Any]]] = OrderedDict()
-_DISPLAY_CACHE_TTL: int = 43200  # 12 小时
-_DISPLAY_CACHE_MAX: int = 500
-
-
-def get_display_cache(offer_id: str, lang: str) -> dict[str, Any] | None:
-    """读 display 缓存。过期返回 None。命中刷新 LRU 顺序。"""
-    key: str = f"{offer_id}:{lang}"
-    entry: tuple[float, dict[str, Any]] | None = _display_cache.get(key)
-    if entry is None:
-        return None
-    ts, data = entry
-    if time.time() - ts < _DISPLAY_CACHE_TTL:
-        _display_cache.move_to_end(key)  # LRU: 访问移到末尾
-        return data
-    del _display_cache[key]
-    return None
-
-
-def set_display_cache(offer_id: str, lang: str, data: dict[str, Any]) -> None:
-    """写 display 缓存。O(1) 淘汰最旧条目。"""
-    key: str = f"{offer_id}:{lang}"
-    _display_cache[key] = (time.time(), data)
-    _display_cache.move_to_end(key)
-    while len(_display_cache) > _DISPLAY_CACHE_MAX:
-        _display_cache.popitem(last=False)  # O(1) 弹出最旧
-
 
 # ====================================================================
 # AI 判词编排
@@ -72,16 +41,10 @@ async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang:
     try:
         if lang and lang != "zh":
             # AI 判词路径（en/vi/th）
-            cached_display: dict[str, Any] | None = get_display_cache(offer_id, lang)
-            if cached_display is not None:
-                result["display"] = cached_display
-                return result
-
             display = await build_with_ai(mapped, lang)
             logger.info(f"[TRACE-DISPLAY-AI] offer_id={offer_id} lang={lang} "
                         f"aiGenerated={display.get('_aiGenerated', '')} "
                         f"display={json.dumps(display, ensure_ascii=False, default=str)}")
-            set_display_cache(offer_id, lang, display)
         else:
             # 模板路径（zh / 空 lang）
             display = build_display(mapped, lang)

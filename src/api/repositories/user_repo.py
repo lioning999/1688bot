@@ -4,6 +4,7 @@ from typing import Any
 
 import aiomysql  # type: ignore[import-untyped]
 
+from config import Config
 from database import AsyncDatabaseConnection
 from utils.logger import get_logger
 
@@ -30,7 +31,6 @@ class UserRepository:
                      name: str | None = None, avatar_url: str | None = None,
                      default_lang: str | None = None) -> int:
         """创建新用户，返回自增 ID。quota = Config.SIGNUP_BONUS_QUOTA（注册赠送）。"""
-        from config import Config
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:

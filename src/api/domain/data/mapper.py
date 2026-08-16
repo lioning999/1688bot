@@ -7,7 +7,7 @@
 
 from typing import Any, cast
 
-# ---- tier + industry KEY 映射（term_glossary.json 中对应条目） ----
+# ---- tier + industry KEY 映射（glossary.json 中对应条目） ----
 
 # tier → glossary key 映射
 _TIER_KEY: dict[str, str] = {
@@ -42,6 +42,10 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
     _raw_skus: Any = raw.get("skuImages")
     sku_list: list[dict[str, Any]] = _raw_skus if isinstance(_raw_skus, list) else []  # type: ignore[reportUnnecessaryIsInstance]
 
+    # 商品图片（Apify 键名: images，字段级容错：非 list 视为空）
+    _raw_images: Any = raw.get("images")
+    images: list[Any] = _raw_images if isinstance(_raw_images, list) else []
+
     # 阶梯价格
     price_tiers = _extract_price_tiers(raw)
 
@@ -51,8 +55,8 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
     return {
         # 产品信息
         "title": raw.get("title", ""),
-        "image": (raw.get("images") or [""])[0] if raw.get("images") else "",
-        "images": (raw.get("images") or [])[:5],
+        "image": images[0] if images else "",
+        "images": images[:5],
         "priceCNY": {"low": _safe_float(price_low_cny), "high": _safe_float(price_high_cny)},
         "moq": raw.get("minOrderQuantity"),
         "itemUrl": original_url or raw.get("detailUrl", ""),
@@ -86,7 +90,7 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
         "certType": _safe_cert_type(supplier.get("certification")),
         "certReportUrl": _safe_cert_url(supplier.get("certification")),
         "shopUrl": supplier.get("shopUrl", ""),
-        "rankText": (cast(dict[str, Any], supplier.get("rank")) or {}).get("text", ""),  # type: ignore[reportUnknownMemberType]
+        "rankText": _safe_rank_text(supplier.get("rank")),
         "sellerTierLabel": _trust_bar_label(flags),
         "stock": raw.get("stock"),
         "positive_rate": _parse_positive_rate(supplier, stats),
@@ -205,6 +209,15 @@ def _build_factory_flags(flags: dict[str, Any]) -> str:
         if flags.get(key):
             parts.append(label)
     return " · ".join(parts) if parts else ""
+
+
+def _safe_rank_text(rank: Any) -> str:
+    """安全提取排名文本。rank 可能为 dict({text}) / 纯字符串 / None。"""
+    if isinstance(rank, dict):
+        return str(rank.get("text", ""))
+    if isinstance(rank, str):
+        return rank
+    return ""
 
 
 def _safe_cert_type(cert: Any) -> str:

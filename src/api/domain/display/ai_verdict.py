@@ -22,7 +22,7 @@ with open(_HERE / "verdict_prompts.json", "r", encoding="utf-8") as _f:
 
 
 def _gl(key: str, lang: str, default: str = "") -> str:
-    """term_glossary.json 查表。"""
+    """glossary.json 查表。"""
     entry: Any = _GL.get(key, {})
     if not isinstance(entry, dict):
         return default or key
@@ -359,6 +359,8 @@ def _pack_dimensions(
             continue
         d = cast(dict[str, Any], dim)
         score: int = int(d.get("score", 0))
+        if score == 0:
+            continue  # no-data 维度不打包，省 token（低质/数据不足商品维度多为空）
         product_dims.append({
             "key": str(d.get("key", "")),
             "signal": {3: "positive", 2: "neutral", 1: "negative"}.get(score, "unknown"),
@@ -374,6 +376,8 @@ def _pack_dimensions(
             continue
         d = cast(dict[str, Any], dim)
         score_s: int = int(d.get("score", 0))
+        if score_s == 0:
+            continue  # no-data 维度不打包，省 token
         data_s: str = _dim_data_text(d)
         if not data_s and str(d.get("key")) == "d2":
             cert_type_raw: str = str(supplier_signals.get("cert_type", ""))

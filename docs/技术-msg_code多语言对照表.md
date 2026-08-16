@@ -29,12 +29,10 @@
 | 18 | USER_NOT_FOUND | 用户不存在 | User not found. | Không tìm thấy người dùng. | ไม่พบผู้ใช้ |
 | 19 | QUOTA_EXHAUSTED | 今日分析次数不足，请明天再试 | Daily analysis limit reached. Please try again tomorrow. | Đã hết số lần phân tích hôm nay, vui lòng thử lại vào ngày mai. | จำนวนครั้งในการวิเคราะห์วันนี้หมดแล้ว กรุณาลองใหม่พรุ่งนี้ |
 | 20 | TASK_NOT_FOUND | 任务不存在 | Task not found. | Không tìm thấy tác vụ. | ไม่พบงานที่ร้องขอ |
-| 21 | ANALYSIS_EXPIRED | 分析已过期，请重新搜索该商品 | Analysis expired. Please search the product again. | Kết quả phân tích đã hết hạn, vui lòng tìm kiếm lại sản phẩm. | ผลการวิเคราะห์หมดอายุแล้ว กรุณาค้นหาสินค้าใหม่อีกครั้ง |
-| 22 | SAVE_LIMIT_EXCEEDED | 已达保存上限，请先删除旧记录后再保存 | Save limit reached. Please delete old records first. | Đã đạt giới hạn lưu, vui lòng xóa bản ghi cũ trước khi lưu. | ถึงขีดจำกัดการบันทึกแล้ว กรุณาลบรายการเก่าก่อน |
-| 23 | FETCH_FAILED_RETRY_TOMORROW | 该链接连续获取失败，请明天再试或联系 WhatsApp | This link keeps failing. Please try again tomorrow or contact us on WhatsApp. | Liên kết này liên tục lấy dữ liệu thất bại, vui lòng thử lại vào ngày mai hoặc liên hệ WhatsApp. | ลิงก์นี้ดึงข้อมูลไม่สำเร็จติดต่อกัน กรุณาลองใหม่พรุ่งนี้ หรือติดต่อ WhatsApp |
-| 24 | APIFY_QUOTA_EXHAUSTED | 今日分析服务额度已用完，请明天再试 | Daily analysis quota used up. Please try again tomorrow. | Hạn mức dịch vụ phân tích hôm nay đã hết, vui lòng thử lại vào ngày mai. | โควตาบริการวิเคราะห์วันนี้หมดแล้ว กรุณาลองใหม่พรุ่งนี้ |
-| 25 | FETCH_FAILED_RETRY_LATER | 获取失败，请稍后重试 | Failed to fetch. Please try again later. | Lấy dữ liệu thất bại, vui lòng thử lại sau. | ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง |
-| 26 | PRODUCT_NOT_FOUND | 该链接可能已下架，请检查后重试 | This product may have been delisted. Please check and try again. | Sản phẩm có thể đã bị gỡ xuống, vui lòng kiểm tra và thử lại. | สินค้าอาจถูกนำออกแล้ว กรุณาตรวจสอบและลองใหม่ |
+| 21 | FETCH_FAILED_RETRY_TOMORROW | 该链接连续获取失败，请明天再试或联系 WhatsApp | This link keeps failing. Please try again tomorrow or contact us on WhatsApp. | Liên kết này liên tục lấy dữ liệu thất bại, vui lòng thử lại vào ngày mai hoặc liên hệ WhatsApp. | ลิงก์นี้ดึงข้อมูลไม่สำเร็จติดต่อกัน กรุณาลองใหม่พรุ่งนี้ หรือติดต่อ WhatsApp |
+| 22 | APIFY_QUOTA_EXHAUSTED | 今日分析服务额度已用完，请明天再试 | Daily analysis quota used up. Please try again tomorrow. | Hạn mức dịch vụ phân tích hôm nay đã hết, vui lòng thử lại vào ngày mai. | โควตาบริการวิเคราะห์วันนี้หมดแล้ว กรุณาลองใหม่พรุ่งนี้ |
+| 23 | FETCH_FAILED_RETRY_LATER | 获取失败，请稍后重试 | Failed to fetch. Please try again later. | Lấy dữ liệu thất bại, vui lòng thử lại sau. | ดึงข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง |
+| 24 | PRODUCT_NOT_FOUND | 该链接可能已下架，请检查后重试 | This product may have been delisted. Please check and try again. | Sản phẩm có thể đã bị gỡ xuống, vui lòng kiểm tra và thử lại. | สินค้าอาจถูกนำออกแล้ว กรุณาตรวจสอบและลองใหม่ |
 
 ## 二、成功码（前端不显示，无需翻译）
 
@@ -42,7 +40,6 @@
 |----------|----|------|
 | OK | ok | 通用成功 |
 | DELETE_OK | 已删除 | 删除成功 |
-| SAVE_OK | 已保存到我的分析 | 保存成功 |
 
 ## 三、说明
 

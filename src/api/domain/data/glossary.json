@@ -1,5 +1,5 @@
 {
-  "_about": "Sourcely 术语/模板字典 — 唯一翻译数据源。5语言平行(zh/en/vi/th/id)。改中文KEY时必须同步检查其他4语言翻译。",
+  "_about": "Sourcely 术语/模板字典 — 唯一翻译数据源。4语言平行(zh/en/vi/th)。改中文KEY时必须同步检查其他3语言翻译。",
   "24小时发货": {
     "zh": "24小时发货",
     "en": "24-Hour Dispatch",
@@ -1169,66 +1169,6 @@
     "en": "pack",
     "vi": "túi",
     "th": "ถุง"
-  },
-  "verdict_factory_cooperative": {
-    "zh": "✅ 值得合作 — {years} 年工厂 + 已认证。建议取样确认产能",
-    "en": "✅ Worth cooperating — {years}y factory + certified. Suggest sample to confirm capacity",
-    "vi": "✅ Đáng hợp tác — Nhà máy {years} năm + chứng nhận. Nên lấy mẫu xác nhận năng lực",
-    "th": "✅ น่าร่วมมือ — โรงงาน {years} ปี + รับรอง. แนะนำตัวอย่างยืนยันกำลังการผลิต"
-  },
-  "verdict_factory_insufficient": {
-    "zh": "⚠️ 数据不足 — 缺少工商信息。建议 WhatsApp 联系后再决定",
-    "en": "⚠️ Insufficient data — Missing business info. Suggest WhatsApp contact before deciding",
-    "vi": "⚠️ Thiếu dữ liệu — Thiếu thông tin kinh doanh. Nên liên hệ WhatsApp trước khi quyết định",
-    "th": "⚠️ ข้อมูลไม่เพียงพอ — ไม่มีข้อมูลธุรกิจ. แนะนำติดต่อ WhatsApp ก่อนตัดสินใจ"
-  },
-  "verdict_factory_reliable": {
-    "zh": "✅ 可靠工厂 — 成立 {years} 年 + {cert} 认证。合作风险低",
-    "en": "✅ Reliable factory — {years}y established + {cert} audit. Low cooperation risk",
-    "vi": "✅ Nhà máy đáng tin — {years} năm hoạt động + {cert}. Rủi ro hợp tác thấp",
-    "th": "✅ โรงงานน่าเชื่อถือ — ก่อตั้ง {years} ปี + {cert}. ความเสี่ยงความร่วมมือต่ำ"
-  },
-  "verdict_factory_self_claimed": {
-    "zh": "⚠️ 自认工厂 — 无第三方验厂审计。通过样品验证，不要轻信宣称",
-    "en": "⚠️ Self-claimed factory — No third-party audit. Verify via sample, don't trust claims alone",
-    "vi": "⚠️ Tự xưng nhà máy — Không có kiểm toán bên thứ ba. Xác minh qua mẫu, đừng tin lời nói",
-    "th": "⚠️ อ้างตัวเป็นโรงงาน — ไม่มีการตรวจสอบจากบุคคลที่สาม. ตรวจสอบผ่านตัวอย่าง อย่าเชื่อแค่คำพูด"
-  },
-  "verdict_factory_trader": {
-    "zh": "⚠️ 非工厂 — 贸易商从第三方拿货。价格可能有差异；先取样对比",
-    "en": "⚠️ Not a factory — Trader sources from third parties. Price may vary; compare via sample first",
-    "vi": "⚠️ Không phải nhà máy — Thương nhân lấy hàng từ bên thứ ba. Giá có thể chênh; so sánh qua mẫu",
-    "th": "⚠️ ไม่ใช่โรงงาน — ผู้ค้ารับสินค้าจากบุคคลที่สาม. ราคาอาจต่าง; เปรียบเทียบผ่านตัวอย่างก่อน"
-  },
-  "verdict_product_consider": {
-    "zh": "✅ 值得考虑 — ¥{price}/{unit}，起订 {moq}，已认证。建议取样确认",
-    "en": "✅ Worth considering — ¥{price}/{unit}, MOQ {moq}, certified. Suggest sample confirmation",
-    "vi": "✅ Đáng cân nhắc — ¥{price}/{unit}, MOQ {moq}, đã chứng nhận. Nên xác nhận mẫu",
-    "th": "✅ น่าพิจารณา — ¥{price}/{unit}, MOQ {moq}, รับรองแล้ว. แนะนำยืนยันตัวอย่าง"
-  },
-  "verdict_product_insufficient": {
-    "zh": "⚠️ 数据不足 — 缺少销量和认证数据。¥{deposit} 取 2 个样品是最安全的做法",
-    "en": "⚠️ Insufficient data — Missing sales & certification data. ¥{deposit} to sample 2 pcs is the safest approach",
-    "vi": "⚠️ Thiếu dữ liệu — Thiếu dữ liệu bán hàng & chứng nhận. ¥{deposit} lấy 2 mẫu là an toàn nhất",
-    "th": "⚠️ ข้อมูลไม่เพียงพอ — ไม่มีข้อมูลการขายและการรับรอง. ¥{deposit} สั่งตัวอย่าง 2 ชิ้นปลอดภัยที่สุด"
-  },
-  "verdict_product_no_cert": {
-    "zh": "⚠️ 无认证 — {sold}+ 已售但无验厂记录。¥{deposit} 取样验证质量",
-    "en": "⚠️ No certification — {sold}+ sold but no factory audit. ¥{deposit} to sample and verify quality",
-    "vi": "⚠️ Thiếu chứng nhận — {sold}+ đã bán nhưng không có kiểm toán. ¥{deposit} lấy mẫu xác minh",
-    "th": "⚠️ ไม่มีการรับรอง — ขาย {sold}+ แต่ไม่มีการตรวจโรงงาน. ¥{deposit} สั่งตัวอย่างตรวจสอบคุณภาพ"
-  },
-  "verdict_product_recommend": {
-    "zh": "✅ 推荐取样 — ¥{price}/{unit}，起订 {moq}，月销 {sold}+，试错成本极低",
-    "en": "✅ Recommend sampling — ¥{price}/{unit}, MOQ {moq}, {sold}+ sold monthly, very low trial cost",
-    "vi": "✅ Nên lấy mẫu — ¥{price}/{unit}, MOQ {moq}, {sold}+ bán/tháng, chi phí thử rất thấp",
-    "th": "✅ แนะนำสั่งตัวอย่าง — ¥{price}/{unit}, MOQ {moq}, ขาย {sold}+/เดือน, ต้นทุนทดลองต่ำมาก"
-  },
-  "verdict_sample_two_payment": {
-    "zh": "① 支付定金 → ② 验货拍照 → ③ 支付尾款 → ④ 发货",
-    "en": "① Pay deposit → ② Inspection photos → ③ Pay balance → ④ Ship",
-    "vi": "① Thanh toán cọc → ② Ảnh kiểm tra → ③ Thanh toán phần còn lại → ④ Giao hàng",
-    "th": "① จ่ายมัดจำ → ② รูปตรวจสอบ → ③ จ่ายส่วนที่เหลือ → ④ จัดส่ง"
   },
   "不适用": {
     "zh": "不适用",

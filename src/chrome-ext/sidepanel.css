@@ -717,6 +717,7 @@ body {
 .toast.success { background:var(--ok-bg); color:var(--ok); }
 .toast.warning { background:var(--warn-bg);color:var(--warn); }
 .toast.error   { background:var(--bad-bg);color:var(--bad); }
+.toast.info    { background:var(--ink-2); color:#fff; }
 @keyframes toast-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 
 /* ---- 历史列表复选框 ---- */

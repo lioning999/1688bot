@@ -75,7 +75,7 @@ class ApifyAdapter:
     actor.call(run_input, wait_duration) → 启动 run + 等待完成 → 取 dataset items。
 
     ApifyClientAsync v3.x 不支持 async with，直接实例化使用。
-    内部 httpx 客户端随对象生命周期管理。
+    内部用 impit（Rust 实现）HTTP 客户端，资源由 RAII 随对象自动释放，无 aclose/close 方法可调（也无需）。
     """
 
     def __init__(self, token: str = ""):
@@ -104,6 +104,13 @@ class ApifyAdapter:
         last_error: Exception | None = None
         quota_exhausted = False
         tokens = self.tokens if self.tokens else [self.token]
+
+        # 无任何有效 token 时直接报错，避免静默 return None 被上游误判为「商品不存在」
+        if not any(tokens):
+            raise ExternalServiceError(
+                service_name="Apify",
+                details={"offer_id": offer_id, "reason": "token_missing"},
+            )
 
         for i, token in enumerate(tokens):
             if not token:
@@ -147,8 +154,16 @@ class ApifyAdapter:
                 t_dataset = time.time()
 
                 if not items:
+                    run_status = str(getattr(run, "status", "") or "").upper()
+                    if run_status in ("READY", "RUNNING", "TIMING-OUT", "TIMED-OUT"):
+                        # 超时（G7）：wait_duration 到期但 run 未完成，dataset 暂时空 → 报超时，不是「已下架」
+                        logger.warning(f"[Apify] 超时 dataset 空: offer_id={offer_id} run_status={run_status} 耗时={t_dataset - t_token:.1f}s")
+                        raise ExternalServiceError(
+                            service_name="Apify",
+                            details={"offer_id": offer_id, "reason": "timeout"},
+                        )
                     logger.warning(f"[Apify] dataset 为空: offer_id={offer_id} 耗时 total={t_dataset - t_token:.1f}s")
-                    return None  # 商品不存在或数据为空
+                    return None  # 商品不存在或数据为空（run 已完成）
 
                 # 检测 item 级别的配额耗尽标记
                 if len(items) == 1 and items[0].get("limit_reached"):

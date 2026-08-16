@@ -134,7 +134,7 @@ async def update_lang(request: Request) -> dict[str, Any]:
     user_id: int = getattr(request.state, "user_id", 0) or 0
     body: dict[str, Any] = await request.json()
     lang: str = str(body.get("lang", "")).strip()
-    if not lang or lang not in ("en", "vi", "th", "id", "zh"):
+    if not lang or lang not in ("en", "vi", "th", "zh"):
         return {"code": 400, "msg_code": "INVALID_LANG", "data": None, "message": "不支持的语言"}
     await _user_repo.update_default_lang(user_id, lang)
     logger.info(f"[User] lang updated: user_id={user_id}, lang={lang}")

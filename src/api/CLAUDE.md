@@ -15,7 +15,7 @@
   → Apify 抓取原始数据（adapters/apify_adapter.py）
   → 自动落库 raw_json（analysis 表）
   → 数据映射 map_raw（domain/data/mapper.py）
-  → 规则引擎评判 judge_all（domain/verdict_engine.py → evaluate/）
+  → 规则引擎评判 evaluate（domain/evaluate/：产品 12 规则 + 供应商 6 规则 → 4 档）
   → build_result_with_display（services/ai_verdict_svc.py）：
       ├─ zh → 模板 display（domain/display/builder.py）
       └─ 非zh → build_with_ai（services/ai_verdict_svc.py）
@@ -83,7 +83,7 @@
 - **所有函数完整类型注解**
 - 改 Python 常量 → grep 所有 import 和使用点
 - 改 API 路由/响应格式 → grep 前端所有调用，确认前端同步
-- 改判词逻辑 → 改 `verdict_engine.py` 即可。前端直接展示 display JSON 中的判词，无双端同步问题
+- 改判词逻辑 → 改 `domain/evaluate/` 即可。前端直接展示 display JSON 中的判词，无双端同步问题
 - 改 `config.py` → 确认 `.env.example` 同步
 - 新建文件 → 注册到入口 + 顶部一行描述用途
 

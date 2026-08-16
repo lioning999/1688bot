@@ -80,7 +80,11 @@ class Config:
     # ---- 业务常量 ----
     CNY_USD_RATE: float = float(os.getenv("CNY_USD_RATE", "7.2"))
     TASK_TTL: int = int(os.getenv("TASK_TTL", "1800"))
-    DISPLAY_VERSION: int = 1  # display_i18n 版本号，改 prompt/glossary 后递增触发重建
+    # 异步任务容器上限（防无界增长）+ 失败计数
+    MAX_TASKS: int = int(os.getenv("MAX_TASKS", "200"))
+    MAX_PENDING: int = int(os.getenv("MAX_PENDING", "50"))
+    MAX_FAIL_COUNT: int = int(os.getenv("MAX_FAIL_COUNT", "1000"))
+    FAIL_TTL: float = float(os.getenv("FAIL_TTL", "86400.0"))  # 失败计数 24h 后清零
 
     # ---- 汇率（1 USD = X 本地货币） ----
     FX_VND: float = float(os.getenv("FX_VND", "25450"))
@@ -93,6 +97,8 @@ class Config:
     QWEN_API_KEY: str = os.getenv("QWEN_API_KEY", "")
     QWEN_MODEL: str = os.getenv("QWEN_MODEL", "qwen-flash")
     QWEN_API_BASE: str = os.getenv("QWEN_API_BASE", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
+    QWEN_TEMPERATURE: float = float(os.getenv("QWEN_TEMPERATURE", "0.1"))
+    QWEN_MAX_TOKENS: int = int(os.getenv("QWEN_MAX_TOKENS", "4096"))
 
     # ---- 日志 ----
     LOG_DIR: str = os.getenv("LOG_DIR", "")

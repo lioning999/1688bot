@@ -10,7 +10,7 @@ __all__ = ["verdict", "safe_int", "safe_float"]
 def verdict(key: str, **params: Any) -> dict[str, Any]:
     """构建判词输出：{key, params} dict。
 
-    key 对应 term_glossary.json 中的条目，display_builder 负责查表 + 参数替换。
+    key 对应 glossary.json 中的条目，display_builder 负责查表 + 参数替换。
     """
     return {"key": key, "params": params}
 

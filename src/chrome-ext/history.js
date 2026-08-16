@@ -6,6 +6,7 @@ var HistoryPage = (function () {
 
   var _items = [];
   var _selected = {};  // {offer_id: true} 对比勾选状态
+  var _maxItems = 20;  // 历史记录上限（从 /api/quota 的 history_max 动态获取，默认 free=20）
 
   function getEls() {
     return {
@@ -26,25 +27,34 @@ var HistoryPage = (function () {
     if (isNaN(d.getTime())) return '';
     var now = new Date();
     var diff = now - d;
-    if (diff < 60000) return '刚刚';
-    if (diff < 3600000) return Math.floor(diff/60000) + ' 分钟前';
-    if (diff < 86400000) return Math.floor(diff/3600000) + ' 小时前';
-    if (diff < 604800000) return Math.floor(diff/86400000) + ' 天前';
+    if (diff < 60000) return I18N.t('history.timeJustNow') || '刚刚';
+    if (diff < 3600000) return (I18N.t('history.timeMinutesAgo') || '{n} 分钟前').replace('{n}', Math.floor(diff/60000));
+    if (diff < 86400000) return (I18N.t('history.timeHoursAgo') || '{n} 小时前').replace('{n}', Math.floor(diff/3600000));
+    if (diff < 604800000) return (I18N.t('history.timeDaysAgo') || '{n} 天前').replace('{n}', Math.floor(diff/86400000));
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   }
 
   function load() {
-    API.getHistory(1, 50).then(function (res) {
+    // 先拿 history_max（paid=100/free=20），失败用默认值，不阻塞列表加载
+    API.getQuota().then(function (qres) {
+      if (qres && qres.code === 200 && qres.data && qres.data.history_max) {
+        _maxItems = qres.data.history_max;
+      }
+    }).catch(function () {
+      // 拿不到 history_max 就用默认 _maxItems，继续拉列表
+    }).then(function () {
+      return API.getHistory(1, _maxItems);
+    }).then(function (res) {
       if (!res || res.code !== 200) {
         var els = getEls();
-        els.list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>加载失败</p></div>';
+        els.list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>' + (I18N.t('history.loadFailed') || '加载失败') + '</p></div>';
         return;
       }
       _items = (res.data && res.data.items) ? res.data.items : [];
       renderList(_items);
     }).catch(function () {
       var els = getEls();
-      els.list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>加载失败</p></div>';
+      els.list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>' + (I18N.t('history.loadFailed') || '加载失败') + '</p></div>';
     });
   }
 
@@ -76,7 +86,7 @@ var HistoryPage = (function () {
           var els = getEls();
           els.list.insertAdjacentHTML('afterbegin',
             '<div class="empty-state" style="padding:12px;"><div class="empty-icon">⚠️</div><p>' +
-            (I18N.msg(res && res.msg_code, res && res.message) || '删除失败') + '</p></div>');
+            (I18N.msg(res && res.msg_code, res && res.message) || I18N.t('history.deleteFailed') || '删除失败') + '</p></div>');
         }
       }).catch(function () {
         overlay.remove();
@@ -95,7 +105,7 @@ var HistoryPage = (function () {
 
     // 计数器
     var total = String(items.length);
-    var MAX = 20;  // TODO: 从后端 /api/quota 返回 history_max
+    var MAX = _maxItems;  // 从 /api/quota 的 history_max 动态获取
     if (els.counter) {
       els.counter.style.display = 'block';
       els.counter.textContent = total + '/' + MAX;
@@ -107,12 +117,7 @@ var HistoryPage = (function () {
       var thumb = item.image_url || '';
       var title = item.title || item.offer_id || '';
       var time = formatTime(item.created_at);
-      var grade = item.seller_label ? (function () {
-        var l = item.seller_label.toLowerCase();
-        if (/超级|旗舰|实力|深度|sgs|tuv/i.test(l)) return 'go';
-        if (/工厂|认证|实地/i.test(l)) return 'ok';
-        return 'none';
-      })() : 'none';
+      var grade = item.seller_grade || 'none';  // 后端 evaluate_supplier 算好的四档，不再正则匹配文本
       var gradeEmoji = { go:'🟢', ok:'🟡', bad:'🔴', none:'⬜' };
       var favOn = item.favorited;
 
@@ -138,10 +143,11 @@ var HistoryPage = (function () {
     // 上限提醒（≥18条时显示）
     if (items.length >= 18) {
       var left = MAX - items.length;
+      var favHtml = '<b>' + (I18N.t('history.favorite') || '收藏') + '</b>';
       html += '<div class="limit-warning">' +
         (left > 0
-          ? '📌 还差 ' + left + ' 条就满了。<b>' + (I18N.t('history.favorite') || '收藏') + '</b>重要记录防止自动清除。'
-          : '⚠️ 已达上限。新分析将自动清除最早的未收藏记录。<b>' + (I18N.t('history.favorite') || '收藏') + '</b>可防删。') +
+          ? (I18N.t('history.limitAlmostFull') || '📌 还差 {n} 条就满了。{fav}重要记录防止自动清除。').replace('{n}', left).replace('{fav}', favHtml)
+          : (I18N.t('history.limitFull') || '⚠️ 已达上限。新分析将自动清除最早的未收藏记录。{fav}可防删。').replace('{fav}', favHtml)) +
         '</div>';
     }
 
@@ -157,7 +163,7 @@ var HistoryPage = (function () {
           var cnt = Object.keys(_selected).filter(function (k) { return _selected[k]; }).length;
           if (cnt >= 3) {
             cb.checked = false;
-            showToast(I18N.t('compare.maxHint') || '最多选择 3 个商品进行对比', 'warning');
+            Toast.show(I18N.t('compare.maxHint') || '最多选择 3 个商品进行对比', 'warning');
             return;
           }
           _selected[oid] = true;
@@ -241,14 +247,6 @@ var HistoryPage = (function () {
     }
   }
 
-  function showToast(msg, type) {
-    var t = document.createElement('div');
-    t.className = 'toast ' + (type || '');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(function () { t.remove(); }, 2000);
-  }
-
   function showCompareModal(ids) {
     var modal = document.getElementById('compareModal');
     if (!modal) return;
@@ -281,7 +279,7 @@ var HistoryPage = (function () {
     // 每行对比项：{label, extract(display)}
     var ROWS = [
       { label: I18N.t('compare.price') || '价格',    fn: function (d) { return d && d.price ? (d.price.low || 0) + '-' + (d.price.high || 0) : '-'; } },
-      { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' 件' : '-'; } },
+      { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' ' + (I18N.t('inspect.piecesUnit') || '件') : '-'; } },
       { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 18) : '-'; } },
       { label: '',                                     fn: function (d) { var s = d && d.summaryLine ? (d.summaryLine.short || '') : ''; return '<span class="cmp-verdict-short">' + escHtml(s) + '</span>'; }, isHtml: true },
       { label: I18N.t('compare.supplier') || '供应商评分', fn: function (d) { return d && d.supplierEval ? (d.supplierEval.grade || '') + ' ' + (d.supplierEval.score || 0) + '/' + (d.supplierEval.max_score || 9) : '-'; } },
@@ -340,7 +338,8 @@ var HistoryPage = (function () {
     var found = null;
     d.productEval.dimensions.forEach(function (dim) {
       var data = dim.data || '';
-      if (field === 'repurchaseRate' && data.indexOf('%') !== -1) found = data;
+      // 用 key 定位复购率维度 d2；不能用 % 匹配（d4 好评率也含 %）
+      if (field === 'repurchaseRate' && dim.key === 'd2') found = data;
     });
     return found || '-';
   }

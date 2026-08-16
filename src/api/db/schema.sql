@@ -24,14 +24,14 @@ CREATE TABLE users (
   tier        VARCHAR(20) NOT NULL DEFAULT 'free' COMMENT 'free|paid',
   quota       INT NOT NULL DEFAULT 10 COMMENT '剩余分析次数',
   last_reset_date DATE DEFAULT NULL COMMENT '上次配额补充日期，用于懒重置',
-  default_lang VARCHAR(5) DEFAULT NULL COMMENT '用户默认语言 en/vi/th/id'
+  default_lang VARCHAR(5) DEFAULT NULL COMMENT '用户默认语言 en/vi/th/zh'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   COMMENT='Google 登录用户';
 
 -- ============================================================
 -- 2. analysis — 分析记录（主表）
 --    V1.3：列字段只保留历史列表展示所必需 + 系统字段。
---         完整分析数据（~25字段）统一存 result_json。
+--         完整分析数据（原始 raw_json + 翻译 display_i18n）。
 -- ============================================================
 CREATE TABLE analysis (
   id              INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +50,6 @@ CREATE TABLE analysis (
 
   -- 完整数据
   raw_json        MEDIUMTEXT COMMENT 'Apify 原始返回 JSON（唯一数据源，不可丢）',
-  result_json     TEXT COMMENT '[已废弃] 完整分析结果 JSON — V2 由 raw_json 重跑 mapper 替代',
   display_i18n    TEXT COMMENT '翻译后 display JSON {lang: display}。分析时只存当前语言，切语言时懒加载追加',
   favorited       TINYINT(1) DEFAULT 0 COMMENT '收藏状态 0=未收藏 1=收藏（收藏后不参与 FIFO 自动清理）',
 

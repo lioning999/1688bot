@@ -30,7 +30,7 @@ router = APIRouter()
 
 class AnalyzeRequest(BaseModel):
     url: str
-    lang: str = ""  # 目标语言（en/vi/th/id），空字符串 = 不翻译（V1 路径）
+    lang: str = ""  # 目标语言（en/vi/th/zh），空字符串 = 不翻译（V1 路径）
 
     @field_validator("url")
     @classmethod
@@ -163,56 +163,6 @@ async def analyze_status(task_id: str) -> dict[str, Any]:
 
 
 # ====================================================================
-# POST /api/save-report — 手动保存分析报告（需登录）
-# ====================================================================
-
-class SaveReportRequest(BaseModel):
-    offer_id: str
-
-    @field_validator("offer_id")
-    @classmethod
-    def must_be_valid(cls, v: str) -> str:
-        if not v.isdigit() or len(v) < 8:
-            raise ValueError("无效的 offer_id")
-        return v.strip()
-
-
-@router.post("/api/save-report")
-async def save_report(body: SaveReportRequest, request: Request) -> dict[str, Any]:
-    """用户手动保存分析报告到数据库。
-
-    从中端缓存取数据，不需要重新调 Apify。
-    需 JWT 认证（/api/ 前缀自动拦截）。
-    """
-    user_id: int = getattr(request.state, "user_id", 0) or 0
-    if not user_id:
-        raise AppError(message="请先登录", code="LOGIN_REQUIRED", msg_code="LOGIN_REQUIRED",
-                       http_status=401)
-
-    result = await analyze_service.save_report(user_id=user_id, offer_id=body.offer_id)
-    if result is None:
-        # 缓存已过期
-        logger.warning(f"[Save] 缓存过期 offer_id={body.offer_id} user_id={user_id}")
-        raise AppError(message="分析已过期，请重新搜索该商品", code="ANALYSIS_EXPIRED",
-                       msg_code="ANALYSIS_EXPIRED", http_status=410)
-
-    # 检查是否已达 20 条上限（result 带 limit_exceeded 标记时）
-    if result.get("limit_exceeded"):
-        logger.warning(f"[Save] 保存上限 offer_id={body.offer_id} user_id={user_id}")
-        raise AppError(message="已达 20 条保存上限，请先在历史记录中删除旧记录后再保存",
-                       code="SAVE_LIMIT_EXCEEDED", msg_code="SAVE_LIMIT_EXCEEDED",
-                       http_status=409)
-
-    logger.info(f"[Save] 保存成功 offer_id={body.offer_id} user_id={user_id}")
-    return {
-        "code": 200,
-        "msg_code": "SAVE_OK",
-        "data": {"saved": True},
-        "message": "已保存到我的分析",
-    }
-
-
-# ====================================================================
 # GET /api/quota — 查询当前用户剩余配额
 # ====================================================================
 
@@ -248,6 +198,7 @@ async def get_quota(request: Request) -> dict[str, Any]:
             "remaining": quota,
             "daily_limit": daily_floor,
             "tier": tier,
+            "history_max": Config.HISTORY_PAID_MAX if tier == "paid" else Config.HISTORY_FREE_MAX,
         },
         "message": "ok",
     }

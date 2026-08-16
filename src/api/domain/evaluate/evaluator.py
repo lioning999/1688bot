@@ -88,15 +88,19 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
 
     summary_tier = SUMMARY_MATRIX.get(p_group, {}).get(s_group, "wait_data")
 
-    # headline（4 档）
+    # headline（4 档）+ grade（前端染色，与 headline 同档）
     if summary_tier.startswith("go_"):
         headline_kv = verdict("summary_headline_go")
+        grade = "go"
     elif summary_tier.startswith("conditional_"):
         headline_kv = verdict("summary_headline_conditional")
+        grade = "ok"
     elif summary_tier.startswith("no_"):
         headline_kv = verdict("summary_headline_no")
+        grade = "bad"
     else:
         headline_kv = verdict("summary_headline_wait")
+        grade = "none"
 
     reason_kv = verdict(f"summary_{summary_tier}")
 
@@ -106,5 +110,6 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         "reason": reason_kv,
         "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 18)}",
         "supplier_score": f"{supplier_result.get('score', 0)}/{supplier_result.get('max_score', 9)}",
+        "grade": grade,
         "tier": summary_tier,
     }

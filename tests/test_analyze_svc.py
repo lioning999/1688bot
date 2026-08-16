@@ -73,7 +73,6 @@ async def test_t1_normal_analysis_saves_raw_and_display(monkeypatch):
     monkeypatch.setattr(analyze_svc._user_repo, "increment_quota", fake_increment)
     monkeypatch.setattr(analyze_svc._user_repo, "get_quota_info", fake_get_quota_info)
     monkeypatch.setattr(analyze_svc, "map_raw", lambda raw, url, oid: {"title": "映射标题", "image": "http://x.jpg"})
-    monkeypatch.setattr(analyze_svc, "judge_all", lambda m: {"product": {}, "factory": {}, "sample": {}})
     monkeypatch.setattr(analyze_svc, "build_result_with_display", fake_build)
 
     task_id = "t1"
@@ -172,7 +171,6 @@ async def test_t4_db_hit_missing_lang_rebuilds(monkeypatch):
     monkeypatch.setattr(analyze_svc._user_repo, "increment_quota", fake_increment)
     monkeypatch.setattr(analyze_svc.apify_adapter, "fetch_product_by_url", fake_fetch)
     monkeypatch.setattr(analyze_svc, "map_raw", lambda raw, url, oid: {"title": "重建标题"})
-    monkeypatch.setattr(analyze_svc, "judge_all", lambda m: {"product": {}, "factory": {}, "sample": {}})
     monkeypatch.setattr(analyze_svc, "build_result_with_display", fake_build)
 
     task_id = "t4"
@@ -216,7 +214,6 @@ async def test_t5_concurrent_same_offer_id_single_decrement(monkeypatch):
     monkeypatch.setattr(analyze_svc._user_repo, "get_quota_info", fake_get_quota_info)
     monkeypatch.setattr(analyze_svc.apify_adapter, "fetch_product_by_url", fake_fetch)
     monkeypatch.setattr(analyze_svc, "map_raw", lambda raw, url, oid: {"title": "x"})
-    monkeypatch.setattr(analyze_svc, "judge_all", lambda m: {"product": {}, "factory": {}, "sample": {}})
     monkeypatch.setattr(analyze_svc, "build_result_with_display", fake_build)
 
     await asyncio.gather(
@@ -225,9 +222,9 @@ async def test_t5_concurrent_same_offer_id_single_decrement(monkeypatch):
     )
 
     # 等待后台 _run 完成，避免 pending task 警告
-    for t in list(analyze_svc._pending.values()):
+    for entry in list(analyze_svc._pending.values()):
         with contextlib.suppress(Exception):
-            await t
+            await entry["task"]
 
     assert len(decrements) == 1, f"并发同 offer_id 应只扣一次配额，实际 {len(decrements)} 次"
 
@@ -260,3 +257,87 @@ async def test_t6_mapper_raises_refunds_quota(monkeypatch):
         await svc._run(task_id, "offer6", "http://x", lang="zh", user_id=1)
 
     assert len(refunded) == 1, "mapper 抛异常应退配额（G4）"
+
+
+# ---- G2 合并请求语言不同 → 第二个请求重建正确语言 ----
+@pytest.mark.asyncio
+async def test_g2_coalesce_diff_lang_rebuilds(monkeypatch):
+    repo = FakeRepo()
+    svc = AnalyzeService(repo=repo)
+
+    get_calls = {"n": 0}
+
+    async def fake_get(offer_id, user_id):
+        get_calls["n"] += 1
+        if get_calls["n"] == 1:
+            return None  # 第一个请求：未命中，走 Apify
+        return {"raw": {"offerId": "X"}, "display_i18n": None}  # 第二个重建：命中 raw
+
+    async def slow_fetch(url):
+        await asyncio.sleep(0.05)  # 让第二个请求能合并进来
+        return {"offerId": "X", "title": "raw"}
+
+    async def fake_build(mapped, offer_id, lang):
+        return {"display": {"title": f"t-{lang}"}}
+
+    async def fake_decrement(user_id):
+        return True
+
+    async def noop(*a, **k):
+        return None
+
+    monkeypatch.setattr(repo, "get_by_offer_id", fake_get)
+    monkeypatch.setattr(analyze_svc.apify_adapter, "fetch_product_by_url", slow_fetch)
+    monkeypatch.setattr(analyze_svc, "map_raw", lambda raw, url, oid: {"title": "mapped"})
+    monkeypatch.setattr(analyze_svc, "build_result_with_display", fake_build)
+    monkeypatch.setattr(analyze_svc._user_repo, "decrement_quota", fake_decrement)
+    monkeypatch.setattr(analyze_svc._user_repo, "increment_quota", noop)
+    monkeypatch.setattr(analyze_svc._user_repo, "get_quota_info", noop)
+
+    t1 = await svc.start("X", user_id=1, raw_url="http://x", lang="en")
+    t2 = await svc.start("X", user_id=1, raw_url="http://x", lang="zh")
+
+    await asyncio.sleep(0.2)  # 等第一个 Apify 完成 + 第二个重建
+
+    r1 = svc.get_task(t1)
+    r2 = svc.get_task(t2)
+    assert r1 and r1["result"]["display"]["title"] == "t-en", f"第一个请求应为 en，实际 {r1}"
+    assert r2 and r2["result"]["display"]["title"] == "t-zh", f"第二个合并请求应为 zh，实际 {r2}"
+
+
+# ---- G3 容器硬上限（_cleanup_containers FIFO 删最旧 + _pending 并发拒绝） ----
+
+
+def test_g3_task_cap_fifo_evicts_oldest():
+    cap = analyze_svc._MAX_TASKS
+    now = time.time()
+    for i in range(cap + 5):
+        analyze_svc._tasks[f"t{i}"] = {"status": "done", "result": None, "created_at": now - (cap + 5 - i) * 0.001}
+    analyze_svc._cleanup_containers()
+    assert len(analyze_svc._tasks) == cap
+    for i in range(5):
+        assert f"t{i}" not in analyze_svc._tasks, f"最旧 t{i} 应被 FIFO 删除"
+    assert f"t{cap + 4}" in analyze_svc._tasks, "最新条目应保留"
+
+
+def test_g3_fail_cap_fifo_evicts_oldest():
+    cap = analyze_svc._MAX_FAIL_COUNT
+    now = time.time()
+    for i in range(cap + 5):
+        analyze_svc._fail_count[f"o{i}"] = (1, now - (cap + 5 - i) * 0.001)
+    analyze_svc._cleanup_containers()
+    assert len(analyze_svc._fail_count) == cap
+    for i in range(5):
+        assert f"o{i}" not in analyze_svc._fail_count, f"最旧 o{i} 应被 FIFO 删除"
+
+
+@pytest.mark.asyncio
+async def test_g3_pending_cap_rejects_when_full():
+    repo = FakeRepo()
+    svc = AnalyzeService(repo=repo)
+    for i in range(analyze_svc._MAX_PENDING):
+        analyze_svc._pending[f"offer{i}"] = {"task": None, "lang": "zh", "raw_url": "http://x"}
+    task_id = await svc.start("new_offer", user_id=0, raw_url="http://x", lang="zh")
+    t = analyze_svc._tasks.get(task_id)
+    assert t and t["status"] == "failed"
+    assert t["error_msg_code"] == "GLOBAL_RATE_LIMIT"

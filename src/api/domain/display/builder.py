@@ -23,7 +23,7 @@ with open(_HERE.parent / "data" / "glossary.json", "r", encoding="utf-8") as _f:
 
 
 def _glossary(key: str, lang: str, default: str = "") -> str:
-    """term_glossary.json 查表（结构：{key: {en, vi, th, id}}）。"""
+    """glossary.json 查表（结构：{key: {en, vi, th, zh}}）。"""
     entry: Any = GL.get(key, {})
     if not isinstance(entry, dict):
         return default or key
@@ -54,7 +54,7 @@ _STAR_SYMBOLS: dict[str, str] = {
 _EXPECTED_KEYS: set[str] = {
     "title", "titleOrig", "images", "videoUrl", "itemUrl", "offerId",
     "price", "trustBar", "badges", "specs", "sales",
-    "skus", "priceTiers", "verdictProduct", "verdictFactory", "verdictSample", "factory",
+    "skus", "priceTiers", "factory",
     "productEval", "supplierEval", "summaryLine",
 }
 
@@ -64,7 +64,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
 
     Args:
         mapped: product_mapper.map_raw() 输出
-        lang: 目标语言代码（en/vi/th/id），用于 Path 2 字典查表
+        lang: 目标语言代码（en/vi/th/zh），用于 Path 2 字典查表
 
     Returns:
         display JSON。Path 1 英文，Path 2 字典值，Path 3 中文（待翻译）。
@@ -108,11 +108,6 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
             # ---- 阶梯价格（纯数字，Path 1） ----
             "priceTiers": mapped.get("price_tiers") or [],
 
-            # ---- 判词（glossary 查表，4 语言预翻译） ----
-            "verdictProduct": _format_verdict(mapped.get("verdict_product"), safe_lang),
-            "verdictFactory": _format_verdict(mapped.get("verdict_factory"), safe_lang),
-            "verdictSample": _format_verdict(mapped.get("verdict_sample"), safe_lang),
-
             # ---- 工厂信息（Path 2 + Path 3） ----
             "factory": _build_factory(mapped, safe_lang),
 
@@ -139,9 +134,6 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
             "specs": [],
             "sales": {},
             "skus": [],
-            "verdictProduct": "",
-            "verdictFactory": "",
-            "verdictSample": "",
             "priceTiers": [],
             "factory": {},
             "productEval": {},
@@ -216,7 +208,7 @@ def _build_badges(mapped: dict[str, Any], lang: str) -> list[dict[str, str]]:
                 "html": f'<span class="badge-sm gold">{t_rp}</span>',
             })
 
-        # 混批（Path 2：字典查表，term_glossary.json）
+        # 混批（Path 2：字典查表，glossary.json）
         badge_labels: list[dict[str, Any]] = mapped.get("badgeLabels") or []
         has_mixed: bool = any(
             b.get("label") == "支持混批"
@@ -567,6 +559,7 @@ def _build_summary_line(product_raw: dict[str, Any], supplier_raw: dict[str, Any
             "short": _glossary(headline_key + "_short", lang),
             "product_score": summary.get("product_score", ""),
             "supplier_score": summary.get("supplier_score", ""),
+            "grade": summary.get("grade", "none"),
         }
     except Exception:
         logger.exception("_build_summary_line failed")
@@ -616,7 +609,7 @@ def _format_verdict(v: Any, lang: str) -> str:
             params["reason"] = reason_str
             params["reasons"] = reason_str
 
-    # 翻译参数中的中文单位（verdict_engine 传入 1688 原始中文 unit）
+    # 翻译参数中的中文单位（1688 原始中文 unit）
     if "unit" in params:
         unit_cn: str = str(params["unit"])
         unit_translated: str = _glossary(f"unit_{unit_cn}", lang)

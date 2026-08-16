@@ -50,8 +50,8 @@ class QwenAdapter:
                     json={
                         "model": model or Config.QWEN_MODEL,
                         "messages": messages,
-                        "temperature": 0.1,
-                        "max_tokens": 4096,
+                        "temperature": Config.QWEN_TEMPERATURE,
+                        "max_tokens": Config.QWEN_MAX_TOKENS,
                     },
                 )
 

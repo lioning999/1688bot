@@ -2,7 +2,6 @@
 
 覆盖风险清单：
   #12  查询历史存储 → 方案 B（存元数据），存 analysis 表
-  V1.2  specs/skus/price_tiers 子表已废弃，数据统一存 result_json 列
 """
 
 from typing import Any
@@ -17,7 +16,7 @@ logger = get_logger(__name__)
 
 
 # ---- INSERT 列名（create / upsert 共用） ----
-# V1.3：列字段只保留历史列表展示所需 + 系统字段。完整数据在 result_json + display_i18n。
+# V1.3：列字段只保留历史列表展示所需 + 系统字段。完整数据在 raw_json + display_i18n。
 _INSERT_COLS = (
     "user_id, offer_id, status, title, image_url, "
     "price_min, price_max, apify_task_id, raw_json, display_i18n, favorited"
@@ -137,14 +136,14 @@ class AnalysisRepository:
         """从 DB 加载分析报告。
 
         返回 {"raw": parsed_json, "display_i18n": str|None}。
-        raw_json 优先，result_json 降级（旧记录兼容）。
+        raw_json 为唯一数据源；无 raw_json 返回 None（由上层走 Apify 重抓）。
         """
         conn = await AsyncDatabaseConnection.get_connection()
         try:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
                     """SELECT offer_id, title, image_url, price_min, price_max,
-                              raw_json, result_json, display_i18n, created_at
+                              raw_json, display_i18n, created_at
                        FROM analysis
                        WHERE offer_id=%s AND user_id=%s AND status='done'
                        LIMIT 1""",
@@ -153,34 +152,22 @@ class AnalysisRepository:
                 row = await cur.fetchone()
                 if row is None:
                     return None
-                # 优先 raw_json（新），降级 result_json（旧记录兼容）
-                source_json = row.get("raw_json") or row.get("result_json")
-                if source_json:
-                    try:
-                        created_at_raw = row.get("created_at")
-                        created_at_ts: float | None = None
-                        if created_at_raw is not None:
-                            created_at_ts = created_at_raw.timestamp()
-                        return {
-                            "raw": json.loads(source_json),
-                            "display_i18n": row.get("display_i18n"),
-                            "created_at": created_at_ts,
-                        }
-                    except (json.JSONDecodeError, TypeError):
-                        pass  # JSON 损坏，回退到列字段
-                # fallback：从列字段拼出最小可用结构
-                return {
-                    "raw": {
-                        "title": row.get("title"),
-                        "image": row.get("image_url"),
-                        "offerId": row.get("offer_id"),
-                        "priceCNY": {
-                            "low": float(row["price_min"]) if row.get("price_min") else 0,
-                            "high": float(row["price_max"]) if row.get("price_max") else 0,
-                        },
-                    },
-                    "display_i18n": row.get("display_i18n"),
-                }
+                # raw_json 为唯一数据源（mapped 无法被 map_raw 二次消费，result_json 已废弃）
+                source_json = row.get("raw_json")
+                if not source_json:
+                    return None  # 无原始数据 → 上层走 Apify 重抓
+                try:
+                    created_at_raw = row.get("created_at")
+                    created_at_ts: float | None = None
+                    if created_at_raw is not None:
+                        created_at_ts = created_at_raw.timestamp()
+                    return {
+                        "raw": json.loads(source_json),
+                        "display_i18n": row.get("display_i18n"),
+                        "created_at": created_at_ts,
+                    }
+                except (json.JSONDecodeError, TypeError):
+                    return None  # JSON 损坏 → 上层走 Apify 重抓
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 

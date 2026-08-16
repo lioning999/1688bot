@@ -16,7 +16,6 @@ from typing import Any
 from config import Config
 from adapters.apify_adapter import apify_adapter, get_apify_call_count
 from domain.data.mapper import map_raw
-from domain.verdict_engine import judge_all
 from repositories.analysis_repo import AnalysisRepository
 from repositories.user_repo import UserRepository
 from services.ai_verdict_svc import build_result_with_display
@@ -26,16 +25,16 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 # ---- 异步任务管理 ----
-_pending: dict[str, asyncio.Task[dict[str, Any]]] = {}  # {offer_id: Task}  请求合并（风险 #2）
+_pending: dict[str, dict[str, Any]] = {}  # {offer_id: {task, lang, raw_url}}  请求合并（风险 #2）
 _tasks: dict[str, dict[str, Any]] = {}        # {task_id: {status, result, ...}}  异步轮询（风险 #10）
 TASK_TTL = Config.TASK_TTL  # 任务结果保留时长（秒）
-_MAX_TASKS = 200  # 防止无界增长
-_MAX_PENDING = 50
+_MAX_TASKS = Config.MAX_TASKS  # 防止无界增长
+_MAX_PENDING = Config.MAX_PENDING
 
 # ---- 失败重试上限（同一 offer_id 失败 ≥3 次 → 拒绝） ----
-_FAIL_TTL: float = 86400.0  # 失败计数 24h 后自动清零
+_FAIL_TTL: float = Config.FAIL_TTL  # 失败计数 24h 后自动清零
 _fail_count: dict[str, tuple[int, float]] = {}  # {offer_id: (count, timestamp)}
-_MAX_FAIL_COUNT = 1000
+_MAX_FAIL_COUNT = Config.MAX_FAIL_COUNT
 _user_repo = UserRepository()
 
 
@@ -47,6 +46,28 @@ def _on_apify_fail(offer_id: str) -> None:
         _fail_count[offer_id] = (1, now)
     else:
         _fail_count[offer_id] = (entry[0] + 1, entry[1])
+
+
+def _cleanup_containers() -> None:
+    """清理过期条目 + 强制硬上限（每次新请求触发，无后台定时器）。
+
+    铁律五：全局可变容器必须有上限 + 清理机制。
+    TTL 兜底过期清理；_MAX_TASKS/_MAX_FAIL_COUNT 硬上限 FIFO 删最旧，防 TTL 窗口内无界增长（G3）。
+    """
+    _now: float = time.time()
+    for _tid, _t in list(_tasks.items()):
+        if _now - _t["created_at"] > TASK_TTL:
+            del _tasks[_tid]
+    for _oid, _v in list(_fail_count.items()):
+        if _now - _v[1] > _FAIL_TTL:
+            del _fail_count[_oid]
+    if len(_tasks) > _MAX_TASKS:
+        for _tid, _ in sorted(_tasks.items(), key=lambda kv: kv[1]["created_at"])[:len(_tasks) - _MAX_TASKS]:
+            del _tasks[_tid]
+    if len(_fail_count) > _MAX_FAIL_COUNT:
+        for _oid, _ in sorted(_fail_count.items(), key=lambda kv: kv[1][1])[:len(_fail_count) - _MAX_FAIL_COUNT]:
+            del _fail_count[_oid]
+
 
 class AnalyzeService:
     """商品分析编排。依赖注入。"""
@@ -66,14 +87,8 @@ class AnalyzeService:
         前端每 2s 轮询 GET /api/analyze/{task_id}。
         配额扣减在本方法内完成（decrement_quota）。
         """
-        # 清理过期 task + 过期失败计数（每次新请求触发，无需后台定时器）
-        _now = time.time()
-        _expired_tasks = [tid for tid, t in _tasks.items() if _now - t["created_at"] > TASK_TTL]
-        for tid in _expired_tasks:
-            del _tasks[tid]
-        _expired_fails = [oid for oid, v in _fail_count.items() if _now - v[1] > _FAIL_TTL]
-        for oid in _expired_fails:
-            del _fail_count[oid]
+        # 清理过期 + 硬上限（每次新请求触发，无需后台定时器）
+        _cleanup_containers()
 
         # 失败次数上限检查：同 offer_id 连续失败 ≥3 次 → 拒绝
         _fail_entry = _fail_count.get(offer_id)
@@ -89,12 +104,60 @@ class AnalyzeService:
                 "created_at": time.time(),
             }
             return task_id
+        # 并发上限（G3）：活跃合并数超 _MAX_PENDING → 拒绝，防 Apify 过载
+        if len(_pending) >= _MAX_PENDING and offer_id not in _pending:
+            task_id = str(uuid.uuid4())
+            _tasks[task_id] = {"status": "failed", "error": "系统繁忙，请稍后重试",
+                               "error_msg_code": "GLOBAL_RATE_LIMIT",
+                               "error_http_status": 429, "created_at": time.time()}
+            return task_id
         # 请求合并（风险 #2）：同一 offer_id 正在分析中 → 等现有结果
         if offer_id in _pending:
-            logger.info(f"Request coalesced: offer_id={offer_id}")
-            existing_task = _pending[offer_id]
+            existing = _pending[offer_id]
+            existing_task: asyncio.Task[dict[str, Any]] = existing["task"]
+            existing_lang: str = str(existing.get("lang", ""))
+            logger.info(f"Request coalesced: offer_id={offer_id} existing_lang={existing_lang} req_lang={lang}")
             task_id = str(uuid.uuid4())
             _tasks[task_id] = {"status": "pending", "result": None, "created_at": time.time()}
+
+            if lang and lang != existing_lang:
+                # 语言不同（G2）：等第一个完成后复用 raw_json，用第二个 lang 重建（不 Apify，不扣配额）
+                async def _wait_and_rebuild():
+                    try:
+                        await existing_task
+                    except Exception:
+                        _tasks[task_id] = {"status": "failed", "error": "请求失败",
+                                           "error_msg_code": "INTERNAL_ERROR",
+                                           "error_http_status": 500, "created_at": time.time()}
+                        return
+                    try:
+                        saved = await self.repo.get_by_offer_id(offer_id, user_id)
+                        if not saved or not saved.get("raw"):
+                            _tasks[task_id] = {"status": "failed", "error": "请求失败",
+                                               "error_msg_code": "INTERNAL_ERROR",
+                                               "error_http_status": 500, "created_at": time.time()}
+                            return
+                        safe_lang = lang if lang in ("en", "vi", "th", "zh") else "zh"
+                        mapped = map_raw(saved.get("raw", {}), raw_url, offer_id)
+                        result = await build_result_with_display(mapped, offer_id, safe_lang)
+                        display = result.get("display", {}) or {}
+                        ai_generated = display.pop("_aiGenerated", None)
+                        display_i18n: dict[str, Any] = {}
+                        di18n_raw = saved.get("display_i18n")
+                        if di18n_raw:
+                            display_i18n = json.loads(di18n_raw) if isinstance(di18n_raw, str) else di18n_raw
+                        if safe_lang == "zh" or ai_generated:
+                            display_i18n[safe_lang] = display
+                            await self.repo.update_display_i18n(offer_id, user_id, json.dumps(display_i18n, ensure_ascii=False))
+                        _tasks[task_id] = {"status": "done", "result": result, "created_at": time.time()}
+                    except Exception:
+                        logger.exception(f"合并请求重建语言失败 offer_id={offer_id}")
+                        _tasks[task_id] = {"status": "failed", "error": "请求失败",
+                                           "error_msg_code": "INTERNAL_ERROR",
+                                           "error_http_status": 500, "created_at": time.time()}
+
+                asyncio.create_task(_wait_and_rebuild())
+                return task_id
 
             async def _wait_existing():
                 try:
@@ -128,7 +191,7 @@ class AnalyzeService:
         task_id = str(uuid.uuid4())
         _tasks[task_id] = {"status": "pending", "result": None, "created_at": time.time()}
         task = asyncio.create_task(self._run(task_id, offer_id, raw_url, lang, user_id))
-        _pending[offer_id] = task
+        _pending[offer_id] = {"task": task, "lang": lang, "raw_url": raw_url}
 
         # 配额扣减（占位之后，同 offer_id 不重复扣）
         if user_id:
@@ -160,20 +223,20 @@ class AnalyzeService:
             return None
         return task
 
-    def create_done_task(self, result: dict[str, Any]) -> str:
-        """缓存命中时创建即时完成的任务，统一 POST 响应契约。"""
-        task_id: str = str(uuid.uuid4())[:8]
-        _tasks[task_id] = {"status": "done", "result": result, "created_at": time.time()}
-        return task_id
-
-    async def get_history(self, user_id: int, limit: int = 20) -> list[dict[str, Any]]:
+    async def get_history(self, user_id: int, limit: int = 0) -> list[dict[str, Any]]:
         """查用户最近的分析记录（只读 DB，不调 Apify）。
         从 display_i18n 提取分析语言 + 卖家标签，供前端显示本地货币价格。
+        limit=0 → 按用户 tier 取上限（free=20/paid=100），否则用给定值。
         """
+        if limit <= 0:
+            info = await _user_repo.get_quota_info(user_id)
+            tier = str(info.get("tier", "free")) if info else "free"
+            limit = Config.HISTORY_PAID_MAX if tier == "paid" else Config.HISTORY_FREE_MAX
         rows = await self.repo.get_history(user_id, limit)
         for row in rows:
             lang: str = ""
             seller_label: str = ""
+            seller_grade: str = "none"
             di18n_raw = row.pop("display_i18n", None)
             if di18n_raw:
                 try:
@@ -183,10 +246,13 @@ class AnalyzeService:
                         first_display: dict[str, Any] = di18n.get(lang, {})  # type: ignore[assignment]
                         trust: dict[str, Any] = first_display.get("trustBar", {}) if isinstance(first_display, dict) else {}  # type: ignore[assignment]
                         seller_label = trust.get("label", "")
+                        supplier_eval: dict[str, Any] = first_display.get("supplierEval", {}) if isinstance(first_display, dict) else {}  # type: ignore[assignment]
+                        seller_grade = supplier_eval.get("grade", "none") if isinstance(supplier_eval, dict) else "none"
                 except (json.JSONDecodeError, TypeError, StopIteration):
                     pass
             row["lang"] = lang
             row["seller_label"] = seller_label
+            row["seller_grade"] = seller_grade
         return rows
 
     async def delete_record(self, analysis_id: int, user_id: int) -> bool:
@@ -206,7 +272,7 @@ class AnalyzeService:
         if not saved:
             return None
 
-        safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "en"
+        safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "zh"
 
         display_i18n_raw = saved.get("display_i18n")
         display_i18n: dict[str, Any] = {}
@@ -218,16 +284,6 @@ class AnalyzeService:
 
         display: dict[str, Any] = display_i18n.get(safe_lang) or next(iter(display_i18n.values()), {})
         return {"display": display}
-
-    async def save_report(self, user_id: int, offer_id: str) -> dict[str, Any] | None:
-        """用户手动保存分析报告。
-
-        自动落库已覆盖保存动作，这里退化为从 DB 读回校验：存在返回 raw，不存在返回 None。
-        """
-        saved = await self.repo.get_by_offer_id(offer_id, user_id)
-        if saved is None:
-            return None
-        return saved.get("raw")
 
     # ------------------------------------------------------------------
     # 后台分析流水线
@@ -262,10 +318,6 @@ class AnalyzeService:
 
                 # ③ 有 raw_json 无当前语言 → 重建（跳过 Apify）
                 mapped = map_raw(saved.get("raw", {}), raw_url, offer_id)
-                verdicts = judge_all(mapped)
-                mapped["verdict_product"] = verdicts["product"]
-                mapped["verdict_factory"] = verdicts["factory"]
-                mapped["verdict_sample"] = verdicts["sample"]
                 result = await build_result_with_display(mapped, offer_id, safe_lang)
                 display = result.get("display", {}) or {}
                 # G12：读 _aiGenerated（旧名 _translatedLang 恒空导致非 zh 不落库），读后剥离内部标记
@@ -287,11 +339,16 @@ class AnalyzeService:
             except ExternalServiceError as e:
                 logger.error(f"Apify fetch failed: {e}")
                 is_quota = e.details.get("reason") == "quota_exhausted" if e.details else False
+                is_timeout = e.details.get("reason") == "timeout" if e.details else False
                 # 无缓存 → 区分错误原因
                 if is_quota:
                     _tasks[task_id] = {"status": "failed", "error": "今日分析服务额度已用完，请明天再试",
                                        "error_msg_code": "APIFY_QUOTA_EXHAUSTED",
                                        "error_http_status": 403, "created_at": time.time()}
+                elif is_timeout:
+                    _tasks[task_id] = {"status": "failed", "error": "获取超时，请稍后重试",
+                                       "error_msg_code": "TIMEOUT_RETRY",
+                                       "error_http_status": 504, "created_at": time.time()}
                 else:
                     _tasks[task_id] = {"status": "failed", "error": "获取失败，请稍后重试。如持续失败请联系客服",
                                        "error_msg_code": "FETCH_FAILED_RETRY_LATER",
@@ -327,18 +384,8 @@ class AnalyzeService:
 
             mapped = map_raw(raw, raw_url, offer_id)
 
-            # 判词（风险 #4 #5 #6）
-            verdicts = judge_all(mapped)
-            mapped["verdict_product"] = verdicts["product"]
-            mapped["verdict_factory"] = verdicts["factory"]
-            mapped["verdict_sample"] = verdicts["sample"]
-
             t_mapped = time.time()
-            logger.info(
-                f"[流水线] offer_id={offer_id} 映射+判词完成 耗时={t_mapped - t_apify:.1f}s "
-                f"判词product={verdicts['product'].get('key', '?')} "
-                f"factory={verdicts['factory'].get('key', '?')}"
-            )
+            logger.info(f"[流水线] offer_id={offer_id} 映射完成 耗时={t_mapped - t_apify:.1f}s")
             logger.info(f"[TRACE-MAPPED] offer_id={offer_id} lang={lang} mapped={json.dumps(mapped, ensure_ascii=False, default=str)}")
 
             _fail_count.pop(offer_id, None)  # 成功后清除失败计数
