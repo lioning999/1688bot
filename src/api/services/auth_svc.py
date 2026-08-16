@@ -1,8 +1,10 @@
 """认证服务 — Google OAuth 登录/注册业务编排。"""
 
+from datetime import date
 from typing import Any
 
 from adapters.google_auth import GoogleAuthAdapter
+from config import Config
 from repositories.user_repo import UserRepository
 from utils.jwt import create_token
 from utils.logger import get_logger
@@ -83,3 +85,33 @@ class AuthService:
                 "avatar_url": avatar_url,
             },
         }
+
+    async def get_quota_with_reset(self, user_id: int) -> dict[str, Any] | None:
+        """查配额 + 懒重置补地板。None = 用户不存在。
+
+        从 routes 下沉（原 analyze.py 配额判断），供 POST /api/analyze 与 GET /api/quota 共用。
+        """
+        user_quota = await self.user_repo.get_quota_info(user_id)
+        if not user_quota:
+            return None
+        quota = user_quota["quota"]
+        tier = str(user_quota.get("tier", "free"))
+        last_reset_date = user_quota.get("last_reset_date")
+        daily_floor = Config.DAILY_PAID_QUOTA if tier == "paid" else Config.DAILY_FREE_QUOTA
+        today = date.today()
+        if last_reset_date is None or last_reset_date < today:
+            quota = await self.user_repo.lazy_reset_daily_quota(user_id, tier, daily_floor)
+        return {
+            "remaining": quota,
+            "daily_limit": daily_floor,
+            "tier": tier,
+            "history_max": Config.HISTORY_PAID_MAX if tier == "paid" else Config.HISTORY_FREE_MAX,
+        }
+
+    async def update_default_lang(self, user_id: int, lang: str) -> None:
+        """更新用户默认语言（从 routes 下沉）。"""
+        await self.user_repo.update_default_lang(user_id, lang)
+
+
+# 模块级单例 — routes 层共享，不再各自 new UserRepository
+auth_service = AuthService()

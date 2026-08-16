@@ -6,16 +6,14 @@ from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
 from config import Config
-from repositories.user_repo import UserRepository
-from services.auth_svc import AuthService
+from services.auth_svc import auth_service
 from utils.exceptions import ExternalServiceError
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 # ---- 依赖 ----
-auth_service = AuthService()
-_user_repo = UserRepository()
+# auth_service 由 services.auth_svc 模块级单例提供（import 引入）
 
 # ---- 路由 ----
 # /api/auth/* 路由（JWT 中间件豁免登录检查）
@@ -136,6 +134,6 @@ async def update_lang(request: Request) -> dict[str, Any]:
     lang: str = str(body.get("lang", "")).strip()
     if not lang or lang not in ("en", "vi", "th", "zh"):
         return {"code": 400, "msg_code": "INVALID_LANG", "data": None, "message": "不支持的语言"}
-    await _user_repo.update_default_lang(user_id, lang)
+    await auth_service.update_default_lang(user_id, lang)
     logger.info(f"[User] lang updated: user_id={user_id}, lang={lang}")
     return {"code": 200, "msg_code": "OK", "data": None, "message": "ok"}

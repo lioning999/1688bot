@@ -9,17 +9,15 @@
 
 import re
 import time
-from datetime import date
 from typing import Any
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, field_validator
 
-from config import Config
 from domain.infra import rate_limiter
 from domain.infra.urls import extract_offer_id, is_valid_1688_url
-from repositories.user_repo import UserRepository
 from services.analyze_svc import analyze_service
+from services.auth_svc import auth_service
 from utils.exceptions import ValidationError, InsufficientQuotaError, ResourceNotFoundError, AppError
 from utils.logger import get_logger
 
@@ -76,26 +74,15 @@ async def analyze_start(body: AnalyzeRequest, request: Request) -> dict[str, Any
     if not user_id:
         raise AppError(message="请先登录", msg_code="LOGIN_REQUIRED", http_status=401)
 
-    _user_repo = UserRepository()
-    user_quota = await _user_repo.get_quota_info(user_id)
-    if not user_quota:
+    quota_info = await auth_service.get_quota_with_reset(user_id)
+    if not quota_info:
         raise AppError(message="用户不存在", msg_code="USER_NOT_FOUND", http_status=404)
 
-    quota = user_quota["quota"]
-    tier = str(user_quota.get("tier", "free"))
-    last_reset_date = user_quota.get("last_reset_date")
-
-    # 懒重置：补地板，不削顶
-    daily_floor = Config.DAILY_PAID_QUOTA if tier == "paid" else Config.DAILY_FREE_QUOTA
-    today = date.today()
-    if last_reset_date is None or last_reset_date < today:
-        quota = await _user_repo.lazy_reset_daily_quota(user_id, tier, daily_floor)
-
-    if quota <= 0:
+    if quota_info["remaining"] <= 0:
         raise InsufficientQuotaError(
             resource_type="今日分析次数",
             msg_code="QUOTA_EXHAUSTED",
-            details={"daily_limit": daily_floor},
+            details={"daily_limit": quota_info["daily_limit"]},
         )
 
     # ---- 4. 启动后台分析（扣减在 start() 内，请求合并后执行）----
@@ -176,29 +163,13 @@ async def get_quota(request: Request) -> dict[str, Any]:
     if not user_id:
         raise AppError(message="请先登录", msg_code="LOGIN_REQUIRED", http_status=401)
 
-    _user_repo = UserRepository()
-    user_quota = await _user_repo.get_quota_info(user_id)
-    if not user_quota:
+    quota_info = await auth_service.get_quota_with_reset(user_id)
+    if not quota_info:
         raise AppError(message="用户不存在", msg_code="USER_NOT_FOUND", http_status=404)
-
-    quota = user_quota["quota"]
-    tier = str(user_quota.get("tier", "free"))
-    last_reset_date = user_quota.get("last_reset_date")
-
-    # 懒重置：补地板
-    daily_floor = Config.DAILY_PAID_QUOTA if tier == "paid" else Config.DAILY_FREE_QUOTA
-    today = date.today()
-    if last_reset_date is None or last_reset_date < today:
-        quota = await _user_repo.lazy_reset_daily_quota(user_id, tier, daily_floor)
 
     return {
         "code": 200,
         "msg_code": "OK",
-        "data": {
-            "remaining": quota,
-            "daily_limit": daily_floor,
-            "tier": tier,
-            "history_max": Config.HISTORY_PAID_MAX if tier == "paid" else Config.HISTORY_FREE_MAX,
-        },
+        "data": quota_info,
         "message": "ok",
     }

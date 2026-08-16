@@ -112,7 +112,7 @@ db/            — MySQL schema
 |----|---------|------|
 | 🖥️ 前端i18n | 每种商品一样 | `src/chrome-ext/lang/{lang}.json` |
 | 📖 字典查表 | 中文由我们产出、可穷举 | `src/api/domain/data/glossary.json` |
-| 🤖 Qwen翻译 | 中文来自1688、不可穷举 | translator.py，无固定配置 |
+| 🤖 Qwen翻译 | 中文来自1688、不可穷举 | 内嵌 `build_with_ai()`（services/ai_verdict_svc.py），无独立文件，失败降级模板 `build_display()` |
 | ➖ 不翻译 | 数字/URL/图片 | 无 |
 
 **改 `glossary.json` 中文原文时，必须同步检查 en/vi/th/zh 四语言翻译。不同步 → 删旧值，前端降级显示中文。**
