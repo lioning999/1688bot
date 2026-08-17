@@ -17,7 +17,7 @@
 | 节点 4 | 轮询状态 | routes/analyze.py · `analyze_status` | pending/done/failed |
 | 节点 5 | 默认语言 | routes/auth.py · `PUT /api/user/lang` | 改语言写 DB |
 
-> 📖 判词定档规则（产品 12 规则→4 档 · 供应商 6 规则→4 档 · 综合 9 档）见文末「判词档位设计」。
+> 📖 判词定档规则（产品 12 规则→4 档 · 供应商 5 tier→4 档 · 综合 9 档）见文末「判词档位设计」。
 > 💾 缓存规则：DB `display_i18n` 是唯一缓存，全项目禁止内存缓存层（DB 命中检查在前，内存缓存永远读不到）。
 
 ---
@@ -43,7 +43,7 @@
 │        （OFFER_ID_NOT_FOUND / OFFER_ID_INVALID）             │
 │   3. 全局限流检查（rate_limiter.check()）                     │
 │      → 超限 → GLOBAL_RATE_LIMIT（retry_after 60秒）          │
-│   4. 用户配额检查（user_repo.get_quota_info）                 │
+│   4. 用户配额检查（auth_service.get_quota_with_reset）        │
 │      → 取 user_id（request.state.user_id，JWT 中间件注入）    │
 │      → 查 quota / tier / last_reset_date                     │
 │      → 懒重置补地板：为空/过期 → lazy_reset_daily_quota       │
@@ -70,11 +70,14 @@
 │                                                             │
 │ 做了什么：                                                   │
 │   1. 失败次数检查（同 offer_id 连续失败 ≥3 次 → 拒绝）        │
-│   2. 请求合并检查（同 offer_id 正在跑 → 复用旧 Task）         │
-│      → 防止：用户等 Apify 返回期间（10-90秒）重复点击          │
-│         同一商品，避免多次调用 Apify（花钱）+ 重复跑流水线      │
-│   3. 扣减配额（user_repo.decrement_quota）                   │
-│   4. 创建后台 asyncio.Task → 调用 _run()                     │
+│   2. 并发上限检查（活跃合并数 ≥ _MAX_PENDING → 拒绝）         │
+│   3. 请求合并检查（同 offer_id 正在跑 → 复用旧 Task）         │
+│      → 防止：用户等 Apify 返回期间（10-90秒）重复点击         │
+│      同一商品，避免多次调用 Apify（花钱）+ 重复跑流水线       │
+│   4. 创建后台 asyncio.Task 占位 → 写 _pending（同步）         │
+│   5. 扣减配额（user_repo.decrement_quota）                    │
+│      → 先占位再扣配额：同步写完 _pending 后才 await，         │
+│      第二请求过合并检查见已占位 → 走复用，堵 G1 并发双扣      │
 │      → POST /api/analyze 必须立即返回 task_id 给前端，        │
 │         不能卡住等 Apify 跑完。把 _run() 扔后台异步执行，      │
 │         前端拿 task_id 每 2 秒轮询，Task 跑完状态变 done       │
@@ -169,14 +172,14 @@
 │   ┌─────────────────────────────────────────────────────┐   │
 │   │ 文件：domain/evaluate/                                │   │
 │   │   _product.py    evaluate_product（6 维 → 12 规则）    │   │
-│   │   _supplier.py   evaluate_supplier（3 维 → 6 规则）    │   │
+│   │   _supplier.py   evaluate_supplier（3 维 → 5 tier）    │   │
 │   │   evaluator.py   evaluate_summary（9 档矩阵）          │   │
 │   │                                                     │   │
 │   │ 输入：3.3 mapper 产出的 mapped dict（~50字段）         │   │
 │   │                                                     │   │
 │   │ 做什么：程序定档（规则引擎判断），不产最终文案           │   │
 │   │   ① 产品：6 维信号 → 12 规则 → tier → grade            │   │
-│   │   ② 供应商：3 维信号 → 6 规则 → tier → grade            │   │
+│   │   ② 供应商：3 维信号 → 5 tier → grade                   │   │
 │   │   ③ 综合：产品档 × 供应商档 → 9 档矩阵 → headline       │   │
 │   │                                                     │   │
 │   │ 输出（验货报告三卡片，塞进 display JSON）：             │   │
@@ -184,7 +187,7 @@
 │   │   supplierEval {score, grade, dimensions[3], verdict} │   │
 │   │   summaryLine  {headline, reason, verdict}            │   │
 │   │                                                     │   │
-│   │ 三层「档」：规则（产品12 / 供应商6）→ tier（细分档）     │   │
+│   │ 三层「档」：规则（产品12 / 供应商5）→ tier（细分档）     │   │
 │   │   → grade（粗档 go/ok/bad/none，给前端染色）           │   │
 │   │                                                     │   │
 │   │ 由 3.5 build_display 调用；grade 前端染色，            │   │
@@ -213,7 +216,7 @@
 │   │     tier label stock level 等                         │   │
 │   │     5 语言预翻译，查表填参，不调 AI                      │   │
 │   │   路③ 1688中文原文 → 待翻译                             │   │
-│   │     title specs supplierName                         │   │
+│   │     title supplierName（specs 暂不翻译，待补）       │   │
 │   │     zh 保留中文 / en vi th 调 Qwen 翻译                │   │
 │   │                                                     │   │
 │   │ ── 两条路径 ──                                        │   │
@@ -354,7 +357,7 @@
 
 ## 判词档位设计（最终版，2026-08-15）
 
-> 产品 12 规则→4 档 · 供应商 6 规则→4 档 · 综合 9 档。改判词逻辑前先看这里。代码权威源：domain/evaluate/_product.py、_supplier.py、evaluator.py。
+> 产品 12 规则→4 档 · 供应商 5 tier→4 档 · 综合 9 档。改判词逻辑前先看这里。代码权威源：domain/evaluate/_product.py、_supplier.py、evaluator.py。
 
 0. 先看子维度（判断的原料）
 产品 6 维，每个判断啥、怎么分档：
@@ -379,16 +382,16 @@ D6 退货	有7天无理由吗	有	—	无
 3	出手·卖爆+有复购	D1销量强 + D2复购中上	go_hot_repeat	positive
 4	试·卖爆但啥未知	D1销量强 + D2无 + D5不高	trial_hot_unknown	positive→偏谨慎
 5	试·关注高没卖起来	D5关注强 + D1销量弱	trial_wanted_low	positive→偏谨慎
-6	试·复购好没量+门槛低	D2复购强 + D1销量弱 + D3门槛中上	trial_rep_low	positive→偏谨慎
+6	试·复购好没量+门槛低	D2复购强 + D1销量弱 + 试单成本低（D3 score≥2）	trial_rep_low	positive→偏谨慎
 7	试·3个中等	任意3维=中	trial_medium3	positive→偏谨慎
 8	警·卖爆没人回头	D1销量强 + D2复购弱	caution_hot_low	cautious 提醒
-9	警·复购好没量+门槛高	D2复购强 + D1销量弱 + D3门槛低	caution_rep_low	cautious
+9	警·复购好没量+门槛高	D2复购强 + D1销量弱 + 试单成本高（D3 score<2）	caution_rep_low	cautious
 10	观·1-2个中等	任意1-2维=中	watch_medium12	neutral 中性
 11	观·全平平	其余全掉这	watch_flat	neutral
 12	跳过·数据不足	销量+复购+退货 缺≥2	skip	neutral
 外加「致命·好评<80%」→ tier=fatal_badrate，tone=negative 否定。
 
-2. 供应商 6 规则 → 5 tier → 4 档 → 给 AI
+2. 供应商 5 tier → 4 档 → 给 AI
 #	结果	判定条件	给 AI 的 tier	tone
 1	信任	身份强 + 认证强	trust_strong2	(配合产品定)
 2	还行	强-弱净分 ≥ 1	usable_ok	—

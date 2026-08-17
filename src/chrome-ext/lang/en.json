@@ -60,6 +60,11 @@
   "msg.FETCH_FAILED_RETRY_LATER": "Failed to fetch. Please try again later.",
   "msg.PRODUCT_NOT_FOUND": "This product may have been delisted. Please check and try again.",
   "msg.TIMEOUT_RETRY": "Request timed out. Please try again later.",
+  "msg.IPC_ERROR": "Communication failed. Please reload the extension.",
+  "msg.EMPTY_RESPONSE": "Empty response.",
+  "msg.BODY_PARSE_FAILED": "Failed to parse request data.",
+  "msg.LOGIN_FAILED": "Login failed",
+  "msg.UNKNOWN_MSG_TYPE": "Unknown message type.",
   "msg.OK": "Success",
   "msg.DELETE_OK": "Deleted",
 

@@ -60,6 +60,11 @@
   "msg.FETCH_FAILED_RETRY_LATER": "Lấy dữ liệu thất bại, vui lòng thử lại sau.",
   "msg.PRODUCT_NOT_FOUND": "Sản phẩm có thể đã bị gỡ xuống, vui lòng kiểm tra và thử lại.",
   "msg.TIMEOUT_RETRY": "Hết thời gian chờ lấy dữ liệu. Vui lòng thử lại sau.",
+  "msg.IPC_ERROR": "Lỗi giao tiếp. Vui lòng tải lại tiện ích.",
+  "msg.EMPTY_RESPONSE": "Phản hồi trống.",
+  "msg.BODY_PARSE_FAILED": "Không thể phân tích dữ liệu yêu cầu.",
+  "msg.LOGIN_FAILED": "Đăng nhập thất bại",
+  "msg.UNKNOWN_MSG_TYPE": "Loại yêu cầu không xác định.",
   "msg.OK": "Thành công",
   "msg.DELETE_OK": "Đã xóa",
 
