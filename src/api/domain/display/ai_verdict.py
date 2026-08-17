@@ -472,7 +472,7 @@ def validate_ai_output(
     任一规则不过 → False → 调用方将该字段降级为模板判词。
 
     校验规则（按优先级）：
-    1. 指定 section 维度数据中的关键数字必须精确出现在 AI 文本中（容忍本地化格式）
+    1. AI 文本中的数字必须能在指定 section 维度数据(data+ref)中精确对上（防编造）
     2. must_not_say 中的禁止表述不得出现（大小写不敏感，跨 section 全量检查）
 
     Args:
@@ -482,22 +482,24 @@ def validate_ai_output(
         dimension_sections: 要检查数字的维度 section，默认全部。
             product_verdict → ("product",)
             supplier_verdict → ("supplier",)
-            summary_verdict → ("product", "supplier")
+            summary_verdict → ()（综合结论不校验数字，只查禁止表述）
     """
     if not ai_text or not ai_text.strip():
         return False
 
-    # 规则 1：维度数据数字精确检查（仅指定 section）
-    for section in dimension_sections:
-        for dim in ai_input.get("dimensions", {}).get(section, []):
-            data_str: str = str(dim.get("data", ""))
-            if not data_str or data_str == "no data":
+    # 规则 1：防编造 — AI 文本里的数字必须能在数据源维度(data+ref)里对上
+    # 方向反转：从「数据源数字必须全出现」改为「AI 数字必须真实存在」，查 AI 有没有编造数据源没有的数字
+    if dimension_sections:
+        source_text: str = " ".join(
+            f"{dim.get('data', '')} {dim.get('ref', '')}"
+            for section in dimension_sections
+            for dim in ai_input.get("dimensions", {}).get(section, [])
+        )
+        for n in re.findall(r"\b\d+(?:\.\d+)?\b", ai_text):
+            if len(n) <= 1:
                 continue
-            for n in re.findall(r"\b\d+(?:\.\d+)?\b", data_str):
-                if len(n) <= 1:
-                    continue
-                if not _number_appears(ai_text, n):
-                    return False
+            if not _number_appears(source_text, n):
+                return False
 
     # 规则 2：禁止表述检查（跨 section 全量检查）
     for key in ("must_not_say", "supplier_must_not_say"):

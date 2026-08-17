@@ -187,7 +187,7 @@ def _merge_ai_verdicts(
     _verdict_fields: list[tuple[str, str, tuple[str, ...]]] = [
         ("product_verdict", "productEval", ("product",)),
         ("supplier_verdict", "supplierEval", ("supplier",)),
-        ("summary_verdict", "summaryLine", ("product", "supplier")),
+        ("summary_verdict", "summaryLine", ()),
     ]
     for ai_key, display_key, dim_sections in _verdict_fields:
         ai_text: str = str(ai.get(ai_key, ""))
