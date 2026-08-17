@@ -214,7 +214,7 @@
 │   │   路② 判词/术语 → glossary.json 查表                   │   │
 │   │     verdict text trustBar label badges sales explain  │   │
 │   │     tier label stock level 等                         │   │
-│   │     5 语言预翻译，查表填参，不调 AI                      │   │
+│   │     4 语言预翻译，查表填参，不调 AI                      │   │
 │   │   路③ 1688中文原文 → 待翻译                             │   │
 │   │     title supplierName（specs 暂不翻译，待补）       │   │
 │   │     zh 保留中文 / en vi th 调 Qwen 翻译                │   │

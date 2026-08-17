@@ -1,5 +1,6 @@
 """认证 API — Google OAuth 登录。"""
 
+import re
 from typing import Any
 
 from fastapi import APIRouter, Request
@@ -25,6 +26,16 @@ callback_router = APIRouter(tags=["auth-callback"])
 # /api/user/* 路由（需 JWT 认证）
 user_router = APIRouter(prefix="/api/user", tags=["user"])
 
+# Chrome 扩展 ID 固定 32 位小写 a-p；非法回落默认 ID，防 Open Redirect（Bug #11 插件流）
+_EXT_ID_PATTERN = re.compile(r"[a-p]{32}")
+
+
+def _sanitize_ext_id(ext_id: str) -> str:
+    """校验 ext_id 为合法 Chrome 扩展 ID；空原样返回（Web 流），非法回落默认 ID。"""
+    if not ext_id:
+        return ext_id
+    return ext_id if _EXT_ID_PATTERN.fullmatch(ext_id) else Config.CHROME_EXTENSION_ID
+
 
 @auth_router.get("/google/login")
 async def google_login(redirect: str = "", platform: str = "", ext_id: str = "",
@@ -46,7 +57,7 @@ async def google_login(redirect: str = "", platform: str = "", ext_id: str = "",
             redirect = ""
     # 构造 state：插件流用 "extension:{ext_id}:lang:{lang}"，Web 流用 redirect 路径
     if platform == "extension":
-        parts = ["extension", (ext_id or Config.CHROME_EXTENSION_ID)]
+        parts = ["extension", _sanitize_ext_id(ext_id) or Config.CHROME_EXTENSION_ID]
         if lang:
             parts.append("lang")
             parts.append(lang)
@@ -87,6 +98,7 @@ async def google_callback(code: str | None = None, state: str = "",
         return ext_id, lang
 
     ext_id, lang = _parse_state(state)
+    ext_id = _sanitize_ext_id(ext_id)
 
     if error or not code:
         reason = error or "no_code"

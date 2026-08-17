@@ -33,9 +33,9 @@ class Config:
     PORT: int = int(os.getenv("PORT", "8008"))
 
     # ---- 数据库 ----
-    DB_HOST: str = os.getenv("DATABASE_HOST", "localhost")
+    DB_HOST: str = os.getenv("DATABASE_HOST", "127.0.0.1")
     DB_PORT: int = int(os.getenv("DATABASE_PORT", "3306"))
-    DB_USER: str = os.getenv("DATABASE_USER", "root")
+    DB_USER: str = os.getenv("DATABASE_USER", "myuser")
     DB_PASSWORD: str = os.getenv("DATABASE_PASSWORD", "")
     DB_NAME: str = os.getenv("DATABASE_NAME", "sourcely_DB")
     DB_POOL_MIN: int = int(os.getenv("DB_POOL_MIN", "5"))
@@ -85,6 +85,8 @@ class Config:
     MAX_PENDING: int = int(os.getenv("MAX_PENDING", "50"))
     MAX_FAIL_COUNT: int = int(os.getenv("MAX_FAIL_COUNT", "1000"))
     FAIL_TTL: float = float(os.getenv("FAIL_TTL", "86400.0"))  # 失败计数 24h 后清零
+    FAIL_RETRY_MAX: int = int(os.getenv("FAIL_RETRY_MAX", "3"))  # 同 offer_id 连续失败 ≥N 次拒绝重试
+    ERROR_LOOKBACK_SECONDS: int = int(os.getenv("ERROR_LOOKBACK_SECONDS", "300"))  # 合并请求回查失败任务的窗口（秒）
 
     # ---- 汇率（1 USD = X 本地货币） ----
     FX_VND: float = float(os.getenv("FX_VND", "25450"))
@@ -107,7 +109,7 @@ class Config:
     SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")
 
     @classmethod
-    def validate(cls):
+    def validate(cls) -> None:
         """启动时校验必填配置。缺失报错，防止带病启动。"""
         required = [
             ("JWT_SECRET_KEY", cls.JWT_SECRET_KEY),

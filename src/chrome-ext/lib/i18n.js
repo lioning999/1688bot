@@ -11,7 +11,7 @@ var I18N = (function () {
     th: { label: 'ภาษาไทย' }
   };
 
-  var current = LOCALES.zh;
+  var current = LOCALES.en;
   var messages = {};
   var _initialized = false;
 
@@ -26,7 +26,7 @@ var I18N = (function () {
   }
 
   function load(lang, cb) {
-    if (!LOCALES[lang]) lang = 'zh';
+    if (!LOCALES[lang]) lang = 'en';
     current = LOCALES[lang];
     current.lang = lang;
 

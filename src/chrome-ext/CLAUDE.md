@@ -179,7 +179,7 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 │ ② 后端 glossary.json — 判词 + 术语（预翻译，静态）        │
 │    src/api/domain/data/glossary.json                     │
 │    规则判词、维度名、标杆文案、卖家标签、库存档位           │
-│    builder.py: _glossary(key, lang) → 5 语言平行翻译      │
+│    builder.py: _glossary(key, lang) → 4 语言平行翻译      │
 │    中文由我们产出、可穷举 → 不调 AI                        │
 ├─────────────────────────────────────────────────────────┤
 │ ③ Qwen AI 判词 — 判词语优化 + 标题/供应商名翻译            │

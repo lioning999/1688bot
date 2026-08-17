@@ -100,7 +100,7 @@ async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
         logger.warning(f"[AI判词] 语言 {lang} 无 system prompt，降级模板")
         return display
 
-    # 6. 调 Qwen（8s 超时）
+    # 6. 调 Qwen（超时 Config.QWEN_TIMEOUT）
     t0: float = time.time()
     try:
         body: dict[str, Any] | None = await qwen_adapter.chat(
@@ -142,7 +142,7 @@ async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
     # 8. 逐字段合并（title + supplierName + 判词，逐字段校验）
     _merge_ai_verdicts(display, ai, ai_input)
 
-    # 9. 标记 AI 生成（translator 据此跳过翻译）
+    # 9. 标记 AI 生成（下游 _run 据此判断是否落库 display_i18n）
     display["_aiGenerated"] = lang
 
     return display
@@ -175,11 +175,13 @@ def _merge_ai_verdicts(
     if title and title.strip() and len(title.strip()) > 3:
         display["title"] = title.strip()
 
-    # factory.supplierName（基础检查：非空 + 长度合理）
+    # 公司名翻译（基础检查：非空 + 长度合理）→ factory.supplierName + supplierEval.companyName 同步
     sname: str = str(ai.get("translated_supplier_name", ""))
     if sname and sname.strip() and len(sname.strip()) > 1:
         if "factory" in display:
             display["factory"]["supplierName"] = sname.strip()
+        if "supplierEval" in display and isinstance(display["supplierEval"], dict):
+            display["supplierEval"]["companyName"] = sname.strip()
 
     # 判词语优化（逐字段校验，失败 → 保留 glossary 模板）
     _verdict_fields: list[tuple[str, str, tuple[str, ...]]] = [

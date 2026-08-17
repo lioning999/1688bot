@@ -2,7 +2,7 @@
 
 Path 1 (英文直接): 数字/公式字段，不调 AI — 10 字段
 Path 2 (字典查表): sellerLabel + badge.mixed 用 4 语言字典 — 2 字段
-Path 3 (中文原文): 复杂文本，后续由 translator.py 调 Qwen 翻译 — 18 字段（16 标量 + 2 数组）
+Path 3 (中文原文): 复杂文本，后续由 ai_verdict_svc.build_with_ai 调 Qwen 翻译 — 18 字段（16 标量 + 2 数组）
 
 纯函数，零外部依赖。每个 builder 独立 try/except，单个崩溃不阻塞整体。
 """

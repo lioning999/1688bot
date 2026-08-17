@@ -69,6 +69,16 @@ def _cleanup_containers() -> None:
             del _fail_count[_oid]
 
 
+def _swallow_task_exception(t: asyncio.Task[dict[str, Any]]) -> None:
+    """取回后台任务异常，吞掉 asyncio「Task exception was never retrieved」噪音。
+
+    _run 失败时永远 raise（合并路径靠 await existing_task 透传错误码），
+    单请求路径无人 await → 异常未取回会打噪音。此处仅取回，不改传播语义。
+    """
+    if not t.cancelled():
+        t.exception()
+
+
 class AnalyzeService:
     """商品分析编排。依赖注入。"""
 
@@ -93,7 +103,7 @@ class AnalyzeService:
         # 失败次数上限检查：同 offer_id 连续失败 ≥3 次 → 拒绝
         _fail_entry = _fail_count.get(offer_id)
         _fail_total = _fail_entry[0] if _fail_entry else 0
-        if _fail_total >= 3:
+        if _fail_total >= Config.FAIL_RETRY_MAX:
             logger.warning(f"offer_id={offer_id} 连续失败 3 次，拒绝重试")
             task_id = str(uuid.uuid4())
             _tasks[task_id] = {
@@ -122,7 +132,7 @@ class AnalyzeService:
 
             if lang and lang != existing_lang:
                 # 语言不同（G2）：等第一个完成后复用 raw_json，用第二个 lang 重建（不 Apify，不扣配额）
-                async def _wait_and_rebuild():
+                async def _wait_and_rebuild() -> None:
                     try:
                         await existing_task
                     except Exception:
@@ -137,7 +147,7 @@ class AnalyzeService:
                                                "error_msg_code": "INTERNAL_ERROR",
                                                "error_http_status": 500, "created_at": time.time()}
                             return
-                        safe_lang = lang if lang in ("en", "vi", "th", "zh") else "zh"
+                        safe_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
                         mapped = map_raw(saved.get("raw", {}), raw_url, offer_id)
                         result = await build_result_with_display(mapped, offer_id, safe_lang)
                         display = result.get("display", {}) or {}
@@ -159,7 +169,7 @@ class AnalyzeService:
                 asyncio.create_task(_wait_and_rebuild())
                 return task_id
 
-            async def _wait_existing():
+            async def _wait_existing() -> None:
                 try:
                     result = await existing_task
                     _tasks[task_id] = {"status": "done", "result": result, "created_at": time.time()}
@@ -168,7 +178,7 @@ class AnalyzeService:
                     # 从 existing_task 对应的 _tasks 条目取错误详情
                     err_info = None
                     for _tid, _t in _tasks.items():
-                        if _t.get("status") == "failed" and _t.get("created_at", 0) >= time.time() - 300:
+                        if _t.get("status") == "failed" and _t.get("created_at", 0) >= time.time() - Config.ERROR_LOOKBACK_SECONDS:
                             err_info = _t
                             break
                     if err_info:
@@ -191,6 +201,7 @@ class AnalyzeService:
         task_id = str(uuid.uuid4())
         _tasks[task_id] = {"status": "pending", "result": None, "created_at": time.time()}
         task = asyncio.create_task(self._run(task_id, offer_id, raw_url, lang, user_id))
+        task.add_done_callback(_swallow_task_exception)
         _pending[offer_id] = {"task": task, "lang": lang, "raw_url": raw_url}
 
         # 配额扣减（占位之后，同 offer_id 不重复扣）
@@ -272,7 +283,7 @@ class AnalyzeService:
         if not saved:
             return None
 
-        safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "zh"
+        safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "en"
 
         display_i18n_raw = saved.get("display_i18n")
         display_i18n: dict[str, Any] = {}
@@ -299,7 +310,7 @@ class AnalyzeService:
             # ---- 1. DB 检查（3.1：复用 raw_json + display_i18n） ----
             saved = await self.repo.get_by_offer_id(offer_id, user_id)
             if saved:
-                safe_lang = lang if lang in ("en", "vi", "th", "zh") else "zh"
+                safe_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
                 display_i18n: dict[str, Any] = {}
                 di18n_raw = saved.get("display_i18n")
                 if di18n_raw:
@@ -397,7 +408,7 @@ class AnalyzeService:
             display: dict[str, Any] = result.get("display", {}) or {}
             # G12：读 _aiGenerated（旧名 _translatedLang 恒空导致非 zh 不落库），读后剥离内部标记
             display_lang: str = str(display.pop("_aiGenerated", ""))
-            save_lang = lang if lang in ("en", "vi", "th", "zh") else "zh"
+            save_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
             if user_id and (save_lang == "zh" or display_lang):
                 try:
                     await self._save_to_db_upsert(raw, mapped, {save_lang: display}, user_id, offer_id)

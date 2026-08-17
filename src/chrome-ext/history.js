@@ -86,7 +86,7 @@ var HistoryPage = (function () {
           var els = getEls();
           els.list.insertAdjacentHTML('afterbegin',
             '<div class="empty-state" style="padding:12px;"><div class="empty-icon">⚠️</div><p>' +
-            (I18N.msg(res && res.msg_code, res && res.message) || I18N.t('history.deleteFailed') || '删除失败') + '</p></div>');
+            escHtml(I18N.msg(res && res.msg_code, res && res.message) || I18N.t('history.deleteFailed') || '删除失败') + '</p></div>');
         }
       }).catch(function () {
         overlay.remove();
