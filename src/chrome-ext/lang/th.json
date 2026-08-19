@@ -100,6 +100,7 @@
   "inspect.checkLabel": "ฉลากตรง",
   "inspect.qtyLabel": "จำนวน",
   "inspect.piecesUnit": "ชิ้น",
+  "currency.symbol": "฿",
   "inspect.deposit": "มัดจำ",
   "inspect.productLabel": "สินค้า",
   "inspect.domesticFreight": "ค่าส่งในประเทศ",
@@ -117,6 +118,8 @@
   "compare.product": "สินค้า",
   "compare.supplier": "ผู้ขาย",
   "compare.sales": "ยอดขาย",
-  "compare.repurchase": "ซื้อซ้ำ",
+  "compare.conclusion": "สรุป",
+  "compare.shipping": "แหล่งจัดส่ง",
+  "compare.stock": "สต็อก",
   "compare.maxHint": "เปรียบเทียบได้สูงสุด 3 รายการ"
 }

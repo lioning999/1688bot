@@ -100,6 +100,7 @@
   "inspect.checkLabel": "Đúng nhãn",
   "inspect.qtyLabel": "SL",
   "inspect.piecesUnit": "cái",
+  "currency.symbol": "₫",
   "inspect.deposit": "Đặt cọc",
   "inspect.productLabel": "Hàng",
   "inspect.domesticFreight": "Phí ship nội địa",
@@ -117,6 +118,8 @@
   "compare.product": "Sản phẩm",
   "compare.supplier": "Nhà cung cấp",
   "compare.sales": "Đã bán",
-  "compare.repurchase": "Tỷ lệ mua lại",
+  "compare.conclusion": "Kết luận",
+  "compare.shipping": "Nơi giao",
+  "compare.stock": "Tồn kho",
   "compare.maxHint": "Tối đa 3 sản phẩm để so sánh"
 }

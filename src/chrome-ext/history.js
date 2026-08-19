@@ -278,21 +278,26 @@ var HistoryPage = (function () {
 
     // 每行对比项：{label, extract(display)}
     var ROWS = [
+      { label: I18N.t('compare.conclusion') || '结论', fn: function (d) { return _extractVerdict(d); }, isHtml: true },
       { label: I18N.t('compare.price') || '价格',    fn: function (d) { return d && d.price ? (d.price.low || 0) + '-' + (d.price.high || 0) : '-'; } },
       { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' ' + (I18N.t('inspect.piecesUnit') || '件') : '-'; } },
       { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 18) : '-'; } },
-      { label: '',                                     fn: function (d) { var s = d && d.summaryLine ? (d.summaryLine.short || '') : ''; return '<span class="cmp-verdict-short">' + escHtml(s) + '</span>'; }, isHtml: true },
       { label: I18N.t('compare.supplier') || '供应商评分', fn: function (d) { return d && d.supplierEval ? (d.supplierEval.grade || '') + ' ' + (d.supplierEval.score || 0) + '/' + (d.supplierEval.max_score || 9) : '-'; } },
       { label: '',                                     fn: function (d) { return _extractSupplierMeta(d); }, isHtml: true },
       { label: I18N.t('compare.sales') || '销量',      fn: function (d) { return d && d.sales && d.sales.sold ? d.sales.sold : '-'; } },
-      { label: I18N.t('compare.repurchase') || '复购率', fn: function (d) { return _extractDim(d, 'repurchaseRate'); } }
+      { label: I18N.t('compare.shipping') || '发货地', fn: function (d) { return (d && d.supplierEval && d.supplierEval.shippingLocation) || (d && d.factory && d.factory.shippingLocation) || '-'; } },
+      { label: I18N.t('compare.stock') || '库存',      fn: function (d) { return d && d.productEval && d.productEval.stockLevel ? d.productEval.stockLevel.text : '-'; } }
     ];
 
     // 标题行
     var html = '<table class="compare-table"><thead><tr><th></th>';
     results.forEach(function (r) {
       var title = r.display && r.display.title ? r.display.title : r.offerId;
-      html += '<th><div class="cmp-title" title="' + escHtml(title) + '">' + escHtml(String(title).slice(0, 16)) + '</div></th>';
+      var img = r.display && r.display.images && r.display.images[0] ? r.display.images[0] : '';
+      html += '<th><div class="cmp-title" title="' + escHtml(title) + '">';
+      if (img) html += '<img class="cmp-img" src="' + escHtml(img) + '" alt="">';
+      html += '<span class="cmp-title-text">' + escHtml(String(title).slice(0, 16)) + '</span>';
+      html += '</div></th>';
     });
     html += '</tr></thead><tbody>';
 
@@ -332,16 +337,13 @@ var HistoryPage = (function () {
     return '<span class="cmp-identity">' + escHtml(text) + '</span>';
   }
 
-  // 从 productEval dimensions 提取数值字段
-  function _extractDim(d, field) {
-    if (!d || !d.productEval || !d.productEval.dimensions) return '-';
-    var found = null;
-    d.productEval.dimensions.forEach(function (dim) {
-      var data = dim.data || '';
-      // 用 key 定位复购率维度 d2；不能用 % 匹配（d4 好评率也含 %）
-      if (field === 'repurchaseRate' && dim.key === 'd2') found = data;
-    });
-    return found || '-';
+  // 综合结论档位（4 档颜色 + 短结论；none 显式标「-」防误导）
+  function _extractVerdict(d) {
+    if (!d || !d.summaryLine) return '<span class="cmp-grade cmp-grade-none">⬜ -</span>';
+    var s = d.summaryLine;
+    var emoji = { go: '🟢', ok: '🟡', bad: '🔴', none: '⬜' }[s.grade] || '⬜';
+    var label = s.short || '-';
+    return '<span class="cmp-grade cmp-grade-' + escHtml(s.grade || 'none') + '">' + emoji + ' ' + escHtml(label) + '</span>';
   }
 
   function initCompare() {

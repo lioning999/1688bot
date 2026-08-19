@@ -276,8 +276,8 @@
     EL.p01Title.textContent = display.title || '—';
 
     if (p.low != null) {
-      EL.p01Price.textContent = Number(p.low).toFixed(2);
-      if (p.high != null && p.high !== p.low) EL.p01Price.textContent += ' – ' + Number(p.high).toFixed(2);
+      EL.p01Price.textContent = fmtMoney(p.low);
+      if (p.high != null && p.high !== p.low) EL.p01Price.textContent += ' – ' + fmtMoney(p.high);
       _currentPriceLow = Number(p.low);
     } else {
       EL.p01Price.textContent = '—';
@@ -301,7 +301,7 @@
       for (var i = 0; i < Math.min(tiers.length, 3); i++) {
         var t = tiers[i];
         var range = t.qty_min != null ? (escHtml(t.qty_min) + (t.qty_max != null ? ('-' + escHtml(t.qty_max)) : '+')) : '';
-        parts.push(range + (I18N.t('inspect.piecesUnit') || '件') + ' ¥' + (t.unit_price != null ? escHtml(Number(t.unit_price).toFixed(2)) : '—'));
+        parts.push(range + (I18N.t('inspect.piecesUnit') || '件') + ' ' + (t.unit_price != null ? fmtMoney(t.unit_price) : '—'));
       }
       EL.p01Tier.style.display = '';
       EL.p01TierText.innerHTML = parts.join(' │ ');
@@ -455,6 +455,15 @@
     _currentMoq = price.moq || 1;
     EL.moqHint.textContent = (I18N.t('report.moqLabel') || '起订') + ' ' + _currentMoq + ' ' + (I18N.t('inspect.piecesUnit') || '件');
     updateFee();
+  }
+
+  // 货币格式化：符号来自 i18n（zh 默认 ¥），小数位按语言（VND/THB 0 位，USD/CNY 2 位）
+  function fmtMoney(n) {
+    var lang = I18N.getLang();
+    var sym = I18N.t('currency.symbol') || '¥';
+    var dec = { en: 2, vi: 0, th: 0, zh: 2 }[lang];
+    if (dec == null) dec = 2;
+    return sym + Number(n).toLocaleString(lang, { minimumFractionDigits: dec, maximumFractionDigits: dec });
   }
 
   // 费用计算

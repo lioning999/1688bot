@@ -100,6 +100,7 @@
   "inspect.checkLabel": "Label Match",
   "inspect.qtyLabel": "Qty",
   "inspect.piecesUnit": "pcs",
+  "currency.symbol": "$",
   "inspect.deposit": "Deposit",
   "inspect.productLabel": "Product",
   "inspect.domesticFreight": "Domestic Freight",
@@ -117,6 +118,8 @@
   "compare.product": "Product",
   "compare.supplier": "Supplier",
   "compare.sales": "Sales",
-  "compare.repurchase": "Repurchase",
+  "compare.conclusion": "Verdict",
+  "compare.shipping": "Ships From",
+  "compare.stock": "Stock",
   "compare.maxHint": "Max 3 products to compare"
 }

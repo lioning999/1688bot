@@ -143,12 +143,6 @@ body {
   overflow:hidden;
 }
 .p01-price-hero { margin-top:var(--s1); line-height:1; }
-.p01-currency {
-  font-size:var(--fs);
-  color:var(--ink);
-  font-weight:600;
-  font-family:var(--font-display);
-}
 .p01-price-hero b {
   font-size:22px;
   font-weight:800;
@@ -842,25 +836,44 @@ body {
   background:var(--paper-2);
   z-index:3;
 }
-/* 标题列截断 */
+/* 标题列：主图 + 截断文字，纵向排列 */
 .compare-table .cmp-title {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  max-width:120px;
+  font-size:var(--fs-xs);
+  color:var(--ink-2);
+}
+.compare-table .cmp-img {
+  width:72px;
+  height:72px;
+  object-fit:cover;
+  border-radius:6px;
+  background:var(--paper-2);
+}
+.compare-table .cmp-title-text {
   max-width:120px;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  font-size:var(--fs-xs);
-  color:var(--ink-2);
 }
 /* 高亮：最佳值 */
 .compare-table .cmp-best {
   color:var(--ok);
   font-weight:700;
 }
-/* 判词short 小字灰 */
-.compare-table .cmp-verdict-short {
+/* 结论档位色块（4 档，对齐 s2-headline 配色） */
+.compare-table .cmp-grade {
   font-size:var(--fs-xs);
-  color:var(--ink-3);
+  font-weight:600;
+  white-space:nowrap;
 }
+.compare-table .cmp-grade-go   { color:var(--ok); }
+.compare-table .cmp-grade-ok   { color:var(--warn); }
+.compare-table .cmp-grade-bad  { color:var(--bad); }
+.compare-table .cmp-grade-none { color:var(--ink-3); }
 /* 身份标签行 小字 */
 .compare-table .cmp-identity {
   font-size:var(--fs-xs);

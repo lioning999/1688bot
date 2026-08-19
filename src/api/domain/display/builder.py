@@ -8,6 +8,7 @@ Path 3 (中文原文): 复杂文本，后续由 ai_verdict_svc.build_with_ai 调
 """
 
 import json
+import re
 from pathlib import Path
 from typing import Any, cast
 
@@ -59,12 +60,13 @@ _EXPECTED_KEYS: set[str] = {
 }
 
 
-def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
+def build_display(mapped: dict[str, Any], lang: str = "en", money: dict[str, Any] | None = None) -> dict[str, Any]:
     """从 mapped 构建 display JSON。
 
     Args:
         mapped: product_mapper.map_raw() 输出
         lang: 目标语言代码（en/vi/th/zh），用于 Path 2 字典查表
+        money: 目标货币配置（per_cny 换算系数），None 保持人民币（zh）
 
     Returns:
         display JSON。Path 1 英文，Path 2 字典值，Path 3 中文（待翻译）。
@@ -88,7 +90,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
             "offerId": _s(mapped.get("offerId")),
 
             # ---- 价格（数字，Path 1） ----
-            "price": _build_price(mapped, safe_lang),
+            "price": _build_price(mapped, safe_lang, money),
 
             # ---- 信任条（Path 1 + Path 2） ----
             "trustBar": _build_trust_bar(mapped, safe_lang),
@@ -106,7 +108,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
             "skus": mapped.get("skus") or [],
 
             # ---- 阶梯价格（纯数字，Path 1） ----
-            "priceTiers": mapped.get("price_tiers") or [],
+            "priceTiers": _build_price_tiers(mapped, money),
 
             # ---- 工厂信息（Path 2 + Path 3） ----
             "factory": _build_factory(mapped, safe_lang),
@@ -128,7 +130,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
         return {
             "title": _s(mapped.get("title", "")),
             "titleOrig": _s(mapped.get("title", "")),
-            "price": _build_price(mapped, safe_lang),
+            "price": _build_price(mapped, safe_lang, money),
             "trustBar": {},
             "badges": [],
             "specs": [],
@@ -147,16 +149,33 @@ def build_display(mapped: dict[str, Any], lang: str = "en") -> dict[str, Any]:
 # ====================================================================
 
 
-def _build_price(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
+def _build_price(mapped: dict[str, Any], lang: str, money: dict[str, Any] | None = None) -> dict[str, Any]:
     cny: Any = mapped.get("priceCNY") or {}
     cny_d = cast(dict[str, Any], cny) if isinstance(cny, dict) else {}
     raw_unit: str = _s(mapped.get("unit"))
+    per_cny: float = float(money["per_cny"]) if money else 1.0  # 汇率 svc 层注入，None 保持人民币
     return {
-        "low": cny_d.get("low", 0),
-        "high": cny_d.get("high", 0),
+        "low": round(float(cny_d.get("low", 0) or 0) * per_cny, 6),
+        "high": round(float(cny_d.get("high", 0) or 0) * per_cny, 6),
         "moq": mapped.get("moq"),
         "unit": _glossary(f"unit_{raw_unit}", lang, raw_unit),  # type: ignore[reportUnknownMemberType]
     }
+
+
+def _build_price_tiers(mapped: dict[str, Any], money: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """阶梯价：money 注入时把 unit_price 换成目标货币，None 保持人民币。"""
+    tiers: list[dict[str, Any]] = mapped.get("price_tiers") or []
+    if not money or not tiers:
+        return tiers
+    per_cny: float = float(money["per_cny"])
+    out: list[dict[str, Any]] = []
+    for t in tiers:
+        up = t.get("unit_price")
+        if isinstance(up, (int, float)):
+            out.append({**t, "unit_price": round(float(up) * per_cny, 6)})
+        else:
+            out.append(t)
+    return out
 
 
 def _build_trust_bar(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
@@ -618,9 +637,10 @@ def _format_verdict(v: Any, lang: str) -> str:
 
     # ---- 新判词系统参数 ----
 
-    # good_part_keys: list of glossary key → resolve each → join with "。"
+    # good_part_keys: list of glossary key → resolve each → join（多证据合并一句，不额外占句数）
     if "good_part_keys" in params:
         gks: Any = params.pop("good_part_keys")
+        sep_p: str = "、" if lang == "zh" else ", "
         if isinstance(gks, list) and gks:
             parts: list[str] = []
             for gk in cast(list[Any], gks):
@@ -629,11 +649,11 @@ def _format_verdict(v: Any, lang: str) -> str:
                     parts.append(part_tpl.format(**params))
                 except (KeyError, ValueError):
                     parts.append(part_tpl)
-            params["good_parts"] = "。".join(parts) if parts else ""
+            params["good_parts"] = sep_p.join(parts) if parts else ""
         else:
             params["good_parts"] = ""
 
-    # bad_part_keys: list of glossary key → resolve each → join with "。"
+    # bad_part_keys: list of glossary key → resolve each → join（同上）
     if "bad_part_keys" in params:
         bks: Any = params.pop("bad_part_keys")
         if isinstance(bks, list) and bks:
@@ -644,7 +664,7 @@ def _format_verdict(v: Any, lang: str) -> str:
                     parts.append(part_tpl.format(**params))
                 except (KeyError, ValueError):
                     parts.append(part_tpl)
-            params["bad_parts"] = "。".join(parts) if parts else ""
+            params["bad_parts"] = sep_p.join(parts) if parts else ""
         else:
             params["bad_parts"] = ""
 
@@ -670,10 +690,16 @@ def _format_verdict(v: Any, lang: str) -> str:
     params["risk_note"] = risk_note
 
     try:
-        return template.format(**params)
+        rendered = template.format(**params)
     except (KeyError, ValueError):
-        logger.warning(f"_format_verdict format failed: key={key}")
-        return template
+        # 可选参数缺失：裁掉含未填占位的括号段（如"（{prod_num}）"），其余保留
+        dropped = re.sub(r"[（(][^（）()]*\{[^}]*\}[^（）()]*[)）]", "", template)
+        dropped = re.sub(r"\{[^}]*\}", "", dropped)
+        logger.warning(f"_format_verdict format failed (optional parts dropped): key={key}")
+        return dropped
+    # 清理空括号：缺参参数填空串后留下的"（）"及尾随空格
+    rendered = re.sub(r"\s*[（(]\s*[)）]\s*", "", rendered)
+    return rendered.rstrip()
 
 
 # ====================================================================

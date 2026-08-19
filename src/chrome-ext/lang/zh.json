@@ -100,6 +100,7 @@
   "inspect.checkLabel": "标签一致",
   "inspect.qtyLabel": "数量",
   "inspect.piecesUnit": "件",
+  "currency.symbol": "¥",
   "inspect.deposit": "定金",
   "inspect.productLabel": "商品",
   "inspect.domesticFreight": "国内运费",
@@ -117,6 +118,8 @@
   "compare.product": "产品评分",
   "compare.supplier": "供应商评分",
   "compare.sales": "销量",
-  "compare.repurchase": "复购率",
+  "compare.conclusion": "结论",
+  "compare.shipping": "发货地",
+  "compare.stock": "库存",
   "compare.maxHint": "最多选择 3 个商品进行对比"
 }
