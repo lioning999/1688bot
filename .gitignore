@@ -11,3 +11,6 @@ client_secret_*.json
 src/web/static/uploads/
 src/web/temp/
 .vscode/
+
+# Apify 抓取用量日志
+src/api/db/apify_usage.jsonl
