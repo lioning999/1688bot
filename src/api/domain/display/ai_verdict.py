@@ -499,6 +499,7 @@ def validate_ai_output(
     校验规则（按优先级）：
     1. AI 文本中的数字必须能在指定 section 维度数据(data+ref)中精确对上（防编造）
     2. must_not_say 中的禁止表述不得出现（大小写不敏感，跨 section 全量检查）
+    3. 判词禁止含中文字符（CJK）— 非 zh 判词必须纯母语，混中文触发重写/降级
 
     Args:
         ai_text: AI 生成的单个字段文本（如 product_verdict）
@@ -543,6 +544,13 @@ def validate_ai_output(
                 errors.append(
                     f'Forbidden phrase "{forbidden}" must not appear in the verdict.'
                 )
+
+    # 规则 3：非中文判词禁止含中文字符（zh 走模板不经过此校验，无需区分语言）
+    if re.search(r"[一-鿿]", ai_text):
+        errors.append(
+            "Text contains Chinese characters — the verdict must be written "
+            "entirely in the target language (English/Vietnamese/Thai)."
+        )
 
     return errors
 
