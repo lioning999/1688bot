@@ -225,11 +225,11 @@
 │   │   build_display(mapped, "zh")                        │   │
 │   │   路③中文原文保留 → 不调 Qwen，纯 CPU，秒出             │   │
 │   │                                                     │   │
-│   │ 路径 B：lang=en/vi/th（非中文，一次 Qwen 调用出一语言）     │   │
+│   │ 路径 B：lang=en/vi/th（非中文，Qwen 出判词，错则重写一次）     │   │
 │   │   ① build_display(mapped, lang) → 出模板 display（兜底）     │   │
 │   │      · 路①数字直出 ✅  路② glossary 查表 ✅                   │   │
 │   │      · 路③ title/supplierName/判词还是中文 ⚠️                 │   │
-│   │      · 判词 glossary en/vi/th 大量 "TODO" → 降级显示中文     │   │
+│   │      · 判词模板 glossary vi/th 已补齐 → 降级时也是母语       │   │
 │   │                                                             │   │
 │   │   ② system prompt：每种语言独立的母语 prompt                     │   │
 │   │      · verdict_prompts.json → _VP_AI[lang].system              │   │
@@ -255,13 +255,19 @@
 │   │      · supplier_verdict → 替换 supplierEval.verdict         │   │
 │   │      · summary_verdict  → 替换 summaryLine.verdict          │   │
 │   │                                                             │   │
-│   │   ⑤ 逐字段校验（validate_ai_output）：                        │   │
-│   │      判词中的数字必须与 dimensions 真实数据一致 → 不对就降级  │   │
-│   │      禁止表述出现 → 降级                                     │   │
-│   │      单个字段校验失败 → 该字段用步骤①的 glossary 模板         │   │
+│   │   ⑤ 逐字段校验（validate_ai_output，返回错误清单）：            │   │
+│   │      规则1 判词数字必须与 dimensions 真实数据一致（防编造）      │   │
+│   │      规则2 禁止表述不得出现                                    │   │
+│   │      规则3 非中文判词禁含中文字符（语言纯净）                   │   │
+│   │      出错字段 → 记下错误清单（哪个字段/哪个数字/表述）          │   │
 │   │                                                             │   │
-│   │   ⑥ 降级链：Qwen调用失败/JSON解析失败 → 全部用步骤①模板       │   │
-│   │      单字段校验失败 → 单字段降级 glossary                     │   │
+│   │   ⑤·5 带反馈重写一次（2026-08-19 新增）：                      │   │
+│   │      有字段出错 → 错误清单+上版输出喂回 Qwen → 重写一次         │   │
+│   │      重写消息：[system, user(数据), assistant(上版), user(错误)]│   │
+│   │      重写后再校验 → 通过用重写版，仍失败才降级                  │   │
+│   │                                                             │   │
+│   │   ⑥ 降级链（重写后仍失败）：Qwen调用失败/JSON解析失败 → 全模板  │   │
+│   │      单字段仍失败 → 单字段降级 glossary（vi/th 已补齐母语）     │   │
 │   │      glossary 也没有 → 显示中文原文（至少不是空白）           │   │
 │   │                                                             │   │
 │   │   ⑦ 判词带上 _aiGenerated=lang 标记（不泄漏到前端）          │   │
