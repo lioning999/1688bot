@@ -268,7 +268,9 @@ def _supplierverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
                      good_part_keys=good_keys, years=years_str, cert_text=cert_display)
         summary_kv, grade = verdict("supp_summary_trust"), "go"
     elif tier == "usable_ok":
-        v = verdict("supp_verdict_usable_ok",
+        # bad_parts 空时用不带「但」的模板，避免拼出「但。」残句
+        v_key = "supp_verdict_usable_ok" if bad_keys else "supp_verdict_usable_ok_nobad"
+        v = verdict(v_key,
                      good_part_keys=good_keys, bad_part_keys=bad_keys,
                      years=years_str, cert_text=cert_type, action_key=action_key)
         summary_kv, grade = verdict("supp_summary_usable"), "ok"

@@ -253,20 +253,20 @@
     "th": "ไม่มีข้อมูล"
   },
   "prod_barrier_tip_high": {
-    "zh": "试错成本偏高（¥{price}/{moq}件起），先算账再决定",
-    "en": "Trial cost runs high (¥{price}, {moq}-unit MOQ) — run the numbers before committing",
+    "zh": "试错偏高（¥{price}/{moq}件起）",
+    "en": "Trial cost high (¥{price}, {moq}-unit MOQ)",
     "vi": "",
     "th": ""
   },
   "prod_barrier_tip_low": {
-    "zh": "试错成本极低（¥{price}/{moq}件起），拿样基本不亏",
-    "en": "Trial cost is minimal (¥{price}, {moq}-unit MOQ) — sampling is basically risk-free",
+    "zh": "试错极低（¥{price}/{moq}件起）",
+    "en": "Trial cost minimal (¥{price}, {moq}-unit MOQ)",
     "vi": "",
     "th": ""
   },
   "prod_barrier_tip_mid": {
-    "zh": "试错成本适中（¥{price}/{moq}件起），拿样不贵",
-    "en": "Trial cost is manageable (¥{price}, {moq}-unit MOQ) — sampling won't break the bank",
+    "zh": "试错适中（¥{price}/{moq}件起）",
+    "en": "Trial cost manageable (¥{price}, {moq}-unit MOQ)",
     "vi": "",
     "th": ""
   },
@@ -489,14 +489,14 @@
   "prod_verdict_fatal_badrate": {
     "zh": "换品。好评率仅{positive}%——差评太多会拖垮店铺。别碰这个品{risk_note}",
     "en": "Skip this one. Only {positive}% positive reviews — too many bad reviews will drag down your store. Don't touch it.{risk_note}",
-    "vi": "",
-    "th": ""
+    "vi": "Bỏ qua sản phẩm này. Chỉ {positive}% đánh giá tốt — quá nhiều đánh giá xấu sẽ kéo tụt cửa hàng. Đừng đụng vào.{risk_note}",
+    "th": "ข้ามสินค้านี้ไปก่อน แค่ {positive}% รีวิวดีเท่านั้น — รีวิวแย่เยอะเกินไปจะลากคะแนนร้านคุณลง อย่าแตะต้องเลย{risk_note}"
   },
   "prod_verdict_skip_nodata": {
-    "zh": "跳过。核心数据不够（{missing_count}项缺失）——判断不了这个品能不能做。先收藏蹲数据{risk_note}",
-    "en": "Skip. Core data is missing ({missing_count} items) — can't judge whether this product works. Save it and wait for data.{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "跳过。核心数据缺{missing_count}项——判断不了。想验证，先拿1件试；不想就换品{risk_note}",
+    "en": "Skip. Core data missing ({missing_count} items) — can't judge. To verify, order 1 piece; otherwise switch products.{risk_note}",
+    "vi": "Bỏ qua. Thiếu {missing_count} dữ liệu cốt lõi — chưa đánh giá được. Muốn kiểm chứng, lấy thử 1 mẫu; không thì đổi sản phẩm khác.{risk_note}",
+    "th": "ข้ามไปก่อน ข้อมูลหลักขาด {missing_count} รายการ — ประเมินไม่ได้ อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า{risk_note}"
   },
   "prod_risk_note_no_return": {
     "zh": "⚠️ 该商品不支持7天无理由退货——买家无法无理由退换，需自行承担退货风险。",
@@ -547,40 +547,40 @@
     "th": "ไม่เปิดเผยสต็อก ⚠️"
   },
   "summary_conditional_ok": {
-    "zh": "货能卖、厂也能用，可以试。先拿样验质量，再谈批量",
-    "en": "Product sells and supplier works — worth a try. Sample first to check quality, then talk bulk.",
-    "vi": "",
-    "th": ""
+    "zh": "试。品有基础（{prod_num}）、厂能配合（{good_parts}）。想推进，先少量拿",
+    "en": "Try. Product has a base ({prod_num}), supplier works ({good_parts}). To move forward, start small.",
+    "vi": "Nên thử. Sản phẩm có nền tảng ({prod_num}), nhà cung cấp hợp tác được ({good_parts}). Muốn tiến xa, lấy ít trước.",
+    "th": "ลองได้เลย สินค้ามีฐาน ({prod_num}) โรงงานให้ความร่วมมือ ({good_parts}) อยากเดินหน้าให้เริ่มสั่งจำนวนน้อย"
   },
   "summary_conditional_careful": {
-    "zh": "两边都有短板，悠着点。先少量试、盯紧质量，别急着铺量",
-    "en": "Both sides have weak spots — go easy. Start small, watch quality closely, don't rush to scale.",
-    "vi": "",
-    "th": ""
+    "zh": "谨慎试。品有信号（{prod_num}）、厂有短板（{bad_parts}）。想试，先少量拿",
+    "en": "Try with care. Product shows some signal ({prod_num}), supplier has gaps ({bad_parts}). If testing, start small.",
+    "vi": "Thử nhưng thận trọng. Sản phẩm có tín hiệu ({prod_num}), nhà cung cấp còn điểm yếu ({bad_parts}). Muốn thử, lấy ít trước.",
+    "th": "ลองแบบระวัง สินค้ามีสัญญาณ ({prod_num}) โรงงานมีจุดอ่อน ({bad_parts}) อยากลองให้เริ่มสั่งจำนวนน้อย"
   },
   "summary_conditional_factory_strong": {
-    "zh": "厂靠得住，但品还没完全验证。先少量拿，卖动了厂能跟上",
-    "en": "Supplier is solid, but the product isn't fully proven. Start small — once it moves, the factory can keep up.",
-    "vi": "",
-    "th": ""
+    "zh": "试。厂靠得住（{good_parts}）、品没完全验证（{prod_num}）。想推进，先少量拿",
+    "en": "Try. Supplier is solid ({good_parts}), product not fully proven ({prod_num}). To move forward, start small.",
+    "vi": "Nên thử. Nhà cung cấp đáng tin ({good_parts}), sản phẩm chưa được kiểm chứng đầy đủ ({prod_num}). Muốn tiến xa, lấy ít trước.",
+    "th": "ลองได้เลย โรงงานเชื่อถือได้ ({good_parts}) สินค้ายังไม่ผ่านการยืนยันเต็มที่ ({prod_num}) อยากเดินหน้าให้เริ่มสั่งจำนวนน้อย"
   },
   "summary_conditional_supplier_weak": {
-    "zh": "品没问题。但厂拖后腿——拿样验货，确认质量再批量",
-    "en": "Product's fine, but the supplier drags it down — sample and inspect, confirm quality before bulk.",
-    "vi": "",
-    "th": ""
+    "zh": "试。品有量（{prod_num}）、厂是短板（{bad_parts}）。想做，先比价再拿样",
+    "en": "Try. Product moves ({prod_num}), supplier is the weak link ({bad_parts}). To proceed, compare prices and sample.",
+    "vi": "Nên thử. Sản phẩm có lượng bán ({prod_num}), nhà cung cấp là điểm yếu ({bad_parts}). Muốn làm, so giá rồi lấy mẫu.",
+    "th": "ลองได้เลย สินค้ามียอดขาย ({prod_num}) โรงงานเป็นจุดอ่อน ({bad_parts}) อยากทำให้เทียบราคาก่อนแล้วสั่งตัวอย่าง"
   },
   "summary_go_both": {
-    "zh": "品验证过，厂靠得住。拿样确认，可以放心做",
-    "en": "Product's proven, supplier checks out. Sample it to confirm, then go with confidence.",
-    "vi": "",
-    "th": ""
+    "zh": "做。品验证过（{prod_num}）、厂靠得住（{good_parts}）。想推进，先拿样确认规格",
+    "en": "Go. Product proven ({prod_num}), supplier solid ({good_parts}). To move forward, sample to confirm specs.",
+    "vi": "Nên làm. Sản phẩm đã được kiểm chứng ({prod_num}), nhà cung cấp đáng tin ({good_parts}). Muốn tiến xa, lấy mẫu xác nhận thông số.",
+    "th": "ทำเลย สินค้าผ่านการยืนยัน ({prod_num}) โรงงานเชื่อถือได้ ({good_parts}) อยากเดินหน้าให้สั่งตัวอย่างเพื่อยืนยันสเปก"
   },
   "summary_go_product_ok": {
-    "zh": "品没问题。厂基本面OK但缺顶级背书——拿样时多留个心眼验货",
-    "en": "Product's fine. Supplier fundamentals are OK but lack top-tier backing — inspect carefully when sampling.",
-    "vi": "",
-    "th": ""
+    "zh": "做。品有量（{prod_num}）、厂过关但缺背书（{bad_parts}）。想推进，先拿样验货",
+    "en": "Go. Product sells ({prod_num}), supplier works but lacks backing ({bad_parts}). To move forward, sample and inspect.",
+    "vi": "Nên làm. Sản phẩm bán được ({prod_num}), nhà cung cấp đạt nhưng thiếu chứng nhận ({bad_parts}). Muốn tiến xa, lấy mẫu kiểm tra.",
+    "th": "ทำเลย สินค้าขายได้ ({prod_num}) โรงงานผ่านแต่ขาดการรับรอง ({bad_parts}) อยากเดินหน้าให้สั่งตัวอย่างตรวจสอบก่อน"
   },
   "summary_headline_conditional": {
     "zh": "🟡 有条件做",
@@ -631,68 +631,68 @@
     "th": "รอข้อมูล"
   },
   "summary_no_product_fatal": {
-    "zh": "硬伤在品，换品。别在这一单上花钱",
-    "en": "The product is the problem — switch products. Don't spend money on this one.",
-    "vi": "",
-    "th": ""
+    "zh": "别做。硬伤在品——想推进，换品，别在这一单花钱",
+    "en": "Don't. The problem is the product. If anything, switch products — don't spend on this one.",
+    "vi": "Đừng làm. Vấn đề nằm ở sản phẩm — muốn tiến xa thì đổi sản phẩm, đừng tiêu tiền vào đơn này.",
+    "th": "อย่าทำ ปัญหาอยู่ที่สินค้า — อยากเดินหน้าให้เปลี่ยนสินค้า อย่าเสียเงินกับออเดอร์นี้"
   },
   "summary_no_supplier_fatal": {
-    "zh": "硬伤在厂，换厂。别在这一单上花钱",
-    "en": "The supplier is the problem — switch suppliers. Don't spend money on this one.",
-    "vi": "",
-    "th": ""
+    "zh": "别做。硬伤在厂——想推进，换厂，别在这一单花钱",
+    "en": "Don't. The problem is the supplier. If anything, switch suppliers — don't spend on this one.",
+    "vi": "Đừng làm. Vấn đề nằm ở nhà cung cấp — muốn tiến xa thì đổi nhà cung cấp, đừng tiêu tiền vào đơn này.",
+    "th": "อย่าทำ ปัญหาอยู่ที่โรงงาน — อยากเดินหน้าให้เปลี่ยนโรงงาน อย่าเสียเงินกับออเดอร์นี้"
   },
   "summary_wait_data": {
-    "zh": "数据不够——判断不了。先收藏，别急着花钱",
-    "en": "Not enough data to judge. Save it, don't spend yet.",
-    "vi": "",
-    "th": ""
+    "zh": "别急。核心数据不够——判断不了。想判断，先补数据，或换数据全的品",
+    "en": "Hold off. Core data missing — can't judge yet. To decide, get more data or switch products.",
+    "vi": "Đừng vội. Dữ liệu cốt lõi chưa đủ — chưa đánh giá được. Muốn quyết định, bổ sung dữ liệu hoặc đổi sản phẩm có đủ dữ liệu.",
+    "th": "อย่าเพิ่งรีบ ข้อมูลหลักไม่พอ — ยังประเมินไม่ได้ อยากตัดสินใจให้เก็บข้อมูลเพิ่ม หรือเปลี่ยนสินค้าที่ข้อมูลครบ"
   },
   "supp_action_check_delivery": {
-    "zh": "拿样确认交期稳不稳",
-    "en": "Sample to confirm delivery lead times are reliable",
-    "vi": "",
-    "th": ""
+    "zh": "想长期合作，先拿样确认交期",
+    "en": "For a long-term partnership, sample to confirm delivery",
+    "vi": "Muốn hợp tác lâu dài, lấy mẫu xác nhận thời gian giao hàng",
+    "th": "อยากร่วมงานระยะยาว ให้สั่งตัวอย่างเพื่อยืนยันเวลาจัดส่ง"
   },
   "supp_action_compare": {
-    "zh": "拿样后先比价，确认有价格优势再合作",
-    "en": "Compare prices after sampling — lock in a price advantage before committing",
-    "vi": "",
-    "th": ""
+    "zh": "想合作，先比价确认优势",
+    "en": "To commit, compare prices for an advantage",
+    "vi": "Muốn hợp tác, so giá để xác nhận lợi thế",
+    "th": "อยากร่วมงาน ให้เทียบราคาเพื่อยืนยันความได้เปรียบ"
   },
   "supp_action_compare_inspect": {
-    "zh": "先比价再拿样，别急着批量",
-    "en": "Compare prices first, then sample — don't rush to bulk",
-    "vi": "",
-    "th": ""
+    "zh": "想推进，先比价再拿样",
+    "en": "To move forward, compare prices and sample first",
+    "vi": "Muốn tiến xa, so giá rồi lấy mẫu trước",
+    "th": "อยากเดินหน้า ให้เทียบราคาก่อนแล้วค่อยสั่งตัวอย่าง"
   },
   "supp_action_inspect": {
-    "zh": "拿样时仔细验货",
-    "en": "Inspect carefully when sampling",
-    "vi": "",
-    "th": ""
+    "zh": "想下单，先拿样验货",
+    "en": "To order, sample and inspect first",
+    "vi": "Muốn đặt hàng, lấy mẫu kiểm tra trước",
+    "th": "อยากสั่งซื้อ ให้สั่งตัวอย่างตรวจสอบก่อน"
   },
   "supp_action_ok": {
-    "zh": "拿样确认款式后可放心合作",
-    "en": "Sample to confirm the specs, then partner with confidence",
-    "vi": "",
-    "th": ""
+    "zh": "想合作，先拿样确认规格",
+    "en": "To partner, sample to confirm specs",
+    "vi": "Muốn hợp tác, lấy mẫu xác nhận thông số",
+    "th": "อยากร่วมงาน ให้สั่งตัวอย่างเพื่อยืนยันสเปก"
   },
   "supp_bad_cert_none": {
-    "zh": "没人验过厂——品质靠你自己判断",
-    "en": "No one has audited the factory — quality is on your own judgment",
+    "zh": "无第三方验厂",
+    "en": "no third-party audit",
     "vi": "",
     "th": ""
   },
   "supp_bad_id_trader": {
-    "zh": "贸易商拿货，不是源头——价格有加价",
-    "en": "Sourcing from a trader, not the source — expect a markup",
+    "zh": "贸易商、有加价",
+    "en": "trader, markup expected",
     "vi": "",
     "th": ""
   },
   "supp_bad_years_new": {
-    "zh": "新店——稳定性还没被验证",
-    "en": "New shop — stability not yet proven",
+    "zh": "新店",
+    "en": "new shop",
     "vi": "",
     "th": ""
   },
@@ -859,32 +859,32 @@
     "th": "ข้อมูลจำกัด"
   },
   "supp_good_cert_basic": {
-    "zh": "有{cert_text}认证，基本面过关",
-    "en": "Has {cert_text} certification — fundamentals pass",
+    "zh": "{cert_text}认证",
+    "en": "{cert_text} certified",
     "vi": "",
     "th": ""
   },
   "supp_good_cert_deep": {
-    "zh": "{cert_text}认证——有第三方背书",
-    "en": "{cert_text} certified — third-party backing",
+    "zh": "{cert_text}认证",
+    "en": "{cert_text} certified",
     "vi": "",
     "th": ""
   },
   "supp_good_id_factory": {
-    "zh": "工厂直供——跳过中间商",
+    "zh": "工厂直供",
     "en": "Factory-direct — no middleman",
     "vi": "",
     "th": ""
   },
   "supp_good_id_super": {
-    "zh": "实力工厂——有实体可追溯",
-    "en": "Established factory — traceable entity",
+    "zh": "实力工厂、可追溯",
+    "en": "Established factory, traceable",
     "vi": "",
     "th": ""
   },
   "supp_good_years_old": {
-    "zh": "干了{years}年——能活下来的不会太差",
-    "en": "{years} years in business — anyone still standing can't be too bad",
+    "zh": "{years}年",
+    "en": "{years} yrs",
     "vi": "",
     "th": ""
   },
@@ -957,32 +957,38 @@
   "supp_verdict_caution_weak2": {
     "zh": "谨慎。{bad_parts}——{action}",
     "en": "Proceed with caution. {bad_parts} — {action}",
-    "vi": "",
-    "th": ""
+    "vi": "Thận trọng. {bad_parts} — {action}",
+    "th": "ระวังไว้ก่อน {bad_parts} — {action}"
   },
   "supp_verdict_fatal_blackbox": {
     "zh": "别碰。对面是谁都不知道——身份、认证、年限全空。没法追溯，出了事你连人都找不到",
     "en": "Don't touch it. You don't even know who's on the other side — no identity, no certification, no history. Can't trace them; if something goes wrong you can't even find them.",
-    "vi": "",
-    "th": ""
+    "vi": "Đừng đụng vào. Không biết đối tác là ai — không có danh tính, chứng nhận, lịch sử. Không thể truy vết; xảy ra vấn đề thì tìm cũng không ra người.",
+    "th": "อย่าแตะต้องเลย ไม่รู้ด้วยซ้ำว่าอีกฝ่ายเป็นใคร — ไม่มีตัวตน ไม่มีการรับรอง ไม่มีประวัติ สืบหาตัวก็ไม่ได้ หากมีปัญหาอะไรเกิดขึ้นหาคนก็ไม่เจอ"
   },
   "supp_verdict_skip_nodata": {
     "zh": "跳过。关键信息不够（{missing_count}项缺失）——判断不了这个厂靠不靠谱",
     "en": "Skip. Key info is missing ({missing_count} items) — can't judge whether this supplier is reliable.",
-    "vi": "",
-    "th": ""
+    "vi": "Bỏ qua. Thiếu thông tin quan trọng ({missing_count} mục) — chưa đánh giá được nhà cung cấp này có đáng tin không.",
+    "th": "ข้ามไปก่อน ข้อมูลสำคัญขาด ({missing_count} รายการ) — ประเมินไม่ได้ว่าโรงงานนี้เชื่อถือได้ไหม"
   },
   "supp_verdict_trust_strong2": {
     "zh": "可信。{good_parts}。拿样确认款式，可放心合作",
     "en": "Trustworthy. {good_parts}. Sample to confirm the specs, then partner with confidence.",
-    "vi": "",
-    "th": ""
+    "vi": "Đáng tin cậy. {good_parts}. Lấy mẫu xác nhận mẫu mã, yên tâm hợp tác.",
+    "th": "น่าเชื่อถือ {good_parts} สั่งตัวอย่างยืนยันสเปกแล้วร่วมงานได้อย่างมั่นใจ"
   },
   "supp_verdict_usable_ok": {
     "zh": "可用。{good_parts}。但{bad_parts}。{action}",
     "en": "Usable. {good_parts}. But {bad_parts}. {action}",
-    "vi": "",
-    "th": ""
+    "vi": "Dùng được. {good_parts}. Nhưng {bad_parts}. {action}",
+    "th": "ใช้ได้ {good_parts} แต่ {bad_parts} {action}"
+  },
+  "supp_verdict_usable_ok_nobad": {
+    "zh": "可用。{good_parts}。{action}",
+    "en": "Usable. {good_parts}. {action}",
+    "vi": "Dùng được. {good_parts}. {action}",
+    "th": "ใช้ได้ {good_parts} {action}"
   },
   "supplier_grade_caution": {
     "zh": "🔴 谨慎",
@@ -1369,69 +1375,69 @@
     "th": "ไม่ใช่ผู้ผลิต"
   },
   "prod_verdict_go_repurchase": {
-    "zh": "值得做。有销量打底（{sold}件）+ 买过的人会回来补货（{repurchase}%复购）——品稳、有需求。{barrier_tip}{risk_note}",
-    "en": "Worth doing. Sales volume backs it up ({sold} units) and buyers come back to restock ({repurchase}% repurchase) — the product holds up and demand is there. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "值得做。销量{sold}件、复购{repurchase}%，需求稳。想推进，先拿样。{risk_note}",
+    "en": "Worth doing. {sold} sold + {repurchase}% repeat, demand holds. To move forward, sample first. {risk_note}",
+    "vi": "Đáng làm. {sold} đã bán + {repurchase}% mua lại, nhu cầu ổn định. Muốn tiến xa, lấy mẫu trước. {risk_note}",
+    "th": "คุ้มค่าที่จะทำ ขายไป {sold} ชิ้น + ซื้อซ้ำ {repurchase}% ความต้องการคงที่ อยากเดินหน้าต่อ ให้สั่งตัวอย่างก่อน {risk_note}"
   },
   "prod_verdict_go_hot_wanted": {
-    "zh": "值得做。卖得火（{sold}件）+ 当前热度高（{wanted}人想看）——需求被两次验证过。{barrier_tip}{risk_note}",
-    "en": "Worth doing. Selling hot ({sold} units) with strong current interest ({wanted} want-buys) — demand verified twice over. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "值得做。热销{sold}件、{wanted}人想看，需求双验证。想推进，先拿样。{risk_note}",
+    "en": "Worth doing. {sold} sold + {wanted} want-buys, demand double-checked. To move forward, sample first. {risk_note}",
+    "vi": "Đáng làm. {sold} bán chạy + {wanted} người muốn mua, nhu cầu được xác nhận đôi lần. Muốn tiến xa, lấy mẫu trước. {risk_note}",
+    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + {wanted} คนสนใจ ความต้องการยืนยันสองชั้น อยากเดินหน้า ให้สั่งตัวอย่างก่อน {risk_note}"
   },
   "prod_verdict_go_hot_repeat": {
-    "zh": "值得做。热销（{sold}件）+ 有复购（{repurchase}%）——卖得动且有人回头。{barrier_tip}{risk_note}",
-    "en": "Worth doing. Hot seller ({sold} units) with repeat buyers ({repurchase}%) — it moves and people come back. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "值得做。热销{sold}件、复购{repurchase}%，卖得动有人回头。想推进，先拿样。{risk_note}",
+    "en": "Worth doing. {sold} sold + {repurchase}% repeat — it moves, buyers return. To move forward, sample first. {risk_note}",
+    "vi": "Đáng làm. Bán chạy {sold} + {repurchase}% mua lại — bán được và khách quay lại. Muốn tiến xa, lấy mẫu trước. {risk_note}",
+    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + ซื้อซ้ำ {repurchase}% — ขายคล่องมีลูกค้ากลับมา อยากเดินหน้า สั่งตัวอย่างก่อน {risk_note}"
   },
   "prod_verdict_trial_hot_unknown": {
-    "zh": "小批量试。卖得火（{sold}件）但复购数据缺失——不确定买过的人会不会回来。先少量拿，卖动了再追。{barrier_tip}{risk_note}",
-    "en": "Test with a small batch. Selling hot ({sold} units) but repurchase data is missing — unsure if buyers come back. Start small, scale if it keeps moving. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "小批量试。热销{sold}件但复购未知——不确定回头。想验证，先拿少量。{risk_note}",
+    "en": "Try small. {sold} sold but repurchase unknown — unclear if buyers return. To verify, order small. {risk_note}",
+    "vi": "Thử với số lượng nhỏ. Bán chạy {sold} nhưng tỷ lệ mua lại chưa rõ — không chắc khách có quay lại không. Muốn kiểm chứng, lấy ít trước. {risk_note}",
+    "th": "ลองสั่งจำนวนน้อย ขายดี {sold} ชิ้น แต่ยอดซื้อซ้ำไม่ทราบ — ไม่แน่ใจว่าลูกค้าจะกลับมาซื้อไหม อยากยืนยันให้สั่งจำนวนน้อยก่อน {risk_note}"
   },
   "prod_verdict_trial_wanted_low": {
-    "zh": "小批量试。很多人想看（{wanted}人）但还没怎么卖（{sold}件）——需求在但没被验证。拿少量试水。{barrier_tip}{risk_note}",
-    "en": "Test with a small batch. Lots of interest ({wanted} want-buys) but low sales so far ({sold} units) — demand is there but unproven. Order a small trial. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "小批量试。{wanted}人想看但才卖{sold}件——需求在没验证。想验证，拿少量试水。{risk_note}",
+    "en": "Try small. {wanted} want-buys but only {sold} sold — demand unproven. To verify, try a little. {risk_note}",
+    "vi": "Thử với số lượng nhỏ. {wanted} người muốn mua nhưng mới bán {sold} — nhu cầu chưa được kiểm chứng. Muốn kiểm chứng, lấy ít thử. {risk_note}",
+    "th": "ลองสั่งจำนวนน้อย {wanted} คนสนใจ แต่ขายได้แค่ {sold} ชิ้น — ความต้องการยังไม่ยืนยัน อยากยืนยันให้สั่งลองจำนวนน้อย {risk_note}"
   },
   "prod_verdict_trial_rep_low": {
-    "zh": "值得试。复购率高（{repurchase}%）说明产品被反复验证过——不是一次性冲动消费。虽然当前销量少（{sold}件），但门槛低，拿样试错基本不亏。{barrier_tip}{risk_note}",
-    "en": "Worth trying. High repurchase ({repurchase}%) means the product has been re-validated — not a one-time impulse buy. Sales are low ({sold} units) but the barrier is low, so sampling is basically risk-free. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "值得试。复购{repurchase}%、销量{sold}件——老客复购好，客户群还小。想试，先拿样。{risk_note}",
+    "en": "Worth trying. {repurchase}% repeat, {sold} sold — loyal but small base. To test, sample first. {risk_note}",
+    "vi": "Đáng thử. {repurchase}% mua lại, {sold} đã bán — khách trung thành nhưng lượng còn nhỏ. Muốn thử, lấy mẫu trước. {risk_note}",
+    "th": "คุ้มค่าที่จะลอง ซื้อซ้ำ {repurchase}% ขาย {sold} ชิ้น — ลูกค้าประจำดีแต่ฐานยังเล็ก อยากลองให้สั่งตัวอย่างก่อน {risk_note}"
   },
   "prod_verdict_trial_medium3": {
-    "zh": "小批量试。{highlight_count}个维度有亮点——有支撑但不够强。少量试试。{barrier_tip}{risk_note}",
-    "en": "Test with a small batch. {highlight_count} dimensions show promise — enough to support it, not enough to go all in. Try a little. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "小批量试。{highlight_count}个维度有亮点——有支撑不够强。想试，少量拿。{risk_note}",
+    "en": "Try small. {highlight_count} dimensions show promise — support but not enough. To test, order small. {risk_note}",
+    "vi": "Thử với số lượng nhỏ. {highlight_count} tiêu chí có điểm sáng — có hỗ trợ nhưng chưa đủ mạnh. Muốn thử, lấy ít trước. {risk_note}",
+    "th": "ลองสั่งจำนวนน้อย {highlight_count} มิติมีจุดเด่น — มีน้ำหนักแต่ยังไม่พอ อยากลองให้สั่งจำนวนน้อย {risk_note}"
   },
   "prod_verdict_caution_hot_low": {
-    "zh": "谨慎。卖得火（{sold}件）但复购仅{repurchase}%——可能是冲动消费或一次性款。先小批试，卖得动再追。{barrier_tip}{risk_note}",
-    "en": "Be careful. Hot seller ({sold} units) but only {repurchase}% repurchase — could be impulse buys or a one-off. Start small, scale only if it keeps moving. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "谨慎。热销{sold}件但复购仅{repurchase}%——可能冲动消费。想推进，小批试。{risk_note}",
+    "en": "Be careful. {sold} sold but only {repurchase}% repeat — possible impulse buys. To move forward, run small. {risk_note}",
+    "vi": "Thận trọng. Bán chạy {sold} nhưng chỉ {repurchase}% mua lại — có thể là mua bốc đồng. Muốn tiến xa, thử với số lượng nhỏ. {risk_note}",
+    "th": "ระวังให้ดี ขายดี {sold} ชิ้น แต่ซื้อซ้ำแค่ {repurchase}% — อาจเป็นการซื้อตามอารมณ์ อยากเดินหน้าให้ลองสั่งจำนวนน้อย {risk_note}"
   },
   "prod_verdict_caution_rep_low": {
-    "zh": "谨慎。复购高（{repurchase}%）但销量少（{sold}件）——复购好但客户群还小。先拿样测需求。{barrier_tip}{risk_note}",
-    "en": "Be careful. High repurchase ({repurchase}%) but low sales ({sold} units) — loyal buyers but a small base. Sample first to test demand. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "谨慎。复购{repurchase}%但销量{sold}件——客户群小。想推进，先拿样测需求。{risk_note}",
+    "en": "Be careful. {repurchase}% repeat but {sold} sold — small base. To move forward, sample to test demand. {risk_note}",
+    "vi": "Thận trọng. {repurchase}% mua lại nhưng mới bán {sold} — lượng khách còn nhỏ. Muốn tiến xa, lấy mẫu kiểm tra nhu cầu. {risk_note}",
+    "th": "ระวังให้ดี ซื้อซ้ำ {repurchase}% แต่ขายได้ {sold} ชิ้น — ฐานลูกค้าเล็ก อยากเดินหน้าให้สั่งตัวอย่างเพื่อทดสอบความต้องการ {risk_note}"
   },
   "prod_verdict_watch_medium12": {
-    "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。先收藏蹲数据，别急着下手。{barrier_tip}{risk_note}",
-    "en": "Hold off. Only {highlight_count} dimension(s) show promise — not enough to build on. Save it and wait for more data. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。想验证，先拿 1 件试；不想就换品。{risk_note}",
+    "en": "Hold off. Only {highlight_count} dimension(s) show promise — not enough to build on. To verify, order 1 piece; otherwise switch products. {risk_note}",
+    "vi": "Chờ xem. Chỉ {highlight_count} tiêu chí có điểm sáng — chưa đủ mạnh. Muốn kiểm chứng, lấy thử 1 mẫu; không thì đổi sản phẩm. {risk_note}",
+    "th": "รอดูไปก่อน มีแค่ {highlight_count} มิติที่มีจุดเด่น — ยังไม่พอจะต่อยอด อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า {risk_note}"
   },
   "prod_verdict_watch_flat": {
-    "zh": "观望。全维度平平——没看到足够亮点。先收藏蹲数据。{barrier_tip}{risk_note}",
-    "en": "Hold off. Nothing stands out across the board — no strong signals yet. Save it and wait for more data. {barrier_tip}{risk_note}",
-    "vi": "",
-    "th": ""
+    "zh": "观望。全维度平平——没看到足够亮点。想验证，先拿 1 件试；不想就换品。{risk_note}",
+    "en": "Hold off. Nothing stands out across the board — no strong signals yet. To verify, order 1 piece; otherwise switch products. {risk_note}",
+    "vi": "Chờ xem. Mọi tiêu chí đều bình thường — chưa thấy điểm sáng đủ rõ. Muốn kiểm chứng, lấy thử 1 mẫu; không thì đổi sản phẩm. {risk_note}",
+    "th": "รอดูไปก่อน ทุกมิติเรียบๆ — ยังไม่เห็นจุดเด่นพอ อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า {risk_note}"
   }
 }

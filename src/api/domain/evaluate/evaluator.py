@@ -102,10 +102,63 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         headline_kv = verdict("summary_headline_wait")
         grade = "none"
 
-    reason_kv = verdict(f"summary_{summary_tier}")
+    # 综合判词证据：品侧自然数字（销量→关注→复购→价格，取第一个有值）
+    # 厂侧好/坏信号（复用 good/bad_part_keys 机制，空也传 [] 防 format 失败）
+    p_sig: dict[str, Any] = product_result.get("signals", {})
+    s_sig: dict[str, Any] = supplier_result.get("signals", {})
+    params: dict[str, Any] = {}
+
+    def _fmt_num(n: Any) -> str:
+        try:
+            v = float(n)
+            if v == int(v):
+                return f"{int(v):,}"
+            return f"{v:,.1f}".rstrip("0").rstrip(".")
+        except (ValueError, TypeError):
+            return str(n)
+
+    prod_num = ""
+    for field, fmt in (
+        ("sold", _fmt_num),
+        ("wanted", _fmt_num),
+        ("repurchase", lambda v: f"{_fmt_num(v)}%"),
+        ("display_price", lambda v: f"¥{v:.2f}"),
+    ):
+        if p_sig.get(field) is not None:
+            prod_num = fmt(p_sig[field])
+            break
+    params["prod_num"] = prod_num
+
+    # 厂侧参数（供 good/bad part 模板的 {cert_text}/{years} 占位）
+    cert_type = str(s_sig.get("cert_type", ""))
+    if "·" in cert_type:
+        cert_name = cert_type.rsplit("·", 1)[-1]
+    else:
+        cert_name = cert_type
+    params["cert_text"] = cert_name.upper() if cert_name.isascii() else cert_name
+    if s_sig.get("shop_years") is not None:
+        params["years"] = str(s_sig["shop_years"])
+
+    # 厂证据各取最要命的 1 个（身份→认证→年限 / 短板优先），避免综合判词冗长
+    good_keys: list[str] = []
+    bad_keys: list[str] = []
+    for field in ("identity", "cert", "years"):
+        label = s_sig.get(f"{field}_label")
+        strength = s_sig.get(f"{field}_strength")
+        if not label:
+            continue
+        if strength in ("strong", "medium") and not good_keys:
+            good_keys.append(label)
+        elif strength == "weak" and not bad_keys:
+            bad_keys.append(label)
+    params["good_part_keys"] = good_keys
+    params["bad_part_keys"] = bad_keys
+
+    summary_kv = verdict(f"summary_{summary_tier}", **params)
+    reason_kv = summary_kv
 
     return {
-        "verdict": verdict(f"summary_{summary_tier}"),
+        "verdict": summary_kv,
         "headline": headline_kv,
         "reason": reason_kv,
         "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 18)}",
