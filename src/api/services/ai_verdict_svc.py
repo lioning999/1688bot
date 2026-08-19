@@ -39,15 +39,16 @@ async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang:
     result: dict[str, Any] = {**mapped}
 
     try:
+        money: dict[str, Any] | None = _make_money(lang)
         if lang and lang != "zh":
             # AI 判词路径（en/vi/th）
-            display = await build_with_ai(mapped, lang)
+            display = await build_with_ai(mapped, lang, money)
             logger.info(f"[TRACE-DISPLAY-AI] offer_id={offer_id} lang={lang} "
                         f"aiGenerated={display.get('_aiGenerated', '')} "
                         f"display={json.dumps(display, ensure_ascii=False, default=str)}")
         else:
             # 模板路径（zh / 空 lang）
-            display = build_display(mapped, lang)
+            display = build_display(mapped, lang, money)
             logger.info(f"[TRACE-DISPLAY-PRE] offer_id={offer_id} lang={lang} "
                         f"display={json.dumps(display, ensure_ascii=False, default=str)}")
     except Exception:
@@ -58,14 +59,26 @@ async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang:
     return result
 
 
-async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
+def _make_money(lang: str) -> dict[str, Any] | None:
+    """按目标语言返回本地货币配置（符号 / 1 CNY 兑换系数 / 小数位）。None 保持 ¥。"""
+    cny_usd: float = float(Config.CNY_USD_RATE)
+    if lang == "en":
+        return {"symbol": "$", "per_cny": 1.0 / cny_usd, "decimals": 2}
+    if lang == "vi":
+        return {"symbol": "₫", "per_cny": float(Config.FX_VND) / cny_usd, "decimals": 0}
+    if lang == "th":
+        return {"symbol": "฿", "per_cny": float(Config.FX_THB) / cny_usd, "decimals": 0}
+    return None
+
+
+async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any] | None = None) -> dict[str, Any]:
     """AI 判词路径：评估 → 打包 → Qwen → 校验 → 逐字段合并。
 
     异常/超时/JSON 解析失败/校验失败均降级为模板 display。
     中文用户不走此路径（lang="zh" 直接 build_display 模板兜底）。
     """
     # 1. 构建模板 display（始终作为兜底）
-    display: dict[str, Any] = build_display(mapped, lang)
+    display: dict[str, Any] = build_display(mapped, lang, money)
 
     # 2. 语言检查：仅 en/vi/th 走 AI 判词
     if lang not in ("en", "vi", "th"):
@@ -88,6 +101,7 @@ async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
     try:
         ai_input: dict[str, Any] = pack_ai_input(
             product_raw, supplier_raw, summary_raw, mapped, lang,
+            money=money,
         )
     except Exception:
         logger.exception("[AI判词] pack_ai_input 失败，降级模板")
@@ -140,12 +154,64 @@ async def build_with_ai(mapped: dict[str, Any], lang: str) -> dict[str, Any]:
         return display
 
     # 8. 逐字段合并（title + supplierName + 判词，逐字段校验）
-    _merge_ai_verdicts(display, ai, ai_input)
+    failures: list[dict[str, Any]] = _merge_ai_verdicts(display, ai, ai_input)["failures"]
+
+    # 8.5 校验不过 → 带错误反馈重写一次（重试优先于直接降级模板，用户几乎看不到模板）
+    if failures:
+        logger.info(f"[AI判词] {len(failures)} 个字段校验失败，带反馈重写一次: "
+                    + ", ".join(f["field"] for f in failures))
+        retry_user: str = _build_retry_feedback(failures)
+        t1: float = time.time()
+        try:
+            body2: dict[str, Any] | None = await qwen_adapter.chat(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": json.dumps(ai_input, ensure_ascii=False)},
+                    {"role": "assistant", "content": json.dumps(ai, ensure_ascii=False)},
+                    {"role": "user", "content": retry_user},
+                ],
+                timeout=Config.QWEN_TIMEOUT,
+            )
+        except Exception:
+            logger.exception("[AI判词] 重写 Qwen 调用异常，维持模板兜底")
+            body2 = None
+        if body2:
+            content2: str = body2.get("choices", [{}])[0].get("message", {}).get("content", "")
+            if content2:
+                try:
+                    ai2: dict[str, Any] = _parse_ai_json(content2)
+                    if ai2:
+                        still: list[dict[str, Any]] = _merge_ai_verdicts(display, ai2, ai_input)["failures"]
+                        logger.info(f"[AI判词] 重写完成 耗时={time.time() - t1:.1f}s "
+                                    f"仍失败={len(still)} 个字段")
+                except Exception:
+                    logger.exception("[AI判词] 重写 JSON 解析失败，维持模板兜底")
 
     # 9. 标记 AI 生成（下游 _run 据此判断是否落库 display_i18n）
     display["_aiGenerated"] = lang
 
     return display
+
+
+def _build_retry_feedback(failures: list[dict[str, Any]]) -> str:
+    """把校验失败清单拼成给 AI 的英文重写反馈。
+
+    每个失败字段列出：字段名 + AI 上版原文 + 错误原因。
+    AI 据此修正对应字段，其余字段保持上版内容，重新输出完整 JSON。
+    """
+    lines: list[str] = [
+        "Your previous output failed validation. Fix ONLY the fields with errors below.",
+        "For each field, use the correct numbers/values that already exist in the data.",
+        "Keep all other fields identical to your previous output.",
+        "Re-output the COMPLETE JSON, do not omit any field.",
+        "",
+    ]
+    for f in failures:
+        lines.append(f"- field: {f['field']}")
+        lines.append(f"  your previous text: {str(f.get('text', ''))[:200]}")
+        for e in f.get("errors", []):
+            lines.append(f"  error: {e}")
+    return "\n".join(lines)
 
 
 def _parse_ai_json(content: str) -> dict[str, Any]:
@@ -164,12 +230,14 @@ def _merge_ai_verdicts(
     display: dict[str, Any],
     ai: dict[str, Any],
     ai_input: dict[str, Any],
-) -> None:
+) -> dict[str, Any]:
     """AI 输出合并：翻译 title + supplierName + 判词语优化。
 
     判词逐字段校验：数字必须与 dimensions 数据一致，禁止表述不得出现。
     校验失败 → 该字段保留 glossary 模板，不阻塞其他字段。
+    返回 {"failures": [{field, text, errors}, ...]} 供调用方决定是否带反馈重写。
     """
+    failures: list[dict[str, Any]] = []
     # title（基础检查：非空 + 长度合理）
     title: str = str(ai.get("translated_title", ""))
     if title and title.strip() and len(title.strip()) > 3:
@@ -187,20 +255,25 @@ def _merge_ai_verdicts(
     _verdict_fields: list[tuple[str, str, tuple[str, ...]]] = [
         ("product_verdict", "productEval", ("product",)),
         ("supplier_verdict", "supplierEval", ("supplier",)),
-        ("summary_verdict", "summaryLine", ()),
+        # 综合判词同样防编造：数字必须能在品/厂维度数据里对上
+        ("summary_verdict", "summaryLine", ("product", "supplier")),
     ]
     for ai_key, display_key, dim_sections in _verdict_fields:
         ai_text: str = str(ai.get(ai_key, ""))
         if not ai_text or not ai_text.strip():
             continue
-        if validate_ai_output(ai_text, [], ai_input, dim_sections):
+        errors: list[str] = validate_ai_output(ai_text, [], ai_input, dim_sections)
+        if not errors:
             if display_key in display and isinstance(display[display_key], dict):
                 display[display_key]["verdict"] = ai_text.strip()
                 # summary_verdict 同时写 reason：前端 s2Reason 显示 reason，verdict 不渲染
                 if ai_key == "summary_verdict":
                     display[display_key]["reason"] = ai_text.strip()
         else:
+            failures.append({"field": ai_key, "text": ai_text, "errors": errors})
             logger.warning(
                 f"[AI判词] {ai_key} 校验失败，降级 glossary | "
-                f"text={ai_text[:80]}..."
+                f"text={ai_text[:80]}... errors={errors}"
             )
+
+    return {"failures": failures}

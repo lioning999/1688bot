@@ -10,6 +10,7 @@
 
 import json
 import re
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, cast
 
@@ -63,6 +64,7 @@ def pack_ai_input(
     summary_raw: dict[str, Any],
     mapped: dict[str, Any],
     lang: str,
+    money: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """打包 AI 判词输入：评估结果 + mapped → Qwen 结构化 JSON。
 
@@ -75,6 +77,7 @@ def pack_ai_input(
         summary_raw: evaluate_summary() 输出
         mapped: product_mapper.map_raw() 输出
         lang: 目标语言代码
+        money: 本地货币配置 {symbol, per_cny, decimals}，None 保持 ¥
 
     Returns:
         结构化 JSON，可直接 json.dumps 后作为 Qwen user message。
@@ -90,18 +93,31 @@ def pack_ai_input(
             "summary_tier": summary_tier,
             "tone": _derive_tone(p_tier),
         },
-        "must_mention": _pack_product_must_mention(product_raw, mapped),
+        "currency": str(money["symbol"]) if money else "¥",
+        "must_mention": _pack_product_must_mention(product_raw, mapped, money),
         "supplier_must_mention": _pack_supplier_must_mention(supplier_raw),
         "must_not_say": _pack_product_must_not_say(p_tier, product_raw),
         "supplier_must_not_say": _pack_supplier_must_not_say(s_tier, supplier_raw),
         "action": _pack_action(product_raw, supplier_raw),
-        "context": _pack_context(mapped, supplier_raw, lang),
-        "dimensions": _pack_dimensions(product_raw, supplier_raw),
+        "context": _pack_context(mapped, supplier_raw, lang, money),
+        "dimensions": _pack_dimensions(product_raw, supplier_raw, money),
         "to_translate": {
             "title": str(mapped.get("title", "")),
             "supplier_name": str(mapped.get("supplierName", "")),
         },
     }
+
+
+def _fmt_money(cny: float, money: dict[str, Any] | None) -> str:
+    """人民币金额 → 目标货币字符串（判词内金额本地化）。money=None 时保持 ¥。"""
+    if money is None:
+        return f"¥{cny:.2f}"
+    v: float = cny * float(money["per_cny"])
+    decimals: int = int(money.get("decimals", 2))
+    sym: str = str(money["symbol"])
+    if decimals == 0:
+        return f"{sym}{int(round(v)):,}"
+    return f"{sym}{v:.{decimals}f}"
 
 
 def _derive_tone(p_tier: str) -> str:
@@ -123,7 +139,7 @@ def _derive_tone(p_tier: str) -> str:
 
 # ---- must_mention builders ----
 
-def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, Any]) -> list[str]:
+def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, Any], money: dict[str, Any] | None = None) -> list[str]:
     """从产品评估提取 AI 判词必须提及的事实列表。"""
     signals: dict[str, Any] = product_raw.get("signals", {})
     items: list[str] = []
@@ -140,7 +156,7 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
     moq = signals.get("moq")
     unit = str(signals.get("unit", ""))
     if price is not None and moq is not None:
-        items.append(f"price: ¥{price:.2f}/{unit}, MOQ: {moq} {unit}")
+        items.append(f"price: {_fmt_money(float(price), money)}/{unit}, MOQ: {moq} {unit}")
 
     positive = signals.get("positive")
     if positive is not None:
@@ -250,7 +266,10 @@ def _pack_supplier_must_not_say(s_tier: str, supplier_raw: dict[str, Any]) -> li
 # ---- action ----
 
 def _pack_action(product_raw: dict[str, Any], supplier_raw: dict[str, Any]) -> str:
-    """根据产品 tier 推导推荐行动（供应商短板通过 action_key 在上方优先处理）。"""
+    """根据产品 tier 推导推荐行动（供应商短板通过 action_key 在上方优先处理）。
+
+    防诱导铁律：动作一律条件式（if/to …），禁祈使命令与催促，只指下一步验证点。
+    """
     p_tier: str = str(product_raw.get("tier", "watch"))
 
     s_verdict: Any = supplier_raw.get("verdict", {})
@@ -258,34 +277,31 @@ def _pack_action(product_raw: dict[str, Any], supplier_raw: dict[str, Any]) -> s
         sv = cast(dict[str, Any], s_verdict)
         action_key: str = str(sv.get("params", {}).get("action_key", ""))
         action_map: dict[str, str] = {
-            "supp_action_ok": "Product and supplier both check out — "
-                              "proceed with normal sample order then scale.",
-            "supp_action_compare": "Supplier is a trader — compare prices with "
-                                    "2-3 other suppliers before committing.",
-            "supp_action_inspect": "Supplier lacks certification — request detailed "
-                                    "photos or inspection before bulk order.",
-            "supp_action_compare_inspect": "Supplier is an uncertified trader — "
-                                            "compare alternatives AND inspect samples thoroughly.",
-            "supp_action_check_delivery": "Supplier is relatively new — verify delivery "
-                                           "reliability with a small trial order first.",
+            "supp_action_ok": "Product and supplier both check out. "
+                              "To move forward: sample to confirm specs, then scale.",
+            "supp_action_compare": "Supplier is a trader. If committing, "
+                                   "compare prices with 2-3 other suppliers — markup is the risk.",
+            "supp_action_inspect": "Supplier lacks certification. If ordering bulk, "
+                                   "request detailed photos or inspection first — unverified quality is the risk.",
+            "supp_action_compare_inspect": "Supplier is an uncertified trader. If proceeding, "
+                                           "compare alternatives and inspect samples — both markup and quality are risks.",
+            "supp_action_check_delivery": "Supplier is relatively new. If partnering, "
+                                          "verify delivery reliability with a small trial order — stockouts are the risk.",
         }
         if action_key and action_key in action_map:
             return action_map[action_key]
 
     if p_tier.startswith("go"):
-        return ("Product and supplier both check out — "
-                "sample to confirm, then scale with confidence.")
+        return "Product and supplier both check out. If moving forward, sample to confirm before scaling."
     if p_tier.startswith("trial"):
-        return ("Order 2-3 samples to verify quality before committing to bulk. "
-                "Confirm the goods match the photos first.")
+        return "If trying this, order 2-3 samples and confirm the goods match the photos before bulk."
     if p_tier.startswith("caution"):
-        return ("Watch the sales trend or find a similar product with a lower "
-                "minimum order before committing.")
+        return "If considering it, watch the sales trend or find a similar product with a lower MOQ before committing."
     if p_tier.startswith("watch"):
-        return "Wait for more data — current signals aren't enough to act on."
+        return "Current signals aren't enough to act on — more data is needed before deciding."
     if p_tier.startswith("fatal"):
-        return "Skip this product — look for alternatives with better fundamentals."
-    return "Verify with a small sample order before committing to larger quantities."
+        return "If anything, skip this product and look for alternatives with better fundamentals."
+    return "If proceeding, verify with a small sample before committing to larger quantities."
 
 
 # ---- context ----
@@ -294,8 +310,13 @@ def _pack_context(
     mapped: dict[str, Any],
     supplier_raw: dict[str, Any],
     lang: str,
+    money: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """构建 AI 上下文：试错成本 + 供应商摘要 + 市场备注。"""
+    """构建 AI 上下文：试错成本 + 供应商摘要 + 市场备注。
+
+    trial_cost 的风险等级按人民币阈值判断（试错成本定义不变），
+    金额显示按 money 换成本地货币。
+    """
     price_cny_raw: Any = mapped.get("priceCNY")
     price_cny: dict[str, Any] = cast(dict[str, Any], price_cny_raw) if isinstance(price_cny_raw, dict) else {}
     low_price: float = float(price_cny.get("low", 0)) if price_cny else 0.0
@@ -309,14 +330,14 @@ def _pack_context(
     if low_price > 0 and moq > 0:
         total: float = low_price * moq
         if total < 50:
-            trial_cost: str = (f"Very low risk — ¥{total:.2f} minimum order "
-                              f"({moq} {unit} × ¥{low_price:.2f}) = under USD $7")
+            trial_cost: str = (f"Very low risk — {_fmt_money(total, money)} minimum order "
+                              f"({moq} {unit} × {_fmt_money(low_price, money)})")
         elif total < 200:
-            trial_cost: str = (f"Moderate risk — ¥{total:.2f} minimum order "
-                              f"({moq} {unit} × ¥{low_price:.2f})")
+            trial_cost: str = (f"Moderate risk — {_fmt_money(total, money)} minimum order "
+                              f"({moq} {unit} × {_fmt_money(low_price, money)})")
         else:
-            trial_cost: str = (f"Higher barrier — ¥{total:.2f} minimum order "
-                              f"({moq} {unit} × ¥{low_price:.2f})")
+            trial_cost: str = (f"Higher barrier — {_fmt_money(total, money)} minimum order "
+                              f"({moq} {unit} × {_fmt_money(low_price, money)})")
     else:
         trial_cost = "Unknown — price or MOQ data incomplete"
 
@@ -351,8 +372,9 @@ def _pack_context(
 def _pack_dimensions(
     product_raw: dict[str, Any],
     supplier_raw: dict[str, Any],
+    money: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """将 evaluator 维度转为 AI 可读的简化格式。"""
+    """将 evaluator 维度转为 AI 可读的简化格式（价格按 money 本地化）。"""
     product_dims: list[dict[str, Any]] = []
     for dim in product_raw.get("dimensions", []):
         if not isinstance(dim, dict):
@@ -365,7 +387,7 @@ def _pack_dimensions(
             "key": str(d.get("key", "")),
             "signal": {3: "positive", 2: "neutral", 1: "negative"}.get(score, "unknown"),
             "label": _gl(str(d.get("name_key", "")), "en"),
-            "data": _dim_data_text(d),
+            "data": _dim_data_text(d, money),
             "ref": _dim_ref_text(d),
         })
 
@@ -394,8 +416,8 @@ def _pack_dimensions(
     return {"product": product_dims, "supplier": supplier_dims}
 
 
-def _dim_data_text(dim: dict[str, Any]) -> str:
-    """从维度 dict 提取人类可读的数据文本（English，供 AI 参考）。"""
+def _dim_data_text(dim: dict[str, Any], money: dict[str, Any] | None = None) -> str:
+    """从维度 dict 提取人类可读的数据文本（English，供 AI 参考；价格按 money 本地化）。"""
     score: int = int(dim.get("score", 0))
     if score == 0:
         return "no data"
@@ -418,6 +440,8 @@ def _dim_data_text(dim: dict[str, Any]) -> str:
         for k, v in data_params.items():
             if k == "unit":
                 parts.append(_gl(f"unit_{v}", "en", str(v)))
+            elif k == "price" and isinstance(v, (int, float)):
+                parts.append(_fmt_money(float(v), money))
             elif isinstance(v, (int, float)):
                 parts.append(f"{v}")
             else:
@@ -466,10 +490,11 @@ def validate_ai_output(
     must_mention: list[str],
     ai_input: dict[str, Any],
     dimension_sections: tuple[str, ...] = ("product", "supplier"),
-) -> bool:
+) -> list[str]:
     """校验 AI 判词输出：关键数字精确匹配 + 禁止表述未出现。
 
-    任一规则不过 → False → 调用方将该字段降级为模板判词。
+    返回错误清单（英文，供重试反馈喂回 AI）；空列表 = 通过。
+    非空 → 调用方将该字段降级为模板判词，或带反馈让 AI 重写一次。
 
     校验规则（按优先级）：
     1. AI 文本中的数字必须能在指定 section 维度数据(data+ref)中精确对上（防编造）
@@ -484,8 +509,9 @@ def validate_ai_output(
             supplier_verdict → ("supplier",)
             summary_verdict → ()（综合结论不校验数字，只查禁止表述）
     """
+    errors: list[str] = []
     if not ai_text or not ai_text.strip():
-        return False
+        return ["Empty verdict text"]
 
     # 规则 1：防编造 — AI 文本里的数字必须能在数据源维度(data+ref)里对上
     # 方向反转：从「数据源数字必须全出现」改为「AI 数字必须真实存在」，查 AI 有没有编造数据源没有的数字
@@ -495,76 +521,70 @@ def validate_ai_output(
             for section in dimension_sections
             for dim in ai_input.get("dimensions", {}).get(section, [])
         )
-        for n in re.findall(r"\b\d+(?:\.\d+)?\b", ai_text):
+        for n in re.findall(r"\b\d[\d.,]*\d\b|\b\d\b", ai_text):
             if len(n) <= 1:
                 continue
+            # 平台名 1688 非业务数字，跳过防编造检查（与 verify_verdicts.py 的 SKIP_NUMS 对齐）
+            try:
+                if _norm_num(n) == Decimal(1688):
+                    continue
+            except (InvalidOperation, ValueError):
+                pass
             if not _number_appears(source_text, n):
-                return False
+                errors.append(
+                    f'Number "{n}" is not in the source data. '
+                    "Only use numbers provided in the data."
+                )
 
     # 规则 2：禁止表述检查（跨 section 全量检查）
     for key in ("must_not_say", "supplier_must_not_say"):
         for forbidden in ai_input.get(key, []):
             if forbidden.lower() in ai_text.lower():
-                return False
+                errors.append(
+                    f'Forbidden phrase "{forbidden}" must not appear in the verdict.'
+                )
 
-    return True
+    return errors
 
 
 def _number_appears(text: str, num_str: str) -> bool:
     """检查 num_str 的数值是否出现在 text 中（容忍本地化格式差异）。
 
-    规则：
-    - 精确匹配优先
-    - 整数 >= 1000 → 尝试千分位变体（8,950 / 8.950 / 8 950）
-    - 小数 → 尝试逗号小数点变体（67,5 = 67.5）
-    - .0 结尾小数 → 也检查整数版（69.0 → 69）
-    - 末招：数字序列匹配（格式化字符可插入）
-
-    注意：用 "." in num_str 而非 n != int(n) 判断是否有小数位，
-    因为 Python 中 69.0 == 69，无法区分 "69.0" 和 "69"。
+    核心：数值等价 —— 把 num_str 和 text 中的数字都归一化成标准数值，
+    任一相等即通过。兼容英文（逗号千分位/点小数）与越南语/泰语（点千分位/逗号小数）。
+    例："3,50"（越南语 3.5）与源数据 "3.5" 等价；"5.915"（越南语 5915）与 "5,915" 等价。
     """
     if not num_str:
         return True
-
     if num_str in text:
         return True
 
     try:
-        n: float = float(num_str)
-    except ValueError:
+        target: Decimal = _norm_num(num_str)
+    except (InvalidOperation, ValueError):
         return num_str.lower() in text.lower()
 
-    has_decimal: bool = "." in num_str
-    int_n: int = int(n)
-
-    # 整数 >= 1000 → 千分位变体
-    if n == int_n and n >= 1000:
-        variants: list[str] = [f"{int_n:,}"]
-        variants.append(f"{int_n:,}".replace(",", "."))
-        variants.append(f"{int_n:,}".replace(",", " "))
-        for v in variants:
-            if v in text:
+    for m in re.findall(r"\d[\d.,]*\d|\d", text):
+        try:
+            if _norm_num(m) == target:
                 return True
-
-    # 小数 → 本地化格式变体
-    if has_decimal:
-        for decimals in (1, 2):
-            s: str = f"{n:.{decimals}f}"
-            if s in text:
-                return True
-            comma_v: str = s.replace(".", ",")
-            if comma_v in text:
-                return True
-
-        # .0 结尾（如 69.0）→ 也检查整数版（69），越南语常省略 .0
-        if n == int_n:
-            if str(int_n) in text:
-                return True
-
-    digits: str = "".join(c for c in num_str if c.isdigit())
-    if len(digits) >= 3:
-        pattern: str = r"(?<!\d)" + r"[\d.,\s]*".join(list(digits)) + r"(?!\d)"
-        if re.search(pattern, text):
-            return True
-
+        except (InvalidOperation, ValueError):
+            continue
     return False
+
+
+def _norm_num(s: str) -> Decimal:
+    """数字字符串 → 标准数值，兼容英文/越南语/泰语分隔符。
+
+    判断规则：最后一个分隔符（,/.）后的位数 < 3 → 它是小数点，前面其它分隔符是千分位；
+    否则全部当千分位去掉。可覆盖：
+      "3,50"→3.5  "3.5"→3.5  "5.915"→5915  "5,915"→5915  "1.000"→1000  "63"→63
+    """
+    digits: str = re.sub(r"[^\d.,]", "", s.strip())
+    if not digits:
+        raise ValueError(s)
+    last_sep: int = max(digits.rfind(","), digits.rfind("."))
+    if last_sep >= 0 and len(digits[last_sep + 1:]) < 3:
+        int_part: str = digits[:last_sep].replace(",", "").replace(".", "")
+        return Decimal(f"{int_part}.{digits[last_sep + 1:]}")
+    return Decimal(digits.replace(",", "").replace(".", ""))
