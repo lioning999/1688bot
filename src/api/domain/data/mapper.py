@@ -44,7 +44,7 @@ def map_raw(raw: dict[str, Any], original_url: str, offer_id: str) -> dict[str, 
 
     # 商品图片（Apify 键名: images，字段级容错：非 list 视为空）
     _raw_images: Any = raw.get("images")
-    images: list[Any] = _raw_images if isinstance(_raw_images, list) else []
+    images: list[Any] = cast(list[Any], _raw_images) if isinstance(_raw_images, list) else []
 
     # 阶梯价格
     price_tiers = _extract_price_tiers(raw)
@@ -214,7 +214,8 @@ def _build_factory_flags(flags: dict[str, Any]) -> str:
 def _safe_rank_text(rank: Any) -> str:
     """安全提取排名文本。rank 可能为 dict({text}) / 纯字符串 / None。"""
     if isinstance(rank, dict):
-        return str(rank.get("text", ""))
+        _r: dict[str, Any] = cast(dict[str, Any], rank)
+        return str(_r.get("text", ""))
     if isinstance(rank, str):
         return rank
     return ""

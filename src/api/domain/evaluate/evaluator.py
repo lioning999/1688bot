@@ -117,12 +117,18 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         except (ValueError, TypeError):
             return str(n)
 
+    def _fmt_pct(v: Any) -> str:
+        return f"{_fmt_num(v)}%"
+
+    def _fmt_price(v: Any) -> str:
+        return f"¥{v:.2f}"
+
     prod_num = ""
     for field, fmt in (
         ("sold", _fmt_num),
         ("wanted", _fmt_num),
-        ("repurchase", lambda v: f"{_fmt_num(v)}%"),
-        ("display_price", lambda v: f"¥{v:.2f}"),
+        ("repurchase", _fmt_pct),
+        ("display_price", _fmt_price),
     ):
         if p_sig.get(field) is not None:
             prod_num = fmt(p_sig[field])

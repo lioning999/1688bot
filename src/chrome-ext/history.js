@@ -276,10 +276,22 @@ var HistoryPage = (function () {
     var wrap = document.getElementById('compareTableWrap');
     if (!wrap) return;
 
+    // 金额格式化：货币符号 + 千分位（与主报告 sidepanel.js fmtMoney 一致）
+    function _fmtMoney(n) {
+      var sym = I18N.t('currency.symbol') || '¥';
+      var lang = I18N.getLang() || 'zh';
+      return sym + Number(n).toLocaleString(lang, { maximumFractionDigits: 0 });
+    }
+
     // 每行对比项：{label, extract(display)}
     var ROWS = [
       { label: I18N.t('compare.conclusion') || '结论', fn: function (d) { return _extractVerdict(d); }, isHtml: true },
-      { label: I18N.t('compare.price') || '价格',    fn: function (d) { return d && d.price ? (d.price.low || 0) + '-' + (d.price.high || 0) : '-'; } },
+      { label: I18N.t('compare.price') || '价格',    fn: function (d) {
+        if (!d || !d.price) return '-';
+        var lo = d.price.low, hi = d.price.high;
+        if (lo === hi) return _fmtMoney(lo);          // 同价只显示一个
+        return _fmtMoney(lo) + '-' + _fmtMoney(hi);   // 范围显示两个
+      } },
       { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' ' + (I18N.t('inspect.piecesUnit') || '件') : '-'; } },
       { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 18) : '-'; } },
       { label: I18N.t('compare.supplier') || '供应商评分', fn: function (d) { return d && d.supplierEval ? (d.supplierEval.grade || '') + ' ' + (d.supplierEval.score || 0) + '/' + (d.supplierEval.max_score || 9) : '-'; } },

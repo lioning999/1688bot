@@ -169,3 +169,56 @@ class UserRepository:
             raise
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
+
+    # ------------------------------------------------------------------
+    # Admin 管理（自用：用户列表 + 会员切换 + 加配额）
+    # ------------------------------------------------------------------
+
+    async def list_users(self) -> list[dict[str, Any]]:
+        """全部用户列表（按注册时间倒序）。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT id, email, name, tier, quota, default_lang, created_at, last_login "
+                    "FROM users ORDER BY created_at DESC"
+                )
+                rows = await cur.fetchall()
+                return [dict(r) for r in rows]
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def toggle_tier(self, user_id: int) -> str:
+        """切换会员等级（free↔paid）。返回切换后的 tier；用户不存在返回空串。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute("SELECT tier FROM users WHERE id=%s", (user_id,))
+                row = await cur.fetchone()
+                if not row:
+                    return ""
+                new_tier = "free" if row["tier"] == "paid" else "paid"
+                await cur.execute("UPDATE users SET tier=%s WHERE id=%s", (new_tier, user_id))
+                await conn.commit()
+                return new_tier
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def add_quota(self, user_id: int, amount: int) -> int:
+        """给用户加配额。返回加后的 quota；用户不存在返回 0。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute("UPDATE users SET quota = quota + %s WHERE id=%s", (amount, user_id))
+                await conn.commit()
+                await cur.execute("SELECT quota FROM users WHERE id=%s", (user_id,))
+                row = await cur.fetchone()
+                return row["quota"] if row else 0
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)

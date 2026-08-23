@@ -638,9 +638,9 @@ def _format_verdict(v: Any, lang: str) -> str:
     # ---- 新判词系统参数 ----
 
     # good_part_keys: list of glossary key → resolve each → join（多证据合并一句，不额外占句数）
+    sep_p: str = "、" if lang == "zh" else ", "
     if "good_part_keys" in params:
         gks: Any = params.pop("good_part_keys")
-        sep_p: str = "、" if lang == "zh" else ", "
         if isinstance(gks, list) and gks:
             parts: list[str] = []
             for gk in cast(list[Any], gks):

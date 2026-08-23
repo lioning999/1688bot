@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from config import Config
 from database import AsyncDatabaseConnection
 from middleware import JWTAuthMiddleware
+from routes.admin import admin_page_router, admin_router
 from routes.auth import auth_router, callback_router, user_router
 from routes.analyze import router as analyze_router
 from routes.history import router as history_router
@@ -29,9 +30,6 @@ import sentry_sdk
 
 sentry_sdk.init(
     dsn=Config.SENTRY_DSN if Config.SENTRY_DSN else None,
-    send_default_pii=True,
-    enable_logs=True,
-    traces_sample_rate=0.1,
 )
 
 
@@ -135,6 +133,8 @@ async def public_config() -> dict[str, Any]:
 
 
 # ---- API 路由（必须在 StaticFiles mount 之前注册） ----
+app.include_router(admin_router)
+app.include_router(admin_page_router)
 app.include_router(auth_router)
 app.include_router(callback_router)
 app.include_router(analyze_router)

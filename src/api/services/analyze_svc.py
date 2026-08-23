@@ -11,7 +11,7 @@ import asyncio
 import json
 import time
 import uuid
-from typing import Any
+from typing import Any, cast
 
 from config import Config
 from adapters.apify_adapter import apify_adapter, get_apify_call_count
@@ -150,8 +150,8 @@ class AnalyzeService:
                         safe_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
                         mapped = map_raw(saved.get("raw", {}), raw_url, offer_id)
                         result = await build_result_with_display(mapped, offer_id, safe_lang)
-                        display = result.get("display", {}) or {}
-                        ai_generated = display.pop("_aiGenerated", None)
+                        display: dict[str, Any] = cast(dict[str, Any], result.get("display")) or {}
+                        ai_generated: Any = display.pop("_aiGenerated", None)
                         display_i18n: dict[str, Any] = {}
                         di18n_raw = saved.get("display_i18n")
                         if di18n_raw:
@@ -254,11 +254,13 @@ class AnalyzeService:
                     di18n: dict[str, Any] = json.loads(di18n_raw) if isinstance(di18n_raw, str) else di18n_raw
                     if di18n:
                         lang = next(iter(di18n), "")
-                        first_display: dict[str, Any] = di18n.get(lang, {})  # type: ignore[assignment]
-                        trust: dict[str, Any] = first_display.get("trustBar", {}) if isinstance(first_display, dict) else {}  # type: ignore[assignment]
-                        seller_label = trust.get("label", "")
-                        supplier_eval: dict[str, Any] = first_display.get("supplierEval", {}) if isinstance(first_display, dict) else {}  # type: ignore[assignment]
-                        seller_grade = supplier_eval.get("grade", "none") if isinstance(supplier_eval, dict) else "none"
+                        first_display: Any = di18n.get(lang, {})
+                        if isinstance(first_display, dict):
+                            fd: dict[str, Any] = cast(dict[str, Any], first_display)
+                            trust: dict[str, Any] = cast(dict[str, Any], fd.get("trustBar")) or {}
+                            seller_label = str(trust.get("label", ""))
+                            supplier_eval: dict[str, Any] = cast(dict[str, Any], fd.get("supplierEval")) or {}
+                            seller_grade = str(supplier_eval.get("grade", "none"))
                 except (json.JSONDecodeError, TypeError, StopIteration):
                     pass
             row["lang"] = lang
@@ -277,7 +279,7 @@ class AnalyzeService:
     async def get_saved_report(self, offer_id: str, user_id: int, lang: str = "") -> dict[str, Any] | None:
         """从 DB 读已保存的报告，返回缓存好的 display（display_i18n）。
 
-        请求语言有缓存 → 直接返回；没有 → 降级到第一个可用语言。不重跑 mapper/翻译。
+        请求语言有缓存 → 直接返回；没有 → 复用 raw_json 重建该语言（跳过 Apify）。
         """
         saved = await self.repo.get_by_offer_id(offer_id, user_id)
         if not saved:
@@ -293,7 +295,23 @@ class AnalyzeService:
             except json.JSONDecodeError:
                 display_i18n = {}
 
-        display: dict[str, Any] = display_i18n.get(safe_lang) or next(iter(display_i18n.values()), {})
+        # 有当前语言缓存 → 直接返回；缺语言 → 复用 raw_json 重建（跳过 Apify，跑 mapper + 判词/翻译）
+        if safe_lang in display_i18n and display_i18n[safe_lang]:
+            return {"display": display_i18n[safe_lang]}
+
+        raw: dict[str, Any] = saved.get("raw", {}) or {}
+        raw_url: str = str(raw.get("detailUrl") or "") or Config.URL_1688_DETAIL.format(offer_id=offer_id)
+        mapped: dict[str, Any] = map_raw(raw, raw_url, offer_id)
+        result: dict[str, Any] = await build_result_with_display(mapped, offer_id, safe_lang)
+        display: dict[str, Any] = result.get("display", {}) or {}
+        # G12：读 _aiGenerated（旧名 _translatedLang 恒空导致非 zh 不落库），读后剥离内部标记
+        ai_generated = display.pop("_aiGenerated", None)
+        if safe_lang == "zh" or ai_generated:
+            display_i18n[safe_lang] = display
+            try:
+                await self.repo.update_display_i18n(offer_id, user_id, json.dumps(display_i18n, ensure_ascii=False))
+            except Exception:
+                logger.exception(f"历史报告重建语言{safe_lang}后回写失败 offer_id={offer_id}")
         return {"display": display}
 
     # ------------------------------------------------------------------

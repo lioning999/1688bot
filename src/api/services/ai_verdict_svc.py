@@ -251,6 +251,12 @@ def _merge_ai_verdicts(
         if "supplierEval" in display and isinstance(display["supplierEval"], dict):
             display["supplierEval"]["companyName"] = sname.strip()
 
+    # 排名标签翻译（1688 原始中文 → 目标语言）→ factory.rankText（emoji 前缀与 glossary emoji_rank 一致）
+    rank_t: str = str(ai.get("translated_rank", ""))
+    if rank_t and rank_t.strip():
+        if "factory" in display and isinstance(display["factory"], dict):
+            display["factory"]["rankText"] = "🏆 " + rank_t.strip()
+
     # 判词语优化（逐字段校验，失败 → 保留 glossary 模板）
     _verdict_fields: list[tuple[str, str, tuple[str, ...]]] = [
         ("product_verdict", "productEval", ("product",)),

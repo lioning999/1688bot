@@ -30,6 +30,7 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         "/api/config",   # 公开配置（汇率等，无需登录）
         "/api/proxy",    # 图片代理（html2canvas 截图用，无需登录）
         "/api/quota",    # 配额查询（前端未登录时也会调，无敏感数据）
+        "/api/admin",    # 管理后台（独立 role=admin 鉴权，不走普通 JWT）
     ]
 
     async def dispatch(

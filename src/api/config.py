@@ -108,6 +108,11 @@ class Config:
     # ---- Sentry 错误监控 ----
     SENTRY_DSN: str = os.getenv("SENTRY_DSN", "")
 
+    # ---- 管理后台（自用，账号密码配 env） ----
+    ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "")
+    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "")
+    ADMIN_TOKEN_EXPIRE_HOURS: int = int(os.getenv("ADMIN_TOKEN_EXPIRE_HOURS", "12"))  # admin token 短命，防长期驻留
+
     @classmethod
     def validate(cls) -> None:
         """启动时校验必填配置。缺失报错，防止带病启动。"""

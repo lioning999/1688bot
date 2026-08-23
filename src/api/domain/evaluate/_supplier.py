@@ -94,8 +94,8 @@ def _supplier_signals(mapped: dict[str, Any]) -> dict[str, Any]:
         d3 = _dim_fmt("d3", 3, "📅", "supp_dim_d3_name_old", "supp_dim_d3_label_old",
                       "supp_dim_d3_data_fmt", shop_years, "supp_dim_d3_ref_fmt", SHOP_OLD)
     elif shop_years >= SHOP_NEW:
-        years_strength, years_label = "medium", ""
-        d3 = _dim_fmt("d3", 2, "📅", "supp_dim_d3_name", "",
+        years_strength, years_label = "weak", "supp_bad_years_new"
+        d3 = _dim_fmt("d3", 1, "📅", "supp_dim_d3_name", "",
                       "supp_dim_d3_data_fmt", shop_years, "supp_dim_d3_ref_fmt", SHOP_OLD)
     else:
         years_strength, years_label = "weak", "supp_bad_years_new"

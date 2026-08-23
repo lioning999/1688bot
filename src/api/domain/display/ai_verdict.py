@@ -87,11 +87,15 @@ def pack_ai_input(
     summary_tier: str = str(summary_raw.get("tier", "wait_data"))
 
     return {
+        "lang": lang,
         "conclusion": {
             "product_tier": p_tier,
             "supplier_tier": s_tier,
             "summary_tier": summary_tier,
             "tone": _derive_tone(p_tier),
+            "product_grade": str(product_raw.get("grade", "")),
+            "supplier_grade": str(supplier_raw.get("grade", "")),
+            "summary_grade": str(summary_raw.get("grade", "")),
         },
         "currency": str(money["symbol"]) if money else "¥",
         "must_mention": _pack_product_must_mention(product_raw, mapped, money),
@@ -104,6 +108,7 @@ def pack_ai_input(
         "to_translate": {
             "title": str(mapped.get("title", "")),
             "supplier_name": str(mapped.get("supplierName", "")),
+            "rank": str(mapped.get("rankText", "")),
         },
     }
 
@@ -552,6 +557,82 @@ def validate_ai_output(
             "entirely in the target language (English/Vietnamese/Thai)."
         )
 
+    # 规则 4：结论词锁 grade — 首词必须匹配该字段档位对应的结论词（方法论 §三 标准1）
+    errors.extend(_check_conclusion_word(ai_text, ai_input, dimension_sections))
+
+    # 规则 5：恰好 ≤3 句 + 每句不超 90 字（方法论 §三 标准6）
+    errors.extend(_check_sentence_structure(ai_text))
+
+    # 规则 6：综合判词禁祈使/催促（方法论 §四·五）
+    errors.extend(_check_summary_urgency(ai_text, ai_input, dimension_sections))
+
+    return errors
+
+
+# ---- 结构校验辅助 ----
+
+def _field_for_sections(dimension_sections: tuple[str, ...]) -> str:
+    """维度 section → 判词字段名（用于取对应档位 + 触发综合专属规则）。"""
+    if dimension_sections == ("supplier",):
+        return "supplier"
+    if dimension_sections == ("product",):
+        return "product"
+    return "summary"  # ("product", "supplier") 或 ()（综合不查数字）
+
+
+def _check_conclusion_word(ai_text: str, ai_input: dict[str, Any], dimension_sections: tuple[str, ...]) -> list[str]:
+    """规则4：判词首词必须匹配档位结论词，禁止 AI 自由选结论（待落地①）。"""
+    field: str = _field_for_sections(dimension_sections)
+    conclusion: dict[str, Any] = cast(dict[str, Any], ai_input.get("conclusion")) or {}
+    grade: str = str(conclusion.get(f"{field}_grade", ""))
+    lang: str = str(ai_input.get("lang", "en"))
+    structure: dict[str, Any] = cast(dict[str, Any], _VP.get("_structure")) or {}
+    cw: dict[str, Any] = cast(dict[str, Any], structure.get("conclusion_words")) or {}
+    by_lang: dict[str, Any] = cast(dict[str, Any], cw.get(lang)) or {}
+    words: list[str] = cast(list[str], by_lang.get(grade)) or []
+    if not grade or not words:
+        return []  # 无档位或该语言无词表 → 无法判断，跳过（宽松兜底）
+
+    low: str = ai_text.strip().lower()
+    for w in words:
+        if low.startswith(str(w).lower()):
+            return []
+    return [
+        f'Verdict must open with a conclusion word matching grade "{grade}" '
+        f'(one of: {", ".join(words)}).'
+    ]
+
+
+def _check_sentence_structure(ai_text: str) -> list[str]:
+    """规则5：≤3 句 + 总长 ≤200 字（截句按句末标点后跟空白，避免拆分千分位/小数）。
+
+    用总长而非每句长：越/泰语天然更啰嗦，泰语模板常无句末标点，每句阈值会误杀正确模板。
+    """
+    cfg: dict[str, Any] = _VP.get("_structure") or {}
+    max_s: int = int(cfg.get("max_sentences", 3))
+    max_total: int = int(cfg.get("max_total_chars", 200))
+    parts: list[str] = [p.strip() for p in re.split(r"(?<=[.!?。！？])\s+", ai_text) if p.strip()]
+    errors: list[str] = []
+    if len(parts) > max_s:
+        errors.append(f"Verdict has {len(parts)} sentences; max {max_s}.")
+    if len(ai_text) > max_total:
+        errors.append(f"Verdict too long ({len(ai_text)} chars); max {max_total}.")
+    return errors
+
+
+def _check_summary_urgency(ai_text: str, ai_input: dict[str, Any], dimension_sections: tuple[str, ...]) -> list[str]:
+    """规则6：仅综合判词，禁命令/催促语（方法论 §四·五）。"""
+    if _field_for_sections(dimension_sections) != "summary":
+        return []
+    lang: str = str(ai_input.get("lang", "en"))
+    structure: dict[str, Any] = cast(dict[str, Any], _VP.get("_structure")) or {}
+    up: dict[str, Any] = cast(dict[str, Any], structure.get("urgency_patterns")) or {}
+    patterns: list[str] = cast(list[str], up.get(lang)) or []
+    low: str = ai_text.lower()
+    errors: list[str] = []
+    for p in patterns:
+        if str(p).lower() in low:
+            errors.append(f'Urgency/imperative phrase "{p}" is not allowed in the summary.')
     return errors
 
 
