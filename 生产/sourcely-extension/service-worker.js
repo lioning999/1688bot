@@ -63,7 +63,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       return true;
 
     case 'API_GET_REPORT':
-      proxy('/api/report/' + payload.offerId, { method: 'GET' }).then(sendResponse);
+      proxy('/api/report/' + payload.offerId + '?lang=' + encodeURIComponent(payload.lang || ''), { method: 'GET' }).then(sendResponse);
       return true;
 
     case 'API_GET_HISTORY':

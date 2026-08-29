@@ -6,9 +6,7 @@
   "permissions": ["sidePanel", "activeTab", "storage", "tabs", "identity"],
   "host_permissions": [
     "*://*.1688.com/*",
-    "https://sourcely1688.com/*",
-    "http://localhost:8008/*",
-    "http://127.0.0.1:8008/*"
+    "https://sourcely1688.com/*"
   ],
   "icons": {
     "16": "icons/16.png",

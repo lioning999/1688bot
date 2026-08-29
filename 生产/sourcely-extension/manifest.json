@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Sourcely — 1688 Supplier Check",
+  "name": "Sourcely — 1688 Supplier Background Check",
   "version": "1.0.0",
-  "description": "Open any 1688 product page and instantly check whether the supplier is reliable.",
+  "description": "Open a 1688 product page and instantly check if the supplier is reliable.",
   "permissions": ["sidePanel", "activeTab", "storage", "tabs", "identity"],
   "host_permissions": [
     "*://*.1688.com/*",
@@ -19,7 +19,7 @@
     "default_path": "sidepanel.html"
   },
   "action": {
-    "default_title": "Sourcely — 1688 Supplier Check",
+    "default_title": "Sourcely — 1688 Supplier Background Check",
     "default_icon": {
       "16": "icons/16.png",
       "48": "icons/48.png",
