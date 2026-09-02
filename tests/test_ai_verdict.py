@@ -41,8 +41,8 @@ def test_high_quality_product_keeps_all_dims():
         "title": "t", "supplierName": "s",
     }
     ai = _pack(mapped)
-    assert len(ai["dimensions"]["product"]) == 6
-    assert len(ai["dimensions"]["supplier"]) == 3
+    assert len(ai["dimensions"]["product"]) == 4
+    assert len(ai["dimensions"]["supplier"]) == 5
 
 
 def test_partial_data_keeps_only_available_dims():

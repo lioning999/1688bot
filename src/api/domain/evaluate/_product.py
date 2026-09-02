@@ -1,4 +1,4 @@
-"""产品评判引擎 — 6 维信号 → 致命检查 → 12 规则档位匹配 → 判词。
+"""产品评判引擎 — 4 维信号（销量/关注/门槛/退货）→ 加权评分 → 规则档位匹配 → 判词。
 
 纯函数模块，零外部依赖。被 evaluator.py 导入，外部代码不应直接引用此文件。
 
@@ -9,11 +9,15 @@ from typing import Any, cast
 from domain.evaluate._base import (
     verdict, safe_int, safe_float,
     SOLD_HOT, SOLD_POTENTIAL,
-    REPURCHASE_HIGH, REPURCHASE_MID,
     PRICE_LOW, PRICE_MID, MOQ_LOW, MOQ_MID,
-    POSITIVE_HIGH, POSITIVE_MID, POSITIVE_BAD,
     WANTED_HIGH, WANTED_MID,
 )
+
+# 产品维度权重（核心算法，权威源：docs/技术-评分标准与标签体系.md §一）
+# 产品 4 维：销量 d1 / 关注 d5 / 门槛 d3 / 退货 d6。键名保留 v1 空洞编号不重排。
+# 加权总分 = Σ(强度分 × 权重)，满分 3.0。权重只做展示分，档位仍由规则判定。
+PROD_DIM_WEIGHTS: dict[str, float] = {"d1": 0.35, "d5": 0.25, "d3": 0.25, "d6": 0.15}
+PROD_ACTIVE_DIMS: tuple[str, ...] = ("d1", "d5", "d3", "d6")  # 展示顺序：销量→关注→门槛→退货
 
 
 # ====================================================================
@@ -21,11 +25,14 @@ from domain.evaluate._base import (
 # ====================================================================
 
 def _product_signals(mapped: dict[str, Any]) -> dict[str, Any]:
-    """从 mapped dict 提取 6 维信号 + 评分 + 标签。
+    """从 mapped dict 提取 4 维信号 + 评分 + 标签。
+
+    v2：产品只读产品级数据（销量/门槛/关注/退货）。复购率、好评率是店铺级数据，
+    已归供应商评分（_supplier），产品侧不消费 mapped.repurchase / positive_rate。
 
     Returns:
-        {sold, repurchase, price, moq, positive, wanted, return7day, has_service_labels, unit,
-         d1~d6 每个维度的 {score, label_key, data_fmt/data_key, data_num/data_params, ref_fmt, ref_num}}
+        {sold, price, moq, wanted, return7day, has_service_labels, unit,
+         d1/d3/d5/d6 每个维度的 {score, label_key, data_fmt/data_key, data_num/data_params, ref_fmt, ref_num}}
     """
     price_cny_raw: Any = mapped.get("priceCNY")
     price_cny: dict[str, Any] = cast(dict[str, Any], price_cny_raw) if isinstance(price_cny_raw, dict) else {}
@@ -33,8 +40,6 @@ def _product_signals(mapped: dict[str, Any]) -> dict[str, Any]:
     entry_price: float | None = safe_float(price_cny.get("high")) or price
     moq: int | None = safe_int(mapped.get("moq"))
     sales: int | None = safe_int(mapped.get("sold"))
-    repurchase: float | None = safe_float(mapped.get("repurchase"))
-    positive: float | None = safe_float(mapped.get("positive_rate"))
     wanted: int | None = safe_int(mapped.get("wantBuy"))
     return7day: str = str(mapped.get("return7day", ""))
     has_service_labels: bool = bool(mapped.get("has_service_labels"))
@@ -43,8 +48,8 @@ def _product_signals(mapped: dict[str, Any]) -> dict[str, Any]:
     display_price: float = entry_price if entry_price is not None else (price or 0)
 
     signals: dict[str, Any] = {
-        "sold": sales, "repurchase": repurchase, "price": price, "moq": moq,
-        "positive": positive, "wanted": wanted, "return7day": return7day,
+        "sold": sales, "price": price, "moq": moq,
+        "wanted": wanted, "return7day": return7day,
         "has_service_labels": has_service_labels, "unit": unit,
         "display_price": display_price,
     }
@@ -63,19 +68,7 @@ def _product_signals(mapped: dict[str, Any]) -> dict[str, Any]:
         signals["d1"] = _dim("d1", 1, "🔥", "prod_dim_d1_name", "",
                              "prod_dim_d1_data_fmt", sales, "prod_dim_d1_ref_fmt", SOLD_HOT)
 
-    # D2 复购
-    if repurchase is None:
-        signals["d2"] = _dim("d2", 0, "🔄", "prod_dim_d2_name", "",
-                             data_fmt="", data_num=None, ref_fmt="", ref_num=None)
-    elif repurchase > REPURCHASE_HIGH:
-        signals["d2"] = _dim("d2", 3, "🔄", "prod_dim_d2_name_high", "prod_dim_d2_label",
-                             "prod_dim_d2_data_fmt", repurchase, "prod_dim_d2_ref_fmt", REPURCHASE_HIGH)
-    elif repurchase > REPURCHASE_MID:
-        signals["d2"] = _dim("d2", 2, "🔄", "prod_dim_d2_name", "",
-                             "prod_dim_d2_data_fmt", repurchase, "prod_dim_d2_ref_fmt", REPURCHASE_HIGH)
-    else:
-        signals["d2"] = _dim("d2", 1, "🔄", "prod_dim_d2_name", "",
-                             "prod_dim_d2_data_fmt", repurchase, "prod_dim_d2_ref_fmt", REPURCHASE_HIGH)
+    # (D2 复购已移除 — 店铺级数据归供应商评分，见 _supplier.py 权重表)
 
     # D3 门槛
     if price is None or moq is None:
@@ -91,19 +84,7 @@ def _product_signals(mapped: dict[str, Any]) -> dict[str, Any]:
         signals["d3"] = _dim_p("d3", 1, "💰", "prod_dim_d3_name_low", "",
                                "prod_dim_d3_data_fmt", {"price": display_price, "moq": moq, "unit": unit})
 
-    # D4 口碑
-    if positive is None:
-        signals["d4"] = _dim("d4", 0, "⭐", "prod_dim_d4_name", "",
-                             data_fmt="", data_num=None, ref_fmt="", ref_num=None)
-    elif positive >= POSITIVE_HIGH:
-        signals["d4"] = _dim("d4", 3, "⭐", "prod_dim_d4_name_high", "prod_dim_d4_label",
-                             "prod_dim_d4_data_fmt", positive, "prod_dim_d4_ref_fmt", POSITIVE_HIGH)
-    elif positive >= POSITIVE_MID:
-        signals["d4"] = _dim("d4", 2, "⭐", "prod_dim_d4_name", "",
-                             "prod_dim_d4_data_fmt", positive, "prod_dim_d4_ref_fmt", POSITIVE_HIGH)
-    else:
-        signals["d4"] = _dim("d4", 1, "⭐", "prod_dim_d4_name", "",
-                             "prod_dim_d4_data_fmt", positive, "prod_dim_d4_ref_fmt", POSITIVE_HIGH)
+    # (D4 好评已移除 — 店铺级数据归供应商评分，见 _supplier.py 权重表)
 
     # D5 关注（wantBuy）
     if wanted is None:
@@ -163,29 +144,10 @@ def _dim_p(key: str, score: int, icon: str, name_key: str, label_key: str,
 # 致命短板 + 数据不足
 # ====================================================================
 
-def _product_fatal(signals: dict[str, Any]) -> dict[str, Any] | None:
-    """致命短板一票否决。
-
-    - 好评率 < 80%（接口保留，当前数据覆盖率 0%）
-
-    无7天退货不再一票否决——改为 D6=1 低分 + risk_flag 标风险，
-    由12规则正常匹配 tier，判词模板追加退货风险提醒。
-    """
-    if signals["positive"] is not None and signals["positive"] < POSITIVE_BAD:
-        return _make_result(0, "bad", "fatal_badrate",
-                            verdict("prod_summary_fatal"),
-                            verdict("prod_verdict_fatal_badrate",
-                                     positive=str(signals["positive"])),
-                            signals, fatal_reason="badrate")
-    return None
-
-
 def _product_missing(signals: dict[str, Any]) -> bool:
-    """核心数据缺失检查：销量 + 复购 + 退货 ≥ 2 项缺失 → 跳过。"""
+    """核心数据缺失检查：销量 + 退货 ≥ 2 项缺失 → 跳过（v2 无复购维度）。"""
     missing = 0
     if signals["sold"] is None:
-        missing += 1
-    if signals["repurchase"] is None:
         missing += 1
     if not signals["has_service_labels"]:
         missing += 1
@@ -197,65 +159,43 @@ def _product_missing(signals: dict[str, Any]) -> bool:
 # ====================================================================
 
 def _product_tier(signals: dict[str, Any]) -> str:
-    """12 条规则按优先级顺序匹配，返回 tier key。
+    """产品规则按优先级顺序匹配，返回 tier key（v2：无复购/好评依赖）。
 
-    前置条件：已通过 fatal 和 missing 检查。
-    中等亮点 = score == 2 的维度数（score=3 由规则 3-9 覆盖）。
+    产品只剩真实产品信号：销量 / 关注 / 门槛 / 退货。
+    档位语义：go 双热（热销+高关注）；trial 热销单信号/高关注低销量/多中等；
+    watch 信号平平。产品无 caution/bad（低质信号不足 → 观望，不轻判「坏品」）。
+    无复购数据后 go 档变严是特性——判词向用户传递「新品默认更谨慎」。
     """
     sold: int | None = signals["sold"]
-    repurchase: float | None = signals["repurchase"]
     wanted: int | None = signals["wanted"]
 
     medium = _count_medium(signals)
 
-    # Rule 3: 高复购 + 有销量基础
-    if (repurchase is not None and repurchase > REPURCHASE_HIGH
-            and sold is not None and sold > SOLD_POTENTIAL):
-        return "go_repurchase"
-    # Rule 4: 热销 + 高关注（双热信号）
+    # Rule 1: 热销 + 高关注（双热信号 → go）
     if (sold is not None and sold > SOLD_HOT
             and wanted is not None and wanted > WANTED_HIGH):
         return "go_hot_wanted"
-    # Rule 5: 热销 + 有复购
+    # Rule 2: 热销但关注不高 → 试（单一信号撑不起 go）
     if (sold is not None and sold > SOLD_HOT
-            and repurchase is not None and repurchase > REPURCHASE_MID):
-        return "go_hot_repeat"
-    # Rule 6: 热销 + 复购未知 + 关注不高
-    if (sold is not None and sold > SOLD_HOT
-            and repurchase is None
             and (wanted is None or wanted <= WANTED_HIGH)):
         return "trial_hot_unknown"
-    # Rule 7: 高关注 + 低销量
+    # Rule 3: 高关注 + 低销量 → 试（需求未兑现，先小单）
     if (wanted is not None and wanted > WANTED_HIGH
             and (sold is None or sold <= SOLD_POTENTIAL)):
         return "trial_wanted_low"
-    # Rule 8: 高复购 + 销量少 + 门槛低
-    if (repurchase is not None and repurchase > REPURCHASE_HIGH
-            and (sold is None or sold <= SOLD_POTENTIAL)
-            and signals["d3"]["score"] >= 2):
-        return "trial_rep_low"          # 门槛低 → 值得试
-    # Rule 9: 中等亮点 ≥ 3
+    # Rule 4: 中等亮点 ≥ 3 → 试
     if medium >= 3:
         return "trial_medium3"
-    # Rule 10: 热销 + 已知低复购
-    if (sold is not None and sold > SOLD_HOT
-            and repurchase is not None and repurchase <= REPURCHASE_MID):
-        return "caution_hot_low"
-    # Rule 11: 高复购 + 销量少 + 门槛高
-    if (repurchase is not None and repurchase > REPURCHASE_HIGH
-            and (sold is None or sold <= SOLD_POTENTIAL)):
-        return "caution_rep_low"        # 门槛高 → 先算账
-    # Rule 12: 中等亮点 1-2
+    # Rule 5: 中等亮点 1-2 → 观望
     if medium >= 1:
         return "watch_medium12"
-    # Rule 13: 全维度平平 / 新品无销量
+    # Rule 6: 全维度平平 / 新品无销量 → 观望
     return "watch_flat"
 
 
 def _count_medium(signals: dict[str, Any]) -> int:
-    """统计 score == 2 的维度数。"""
-    return sum(1 for d in ("d1", "d2", "d3", "d4", "d5", "d6")
-               if signals[d]["score"] == 2)
+    """统计活跃维度（d1/d3/d5/d6）score == 2 的数量。"""
+    return sum(1 for d in PROD_ACTIVE_DIMS if signals[d]["score"] == 2)
 
 
 # ====================================================================
@@ -289,24 +229,19 @@ def _common_params(signals: dict[str, Any]) -> dict[str, Any]:
 def _productverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     """根据 tier 组装完整 verdict dict。"""
     sold: int | None = signals["sold"]
-    repurchase: float | None = signals["repurchase"]
     wanted: int | None = signals["wanted"]
     medium = _count_medium(signals)
 
     base = _common_params(signals)
 
     # tier → (verdict_key, summary_key, grade, extra_params)
+    # v2 产品无复购/好评依赖 tier（go_repurchase/go_hot_repeat/trial_rep_low/caution_* 已删）
     mapping: dict[str, tuple[str, str, str, dict[str, Any]]] = {
         "skip":            ("prod_verdict_skip_nodata",    "prod_summary_watch",   "none", {"missing_count": str(_count_missing(signals))}),
-        "go_repurchase":   ("prod_verdict_go_repurchase",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
         "go_hot_wanted":   ("prod_verdict_go_hot_wanted",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "wanted": str(wanted or 0)}),
-        "go_hot_repeat":   ("prod_verdict_go_hot_repeat",  "prod_summary_go",      "go",   {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
         "trial_hot_unknown": ("prod_verdict_trial_hot_unknown", "prod_summary_trial", "ok", {"sold": str(sold or 0)}),
         "trial_wanted_low":  ("prod_verdict_trial_wanted_low",  "prod_summary_trial", "ok", {"wanted": str(wanted or 0), "sold": str(sold or 0)}),
-        "trial_rep_low":   ("prod_verdict_trial_rep_low",  "prod_summary_trial",   "ok",   {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
         "trial_medium3":   ("prod_verdict_trial_medium3",  "prod_summary_trial",   "ok",   {"highlight_count": str(medium)}),
-        "caution_hot_low": ("prod_verdict_caution_hot_low","prod_summary_caution",  "bad",  {"sold": str(sold or 0), "repurchase": str(repurchase or 0)}),
-        "caution_rep_low": ("prod_verdict_caution_rep_low","prod_summary_caution",  "bad",  {"repurchase": str(repurchase or 0), "sold": str(sold or 0)}),
         "watch_medium12":  ("prod_verdict_watch_medium12", "prod_summary_watch",   "none", {"highlight_count": str(medium)}),
         "watch_flat":      ("prod_verdict_watch_flat",     "prod_summary_watch",   "none", {}),
     }
@@ -315,30 +250,29 @@ def _productverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
     v = verdict(v_key, **extra, **base)
     summary_kv = verdict(s_key)
 
-    total_score = sum(signals[d]["score"] for d in ("d1", "d2", "d3", "d4", "d5", "d6"))
+    # 加权总分（展示分，满分 3.0）：Σ(强度分 × 权重)。档位仍由规则判定。
+    total_score = round(sum(signals[d]["score"] * PROD_DIM_WEIGHTS[d] for d in PROD_ACTIVE_DIMS), 2)
 
     return _make_result(total_score, grade, tier, summary_kv, v, signals,
                         skip_reason="missing_data" if tier == "skip" else None)
 
 
 def _count_missing(signals: dict[str, Any]) -> int:
-    """统计核心数据缺失项数。"""
+    """统计核心数据缺失项数（v2：销量 + 退货）。"""
     return (1 if signals["sold"] is None else 0) + \
-           (1 if signals["repurchase"] is None else 0) + \
            (1 if not signals["has_service_labels"] else 0)
 
 
-def _make_result(score: int, grade: str, tier: str,
+def _make_result(score: float, grade: str, tier: str,
                  summary: dict[str, Any], verdict: dict[str, Any],
                  signals: dict[str, Any],
                  fatal_reason: str | None = None,
                  skip_reason: str | None = None) -> dict[str, Any]:
     """组装统一的 result dict。"""
-    # 维度展示顺序拨正：销量 → 门槛 → 退货 → 好评 → 复购 → 关注
-    dims = [signals["d1"], signals["d3"], signals["d6"],
-            signals["d4"], signals["d2"], signals["d5"]]
+    # 维度展示顺序：销量 → 关注 → 门槛 → 退货（PROD_ACTIVE_DIMS）
+    dims = [signals[d] for d in PROD_ACTIVE_DIMS]
     return {
-        "score": score, "max_score": 18,
+        "score": score, "max_score": 3.0,
         "grade": grade, "tier": tier,
         "summary": summary, "verdict": verdict,
         "dimensions": dims,
@@ -353,11 +287,8 @@ def _make_result(score: int, grade: str, tier: str,
 # ====================================================================
 
 def evaluate_product(mapped: dict[str, Any]) -> dict[str, Any]:
-    """产品维度评判：6 维信号 → 致命检查 → 数据检查 → 12 规则档位匹配 → 判词。"""
+    """产品维度评判：4 维信号 → 数据检查 → 规则档位匹配 → 加权评分 + 判词。"""
     signals = _product_signals(mapped)
-    fatal = _product_fatal(signals)
-    if fatal is not None:
-        return fatal
     if _product_missing(signals):
         return _productverdict("skip", signals)
     return _productverdict(_product_tier(signals), signals)

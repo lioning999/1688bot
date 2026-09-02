@@ -1,15 +1,27 @@
-"""供应商评判引擎 — 3 维信号强度 → 黑箱检查 → 信号强度计数 → 6 规则 → 4 档 grade → 判词。
+"""供应商评判引擎 — 5 维信号（身份/认证/年限/复购/好评）→ 黑箱检查 → 档位 → 判词。
 
 纯函数模块，零外部依赖。被 evaluator.py 导入，外部代码不应直接引用此文件。
+
+v2：复购率、好评率（店铺级数据）归位到供应商侧。三高维（认证/复购/好评）处理：
+- 认证空 → 档位封顶「usable」（无第三方验证到不了 trust/go）
+- 复购/好评空 → 归一不计（无信号，不拖累总分）
+加权展示分满分 3.0；档位仍由身份/认证/年限（100% 有值骨架）判定。
 
 依据：docs/技术-评分标准与标签体系.md §二
 """
 from typing import Any
 
 from domain.evaluate._base import (
-    verdict, safe_int,
+    verdict, safe_int, safe_float,
     SHOP_OLD, SHOP_NEW,
+    REPURCHASE_HIGH, REPURCHASE_MID,
+    POSITIVE_HIGH, POSITIVE_MID,
 )
+
+# 供应商维度权重（核心算法，权威源：docs/技术-评分标准与标签体系.md §二）
+# 身份 0.35 / 认证 0.25 / 年限 0.20 / 复购 0.10 / 好评 0.10（店铺级，弱参考）
+SUP_DIM_WEIGHTS: dict[str, float] = {"d1": 0.35, "d2": 0.25, "d3": 0.20, "d4": 0.10, "d5": 0.10}
+SUP_ACTIVE_DIMS: tuple[str, ...] = ("d1", "d2", "d3", "d4", "d5")
 
 
 # ====================================================================
@@ -17,12 +29,15 @@ from domain.evaluate._base import (
 # ====================================================================
 
 def _supplier_signals(mapped: dict[str, Any]) -> dict[str, Any]:
-    """提取 3 维信号强度（强/中等/弱/未知）。
+    """提取 5 维信号（身份/认证/年限强 3 维 + 复购/好评参考 2 维）。
+
+    v2：复购率/好评率是店铺级数据，从产品维度归位到此处。
+    认证/复购/好评高空值维度 → 归一处理（见 _supplierverdict），缺失不拖累总分。
 
     Returns:
         {identity_strength, cert_strength, years_strength,
-         d1~d3 维度 dict, has_id, has_cert, has_years,
-         identity_label, cert_type, shop_years}
+         d1~d5 维度 dict, has_id, has_cert, has_years, has_repurchase, has_positive,
+         identity_label, cert_type, shop_years, repurchase, positive}
     """
     flags: str = str(mapped.get("factoryFlags") or "")
     seller_type: str = str(mapped.get("sellerType") or "")
@@ -31,6 +46,9 @@ def _supplier_signals(mapped: dict[str, Any]) -> dict[str, Any]:
     cert_type: str = str(cert_type_raw) if (cert_type_raw and str(cert_type_raw) not in ("None", "")) else ""
     shop_years_val: Any = mapped.get("shop_years")
     shop_years: int | None = safe_int(shop_years_val)
+    # 店铺级数据（v2 归位供应商）：supplier.stats.repeatRate / positiveReviewRate
+    repurchase: float | None = safe_float(mapped.get("repurchase"))
+    positive: float | None = safe_float(mapped.get("positive_rate"))
 
     # ---- 身份强度 ----
     is_advanced: bool = (
@@ -104,13 +122,43 @@ def _supplier_signals(mapped: dict[str, Any]) -> dict[str, Any]:
               "data_key": "supp_dim_d3_data_short",
               "ref_fmt": "supp_dim_d3_ref_fmt", "ref_num": SHOP_OLD, "ref_params": {}}
 
+    # ---- D4 复购（店铺回头率，弱参考；空 → 归一不计）----
+    has_repurchase: bool = repurchase is not None
+    if repurchase is None:
+        d4 = _dim_fmt("d4", 0, "🔄", "supp_dim_d4_name", "", "", None, "", None)
+    elif repurchase > REPURCHASE_HIGH:
+        d4 = _dim_fmt("d4", 3, "🔄", "supp_dim_d4_name_high", "supp_dim_d4_label",
+                      "supp_dim_d4_data_fmt", repurchase, "supp_dim_d4_ref_fmt", REPURCHASE_HIGH)
+    elif repurchase > REPURCHASE_MID:
+        d4 = _dim_fmt("d4", 2, "🔄", "supp_dim_d4_name", "",
+                      "supp_dim_d4_data_fmt", repurchase, "supp_dim_d4_ref_fmt", REPURCHASE_HIGH)
+    else:
+        d4 = _dim_fmt("d4", 1, "🔄", "supp_dim_d4_name", "",
+                      "supp_dim_d4_data_fmt", repurchase, "supp_dim_d4_ref_fmt", REPURCHASE_HIGH)
+
+    # ---- D5 好评（店铺好评率，弱参考；空 → 归一不计）----
+    has_positive: bool = positive is not None
+    if positive is None:
+        d5 = _dim_fmt("d5", 0, "⭐", "supp_dim_d5_name", "", "", None, "", None)
+    elif positive >= POSITIVE_HIGH:
+        d5 = _dim_fmt("d5", 3, "⭐", "supp_dim_d5_name_high", "supp_dim_d5_label",
+                      "supp_dim_d5_data_fmt", positive, "supp_dim_d5_ref_fmt", POSITIVE_HIGH)
+    elif positive >= POSITIVE_MID:
+        d5 = _dim_fmt("d5", 2, "⭐", "supp_dim_d5_name", "",
+                      "supp_dim_d5_data_fmt", positive, "supp_dim_d5_ref_fmt", POSITIVE_HIGH)
+    else:
+        d5 = _dim_fmt("d5", 1, "⭐", "supp_dim_d5_name", "",
+                      "supp_dim_d5_data_fmt", positive, "supp_dim_d5_ref_fmt", POSITIVE_HIGH)
+
     return {
         "identity_strength": identity_strength, "cert_strength": cert_strength, "years_strength": years_strength,
         "identity_label": identity_label, "cert_label": cert_label, "years_label": years_label,
         "cert_type": cert_type, "shop_years": shop_years,
+        "repurchase": repurchase, "positive": positive,
         "has_id": has_id, "has_cert": has_cert, "has_years": has_years,
         "has_deep_cert": has_deep_cert, "has_basic_cert": has_basic_cert,
-        "d1": d1, "d2": d2, "d3": d3,
+        "has_repurchase": has_repurchase, "has_positive": has_positive,
+        "d1": d1, "d2": d2, "d3": d3, "d4": d4, "d5": d5,
     }
 
 
@@ -165,11 +213,11 @@ def _supplier_fatal(signals: dict[str, Any]) -> dict[str, Any] | None:
     """黑箱检查：身份 + 认证 + 年限 全空 → 致命（别碰）。"""
     if not signals["has_id"] and not signals["has_cert"] and not signals["has_years"]:
         return {
-            "score": 0, "max_score": 9,
+            "score": 0, "max_score": 3.0,
             "grade": "bad", "tier": "fatal_blackbox",
             "summary": verdict("supp_summary_fatal"),
             "verdict": verdict("supp_verdict_fatal_blackbox"),
-            "dimensions": [signals["d1"], signals["d2"], signals["d3"]],
+            "dimensions": [signals[d] for d in SUP_ACTIVE_DIMS],
             "fatal_reason": "blackbox", "skip_reason": None,
             "signals": signals,
         }
@@ -208,7 +256,9 @@ def _supplier_tier(signals: dict[str, Any]) -> str:
         elif s == "weak":
             weak += 1
 
-    # 真工厂 + 深度验厂 → 信任
+    # 真工厂 + 深度验厂 → 信任。
+    # 认证封顶规则：trust 需 cert=="strong"。认证空/基础 → cert 到不了 strong
+    # → 档位最高 usable（v2 核心算法：无第三方验证到不了 trust/go）
     if identity == "strong" and cert == "strong":
         return "trust_strong2"
     # 强-弱净分 ≥ 1 → 还行（弱信号已计入，不再漏）
@@ -287,13 +337,22 @@ def _supplierverdict(tier: str, signals: dict[str, Any]) -> dict[str, Any]:
                      years=years_str, cert_text=cert_type, action_key=action_key)
         summary_kv, grade = verdict("supp_summary_caution"), "bad"
 
-    total = sum(signals[d]["score"] for d in ("d1", "d2", "d3"))
+    # 加权总分（展示分，满分 3.0）：Σ(强度分×权重) / 可得维度权重和（归一）。
+    # Σ(score×w)/denom 已落在 [0,3]（权重和为 1 时 score×w 满分 3），无需再缩放。
+    # 高空值维（认证/复购/好评）缺失 → 不进分母（归一），不拖累总分；
+    # 认证缺失的档位风险由封顶规则表达（无认证到不了 trust），不是线性扣分。
+    available = [d for d in SUP_ACTIVE_DIMS
+                 if {"d1": signals["has_id"], "d2": signals["has_cert"],
+                     "d3": signals["has_years"], "d4": signals["has_repurchase"],
+                     "d5": signals["has_positive"]}[d]]
+    denom = sum(SUP_DIM_WEIGHTS[d] for d in available)
+    total = round(sum(signals[d]["score"] * SUP_DIM_WEIGHTS[d] for d in available) / denom, 2) if denom else 0.0
 
     return {
-        "score": total, "max_score": 9,
+        "score": total, "max_score": 3.0,
         "grade": grade, "tier": tier,
         "summary": summary_kv, "verdict": v,
-        "dimensions": [signals["d1"], signals["d2"], signals["d3"]],
+        "dimensions": [signals[d] for d in SUP_ACTIVE_DIMS],
         "fatal_reason": "blackbox" if tier == "fatal_blackbox" else None,
         "skip_reason": "missing_data" if tier == "skip" else None,
         "signals": signals,

@@ -102,7 +102,7 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         headline_kv = verdict("summary_headline_wait")
         grade = "none"
 
-    # 综合判词证据：品侧自然数字（销量→关注→复购→价格，取第一个有值）
+    # 综合判词证据：品侧自然数字（销量→关注→价格，取第一个有值；v2 无产品复购）
     # 厂侧好/坏信号（复用 good/bad_part_keys 机制，空也传 [] 防 format 失败）
     p_sig: dict[str, Any] = product_result.get("signals", {})
     s_sig: dict[str, Any] = supplier_result.get("signals", {})
@@ -117,9 +117,6 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         except (ValueError, TypeError):
             return str(n)
 
-    def _fmt_pct(v: Any) -> str:
-        return f"{_fmt_num(v)}%"
-
     def _fmt_price(v: Any) -> str:
         return f"¥{v:.2f}"
 
@@ -127,7 +124,6 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
     for field, fmt in (
         ("sold", _fmt_num),
         ("wanted", _fmt_num),
-        ("repurchase", _fmt_pct),
         ("display_price", _fmt_price),
     ):
         if p_sig.get(field) is not None:
@@ -167,8 +163,8 @@ def evaluate_summary(product_result: dict[str, Any], supplier_result: dict[str, 
         "verdict": summary_kv,
         "headline": headline_kv,
         "reason": reason_kv,
-        "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 18)}",
-        "supplier_score": f"{supplier_result.get('score', 0)}/{supplier_result.get('max_score', 9)}",
+        "product_score": f"{product_result.get('score', 0)}/{product_result.get('max_score', 3.0)}",
+        "supplier_score": f"{supplier_result.get('score', 0)}/{supplier_result.get('max_score', 3.0)}",
         "grade": grade,
         "tier": summary_tier,
     }

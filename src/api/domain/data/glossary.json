@@ -981,6 +981,16 @@
     "ru": "Опытный магазин"
   },
   "supp_dim_d3_ref_fmt": {
+  "supp_dim_d4_data_fmt": {"zh": "复购率 {n}%", "en": "Repurchase Rate {n}%", "vi": "Tỷ lệ mua lại {n}%", "th": "อัตราซื้อซ้ำ {n}%", "ru": "Повторные покупки {n}%"},
+  "supp_dim_d4_label": {"zh": "🔄高复购", "en": "🔄 High Repurchase", "vi": "🔄 Mua Lại Cao", "th": "🔄 ซื้อซ้ำสูง", "ru": "🔄 Высокие повторные покупки"},
+  "supp_dim_d4_name": {"zh": "复购", "en": "Repurchase", "vi": "Mua lại", "th": "ซื้อซ้ำ", "ru": "Повторные покупки"},
+  "supp_dim_d4_name_high": {"zh": "高复购", "en": "High Repurchase", "vi": "Mua Lại Cao", "th": "ซื้อซ้ำสูง", "ru": "Высокие повторные покупки"},
+  "supp_dim_d4_ref_fmt": {"zh": "标杆 >{n}%", "en": "Benchmark >{n}%", "vi": "Chuẩn >{n}%", "th": "เกณฑ์ >{n}%", "ru": "Порог >{n}%"},
+  "supp_dim_d5_data_fmt": {"zh": "好评率 {n}%", "en": "Positive Rate {n}%", "vi": "Tỷ lệ tốt {n}%", "th": "อัตรารีวิวดี {n}%", "ru": "Положительные отзывы {n}%"},
+  "supp_dim_d5_label": {"zh": "⭐口碑好", "en": "⭐ Good Reputation", "vi": "⭐ Uy Tín Tốt", "th": "⭐ ชื่อเสียงดี", "ru": "⭐ Хорошая репутация"},
+  "supp_dim_d5_name": {"zh": "口碑", "en": "Reputation", "vi": "Uy tín", "th": "ชื่อเสียง", "ru": "Репутация"},
+  "supp_dim_d5_name_high": {"zh": "口碑好", "en": "Good Reputation", "vi": "Uy Tín Tốt", "th": "ชื่อเสียงดี", "ru": "Хорошая репутация"},
+  "supp_dim_d5_ref_fmt": {"zh": "标杆 ≥{n}%", "en": "Benchmark ≥{n}%", "vi": "Chuẩn ≥{n}%", "th": "เกณฑ์ ≥{n}%", "ru": "Порог ≥{n}%"},
     "zh": "标杆 ≥{n}年",
     "en": "Benchmark ≥{n}y",
     "vi": "Chuẩn ≥{n} năm",
