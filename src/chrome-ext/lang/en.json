@@ -40,6 +40,7 @@
   "history.limitFull": "⚠️ Limit reached. New analyses auto-remove the oldest unfavorited records. {fav} to keep them.",
 
   "msg.LOGIN_REQUIRED": "Please login first",
+  "msg.BOT_AUTH_FAILED": "Bot authentication failed",
   "msg.INTERNAL_ERROR": "Internal server error. Please try again later.",
   "msg.PROXY_HOST_DENIED": "This domain is not allowed.",
   "msg.PROXY_FETCH_FAILED": "Failed to load image.",
@@ -58,6 +59,7 @@
   "msg.FETCH_FAILED_RETRY_TOMORROW": "This link keeps failing. Please try again tomorrow or contact us on WhatsApp.",
   "msg.APIFY_QUOTA_EXHAUSTED": "Daily analysis quota used up. Please try again tomorrow.",
   "msg.FETCH_FAILED_RETRY_LATER": "Failed to fetch. Please try again later.",
+  "msg.FETCH_EMPTY_QUOTA_SAVED": "Failed to fetch data — no quota deducted this time. Try again later, or upgrade to PRO for more features.",
   "msg.PRODUCT_NOT_FOUND": "This product may have been delisted. Please check and try again.",
   "msg.TIMEOUT_RETRY": "Request timed out. Please try again later.",
   "msg.IPC_ERROR": "Communication failed. Please reload the extension.",

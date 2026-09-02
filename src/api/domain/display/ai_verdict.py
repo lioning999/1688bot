@@ -566,6 +566,11 @@ def validate_ai_output(
     # 规则 6：综合判词禁祈使/催促（方法论 §四·五）
     errors.extend(_check_summary_urgency(ai_text, ai_input, dimension_sections))
 
+    # 规则 7：综合判词数字数量 — 至少 2 产品数 + 1 供应商数（数据不足自动放宽）。
+    # 仅真实 summary 调用（("product","supplier")）触发；() 表示不查数字（测试用）。
+    if dimension_sections == ("product", "supplier"):
+        errors.extend(_check_summary_numbers(ai_text, ai_input))
+
     return errors
 
 
@@ -634,6 +639,41 @@ def _check_summary_urgency(ai_text: str, ai_input: dict[str, Any], dimension_sec
         if str(p).lower() in low:
             errors.append(f'Urgency/imperative phrase "{p}" is not allowed in the summary.')
     return errors
+
+
+def _check_summary_numbers(ai_text: str, ai_input: dict[str, Any]) -> list[str]:
+    """规则7：综合判词数字数量 — 至少 2 产品数 + 1 供应商数（数据不足自动放宽）。
+
+    每个「含数字的维度」计一个可用数字（取 data 首个数字，ref 阈值不计数）。
+    need = min(需求数, 可用数)：数据缺失时自动放宽，不误杀缺数据的品。
+    """
+    dims: dict[str, Any] = ai_input.get("dimensions") or {}
+    product_nums: list[str] = _dim_first_numbers(dims.get("product", []))
+    supplier_nums: list[str] = _dim_first_numbers(dims.get("supplier", []))
+    need_p: int = min(2, len(product_nums))
+    need_s: int = min(1, len(supplier_nums))
+
+    found_p: int = sum(1 for n in product_nums if _number_appears(ai_text, n))
+    found_s: int = sum(1 for n in supplier_nums if _number_appears(ai_text, n))
+
+    errors: list[str] = []
+    if found_p < need_p:
+        errors.append(f"Summary must include at least {need_p} product numbers (found {found_p}).")
+    if found_s < need_s:
+        errors.append(f"Summary must include at least {need_s} supplier number(s) (found {found_s}).")
+    return errors
+
+
+def _dim_first_numbers(dims: list[Any]) -> list[str]:
+    """从每个维度的 data 文本提取首个数字（ref 阈值不计数，只算主数据数字）。"""
+    nums: list[str] = []
+    for d in dims:
+        if not isinstance(d, dict):
+            continue
+        m: re.Match[str] | None = re.search(r"\d[\d.,]*\d|\d", str(d.get("data", "")))
+        if m:
+            nums.append(m.group(0))
+    return nums
 
 
 def _number_appears(text: str, num_str: str) -> bool:

@@ -11,11 +11,15 @@ CREATE DATABASE IF NOT EXISTS sourcely_DB
 USE sourcely_DB;
 
 -- ============================================================
--- 1. users — Google 登录用户
+-- 1. users — Google / Telegram 登录用户（多身份，单用户表）
+--    已有库迁移：ALTER TABLE users
+--      MODIFY google_id VARCHAR(100) NULL UNIQUE,
+--      ADD COLUMN telegram_uid VARCHAR(50) NULL UNIQUE AFTER google_id;
 -- ============================================================
 CREATE TABLE users (
   id          INT AUTO_INCREMENT PRIMARY KEY,
-  google_id   VARCHAR(100) NOT NULL UNIQUE COMMENT 'Google sub claim',
+  google_id   VARCHAR(100) NULL UNIQUE COMMENT 'Google sub claim，bot 用户为空',
+  telegram_uid VARCHAR(50) NULL UNIQUE COMMENT 'Telegram user_id，bot 用户身份',
   email       VARCHAR(200) COMMENT 'Google 账号邮箱，可空',
   name        VARCHAR(200) COMMENT 'Google 账号显示名',
   avatar_url  VARCHAR(500) COMMENT 'Google 头像 URL',
@@ -26,7 +30,7 @@ CREATE TABLE users (
   last_reset_date DATE DEFAULT NULL COMMENT '上次配额补充日期，用于懒重置',
   default_lang VARCHAR(5) DEFAULT NULL COMMENT '用户默认语言 en/vi/th/zh'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Google 登录用户';
+  COMMENT='Google/Telegram 登录用户';
 
 -- ============================================================
 -- 2. analysis — 分析记录（主表）

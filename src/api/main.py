@@ -18,6 +18,7 @@ from middleware import JWTAuthMiddleware
 from routes.admin import admin_page_router, admin_router
 from routes.auth import auth_router, callback_router, user_router
 from routes.analyze import router as analyze_router
+from routes.bot_auth import router as bot_auth_router
 from routes.history import router as history_router
 from routes.proxy import router as proxy_router
 from utils.exceptions import AppError
@@ -138,6 +139,7 @@ app.include_router(admin_page_router)
 app.include_router(auth_router)
 app.include_router(callback_router)
 app.include_router(analyze_router)
+app.include_router(bot_auth_router)
 app.include_router(history_router)
 app.include_router(proxy_router)
 app.include_router(user_router)

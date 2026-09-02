@@ -461,7 +461,7 @@
   function fmtMoney(n) {
     var lang = I18N.getLang();
     var sym = I18N.t('currency.symbol') || '¥';
-    var dec = { en: 2, vi: 0, th: 0, zh: 2 }[lang];
+    var dec = { en: 2, vi: 0, th: 0, zh: 2, ru: 0 }[lang];
     if (dec == null) dec = 2;
     return sym + Number(n).toLocaleString(lang, { minimumFractionDigits: dec, maximumFractionDigits: dec });
   }

@@ -27,6 +27,19 @@ class UserRepository:
         finally:
             await AsyncDatabaseConnection.close_connection(conn)
 
+    async def get_by_telegram_uid(self, telegram_uid: str) -> dict[str, Any] | None:
+        """按 telegram_uid 查用户（bot 身份），无记录返回 None。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "SELECT id, google_id, telegram_uid, email, name, avatar_url, tier, quota, last_reset_date, default_lang, created_at, last_login FROM users WHERE telegram_uid=%s",
+                    (telegram_uid,),
+                )
+                return await cur.fetchone()
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
     async def create(self, google_id: str, email: str | None = None,
                      name: str | None = None, avatar_url: str | None = None,
                      default_lang: str | None = None) -> int:
@@ -38,6 +51,24 @@ class UserRepository:
                     "INSERT INTO users (google_id, email, name, avatar_url, quota, default_lang, last_reset_date) "
                     "VALUES (%s, %s, %s, %s, %s, %s, CURDATE())",
                     (google_id, email, name, avatar_url, Config.SIGNUP_BONUS_QUOTA, default_lang),
+                )
+                await conn.commit()
+                return cur.lastrowid  # type: ignore[return-value]
+        except Exception:
+            await conn.rollback()
+            raise
+        finally:
+            await AsyncDatabaseConnection.close_connection(conn)
+
+    async def create_by_telegram(self, telegram_uid: str, default_lang: str | None = None) -> int:
+        """创建 bot 用户（google_id 为空），返回自增 ID。quota = DAILY_FREE_QUOTA（免费每天3次）。"""
+        conn = await AsyncDatabaseConnection.get_connection()
+        try:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute(
+                    "INSERT INTO users (telegram_uid, google_id, quota, default_lang, last_reset_date) "
+                    "VALUES (%s, NULL, %s, %s, CURDATE())",
+                    (telegram_uid, Config.DAILY_FREE_QUOTA, default_lang),
                 )
                 await conn.commit()
                 return cur.lastrowid  # type: ignore[return-value]

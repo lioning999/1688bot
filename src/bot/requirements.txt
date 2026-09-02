@@ -1,0 +1,3 @@
+# ===== Telegram bot 进程（复用后端 Python 环境，零新增依赖） =====
+httpx>=0.27.0     # 调后端 API + Telegram Bot API（长轮询）
+python-dotenv>=1.0.0  # 读 src/api/.env（与后端共享）

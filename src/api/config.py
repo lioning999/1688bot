@@ -65,6 +65,7 @@ class Config:
     SIGNUP_BONUS_QUOTA: int = int(os.getenv("SIGNUP_BONUS_QUOTA", "10"))        # 注册一次性赠送
     DAILY_FREE_QUOTA: int = int(os.getenv("DAILY_FREE_QUOTA", "3"))              # free tier 每日地板
     DAILY_PAID_QUOTA: int = int(os.getenv("DAILY_PAID_QUOTA", "20"))             # paid tier 每日地板
+    PAID_ONETIME_QUOTA: int = int(os.getenv("PAID_ONETIME_QUOTA", "300"))        # bot 付费一次性开通配额（不限时间，不每日重置）
     # ---- 历史记录上限 ----
     HISTORY_FREE_MAX: int = int(os.getenv("HISTORY_FREE_MAX", "20"))             # free tier 历史记录上限
     HISTORY_PAID_MAX: int = int(os.getenv("HISTORY_PAID_MAX", "100"))            # paid tier 历史记录上限
@@ -93,6 +94,7 @@ class Config:
     FX_THB: float = float(os.getenv("FX_THB", "35.7"))
     FX_IDR: float = float(os.getenv("FX_IDR", "16100"))
     FX_MYR: float = float(os.getenv("FX_MYR", "4.65"))
+    FX_RUB: float = float(os.getenv("FX_RUB", "95"))
     FX_PHP: float = float(os.getenv("FX_PHP", "57.2"))
 
     # ---- Qwen3 翻译（新加坡节点，OpenAI 兼容接口） ----
@@ -112,6 +114,9 @@ class Config:
     ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "")
     ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "")
     ADMIN_TOKEN_EXPIRE_HOURS: int = int(os.getenv("ADMIN_TOKEN_EXPIRE_HOURS", "12"))  # admin token 短命，防长期驻留
+
+    # ---- Telegram bot ----
+    BOT_SECRET: str = os.getenv("BOT_SECRET", "")  # bot 进程→后端 鉴权共享密钥（bot/login 校验用，禁止硬编码）
 
     @classmethod
     def validate(cls) -> None:

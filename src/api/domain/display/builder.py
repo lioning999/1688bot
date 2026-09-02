@@ -73,7 +73,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en", money: dict[str, Any
         构建失败返回最小可用结构（不抛异常）。
     """
     # 兜底 lang（不支持的语言默认英文）
-    safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "en"
+    safe_lang: str = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
 
     # 验货报告评判（domain 内部组合：evaluator → display）
     product_raw: dict[str, Any] = evaluate_product(mapped)
@@ -403,7 +403,7 @@ def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lan
                 elif data_fmt and dim.get("data_num") is not None:
                     # D1/D2/D4：{n} 格式
                     d_out["data"] = _glossary(data_fmt, lang).format(
-                        n=_fmt_dim_num(dim["data_num"])
+                        n=_fmt_dim_num(dim["data_num"], lang)
                     )
                 else:
                     d_out["data"] = ""
@@ -416,7 +416,7 @@ def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lan
             ref_fmt: str = str(dim.get("ref_fmt", ""))
             if ref_fmt and dim.get("ref_num") is not None:
                 d_out["ref"] = _glossary(ref_fmt, lang).format(
-                    n=_fmt_dim_num(dim["ref_num"])
+                    n=_fmt_dim_num(dim["ref_num"], lang)
                 )
             else:
                 d_out["ref"] = ""
@@ -497,7 +497,7 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
                 data_fmt: str = str(dim.get("data_fmt", ""))
                 if data_fmt and dim.get("data_num") is not None:
                     d_out["data"] = _glossary(data_fmt, lang).format(
-                        n=_fmt_dim_num(dim["data_num"])
+                        n=_fmt_dim_num(dim["data_num"], lang)
                     )
                 elif dim.get("data_text"):
                     # ASCII 认证类型（SGS/TUV）→ 原样透传
@@ -514,7 +514,7 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
             ref_fmt: str = str(dim.get("ref_fmt", ""))
             if ref_fmt and dim.get("ref_num") is not None:
                 d_out["ref"] = _glossary(ref_fmt, lang).format(
-                    n=_fmt_dim_num(dim["ref_num"])
+                    n=_fmt_dim_num(dim["ref_num"], lang)
                 )
             else:
                 d_out["ref"] = ""
@@ -714,16 +714,19 @@ def _s(val: Any) -> str:
     return str(val)
 
 
-def _fmt_dim_num(n: Any) -> str:
-    """维度数字格式化：8900 → '8,900'，67.5 → '67.5'。千分位 + 保留小数。"""
+def _fmt_dim_num(n: Any, lang: str = "") -> str:
+    """维度数字格式化：8900 → '8,900'（ru: '8 900'），67.5 → '67,5'（ru）。千分位 + 保留小数。"""
     if n is None:
         return "0"
     try:
         v: float = float(n)
         if v == int(v):
-            return f"{int(v):,}"
+            return f"{int(v):,}".replace(",", " " if lang == "ru" else ",")
         s: str = f"{v:,.1f}"
-        return s.rstrip("0").rstrip(".") if "." in s else s
+        s = s.rstrip("0").rstrip(".") if "." in s else s
+        if lang == "ru":
+            return s.replace(",", " ").replace(".", ",")
+        return s
     except (ValueError, TypeError):
         return str(n)
 

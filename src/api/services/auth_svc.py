@@ -86,6 +86,22 @@ class AuthService:
             },
         }
 
+    async def bot_login(self, telegram_uid: str) -> dict[str, Any]:
+        """Telegram bot 自动注册/登录（零密码，telegram_uid 唯一身份，语言固定 ru）。
+
+        首触建用户（quota = DAILY_FREE_QUOTA），复用现有 JWT 签发。
+        """
+        default_lang = "ru"  # bot 仅俄语市场
+        existing = await self.user_repo.get_by_telegram_uid(telegram_uid)
+        if existing:
+            user_id = existing["id"]
+        else:
+            user_id = await self.user_repo.create_by_telegram(telegram_uid, default_lang=default_lang)
+            logger.info(f"Bot user registered: id={user_id}, telegram_uid={telegram_uid}")
+
+        access_token = create_token(user_id=user_id, default_lang=default_lang)
+        return {"access_token": access_token, "user": {"id": user_id}}
+
     async def get_quota_with_reset(self, user_id: int) -> dict[str, Any] | None:
         """查配额 + 懒重置补地板。None = 用户不存在。
 

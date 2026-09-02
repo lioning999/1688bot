@@ -147,7 +147,7 @@ class AnalyzeService:
                                                "error_msg_code": "INTERNAL_ERROR",
                                                "error_http_status": 500, "created_at": time.time()}
                             return
-                        safe_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
+                        safe_lang = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
                         mapped = map_raw(saved.get("raw", {}), raw_url, offer_id)
                         result = await build_result_with_display(mapped, offer_id, safe_lang)
                         display: dict[str, Any] = cast(dict[str, Any], result.get("display")) or {}
@@ -285,7 +285,7 @@ class AnalyzeService:
         if not saved:
             return None
 
-        safe_lang: str = lang if lang in ("en", "vi", "th", "zh") else "en"
+        safe_lang: str = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
 
         display_i18n_raw = saved.get("display_i18n")
         display_i18n: dict[str, Any] = {}
@@ -328,7 +328,7 @@ class AnalyzeService:
             # ---- 1. DB 检查（3.1：复用 raw_json + display_i18n） ----
             saved = await self.repo.get_by_offer_id(offer_id, user_id)
             if saved:
-                safe_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
+                safe_lang = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
                 display_i18n: dict[str, Any] = {}
                 di18n_raw = saved.get("display_i18n")
                 if di18n_raw:
@@ -396,11 +396,12 @@ class AnalyzeService:
                 raise ExternalServiceError(service_name="Apify", details={"reason": "fetch_failed"}) from e
 
             if raw is None:
+                # 空结果 ≠ 已下架：商品可能存在，是 Apify actor 抓取失败 → 退配额 + 中性文案防误导
                 _tasks[task_id] = {
                     "status": "failed",
-                    "error": "该链接可能已下架，请检查后重试",
-                    "error_msg_code": "PRODUCT_NOT_FOUND",
-                    "error_http_status": 404,
+                    "error": "数据获取失败，已退还本次分析次数，请稍后重试",
+                    "error_msg_code": "FETCH_EMPTY_QUOTA_SAVED",
+                    "error_http_status": 502,
                     "created_at": time.time(),
                 }
                 await _user_repo.increment_quota(user_id)
@@ -426,7 +427,7 @@ class AnalyzeService:
             display: dict[str, Any] = result.get("display", {}) or {}
             # G12：读 _aiGenerated（旧名 _translatedLang 恒空导致非 zh 不落库），读后剥离内部标记
             display_lang: str = str(display.pop("_aiGenerated", ""))
-            save_lang = lang if lang in ("en", "vi", "th", "zh") else "en"
+            save_lang = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
             if user_id and (save_lang == "zh" or display_lang):
                 try:
                     await self._save_to_db_upsert(raw, mapped, {save_lang: display}, user_id, offer_id)

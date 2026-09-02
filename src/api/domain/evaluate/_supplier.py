@@ -141,9 +141,16 @@ def _dim_fmt(key: str, score: int, icon: str, name_key: str, label_key: str,
 
 def _cert_dim(key: str, score: int, name_key: str, label_key: str,
               cert_type: str, in_glossary: bool) -> dict[str, Any]:
-    """构建认证维度 dict，区分 glossary key 和 ASCII 透传。"""
+    """构建认证维度 dict，区分 glossary key 和 ASCII 透传。
+
+    白名单外 certType 提取可显示段："深度认证·tuv" → "TUV"（有认证不许显示成无数据）。
+    """
     data_key: str = cert_type if in_glossary else ""
-    data_text: str = cert_type.upper() if (cert_type.isascii() and not in_glossary) else ""
+    data_text: str = ""
+    if not in_glossary and cert_type:
+        cert_name: str = cert_type.rsplit("·", 1)[-1] if "·" in cert_type else cert_type
+        if cert_name.isascii():
+            data_text = cert_name.upper()
     return {"key": key, "score": score, "icon": "📋",
             "name_key": name_key, "label_key": label_key,
             "data_key": data_key, "data_text": data_text,

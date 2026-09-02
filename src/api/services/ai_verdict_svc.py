@@ -68,6 +68,8 @@ def _make_money(lang: str) -> dict[str, Any] | None:
         return {"symbol": "₫", "per_cny": float(Config.FX_VND) / cny_usd, "decimals": 0}
     if lang == "th":
         return {"symbol": "฿", "per_cny": float(Config.FX_THB) / cny_usd, "decimals": 0}
+    if lang == "ru":
+        return {"symbol": "₽", "per_cny": float(Config.FX_RUB) / cny_usd, "decimals": 0}
     return None
 
 
@@ -80,8 +82,8 @@ async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any]
     # 1. 构建模板 display（始终作为兜底）
     display: dict[str, Any] = build_display(mapped, lang, money)
 
-    # 2. 语言检查：仅 en/vi/th 走 AI 判词
-    if lang not in ("en", "vi", "th"):
+    # 2. 语言检查：仅 en/vi/th/ru 走 AI 判词
+    if lang not in ("en", "vi", "th", "ru"):
         return display
 
     if not Config.QWEN_API_KEY:

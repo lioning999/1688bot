@@ -40,6 +40,7 @@
   "history.limitFull": "⚠️ 已达上限。新分析将自动清除最早的未收藏记录。{fav}可防删。",
 
   "msg.LOGIN_REQUIRED": "请先登录",
+  "msg.BOT_AUTH_FAILED": "机器人鉴权失败",
   "msg.INTERNAL_ERROR": "服务器内部错误，请稍后重试",
   "msg.PROXY_HOST_DENIED": "不允许代理该域名",
   "msg.PROXY_FETCH_FAILED": "图片代理调用失败",
@@ -58,6 +59,7 @@
   "msg.FETCH_FAILED_RETRY_TOMORROW": "该链接连续获取失败，请明天再试或联系 WhatsApp",
   "msg.APIFY_QUOTA_EXHAUSTED": "今日分析服务额度已用完，请明天再试",
   "msg.FETCH_FAILED_RETRY_LATER": "获取失败，请稍后重试",
+  "msg.FETCH_EMPTY_QUOTA_SAVED": "数据获取失败，本次未扣除次数。请稍后重试，升级 PRO 可解锁更多服务",
   "msg.PRODUCT_NOT_FOUND": "该链接可能已下架，请检查后重试",
   "msg.TIMEOUT_RETRY": "获取超时，请稍后重试",
   "msg.IPC_ERROR": "通信失败，请重载插件",

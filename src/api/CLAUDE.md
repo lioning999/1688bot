@@ -22,7 +22,7 @@
   → 规则引擎评判 evaluate（domain/evaluate/：产品 12 规则 + 供应商 6 规则 → 4 档）
   → build_result_with_display（services/ai_verdict_svc.py）：
       ├─ zh → 模板 display（domain/display/builder.py）
-      └─ 非zh → build_with_ai（services/ai_verdict_svc.py）
+      └─ 非zh(含ru) → build_with_ai（services/ai_verdict_svc.py）
               → 母语 system prompt（domain/display/verdict_prompts.json）
               → Qwen 一次调用出判词+翻译（adapters/qwen_adapter.py）
   → display_i18n 落库（analysis 表，仅当前语言）
@@ -105,7 +105,7 @@
 
 ### msg_code 铁律
 
-**每一条可能展示给用户的响应都 MUST 带 `msg_code`。** 它是对前端 `lib/i18n.js` + `lang/{zh,en,vi,th}.json`（唯一消息出口）的契约字段。
+**每一条可能展示给用户的响应都 MUST 带 `msg_code`。** 它是对前端 `lib/i18n.js` + `lang/{zh,en,vi,th,ru}.json`（唯一消息出口）的契约字段。
 
 | 规则 | 说明 |
 |------|------|
@@ -115,7 +115,7 @@
 | 中间件 401 必须加 `msg_code` | `JSONResponse` content dict 中手动加 |
 | `services/analyze_svc.py` task dict 的 error/warning 加在 dict 里 | 不是抛异常，是写入 `_tasks`，route 读出后返回前端 |
 | `message` 字段保留 | 前端无 `msg_code` 对应翻译时降级显示 `message` |
-| 后端禁止翻译 `msg_code` | 翻译在前端 `lib/i18n.js`（`lang/{zh,en,vi,th}.json`）通过 i18n 完成 |
+| 后端禁止翻译 `msg_code` | 翻译在前端 `lib/i18n.js`（`lang/{zh,en,vi,th,ru}.json`）通过 i18n 完成 |
 
 **新增/修改路由如果产生用户可见消息 → 必须同步更新 `/file-map` skill + 前端 i18n JSON。**
 

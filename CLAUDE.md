@@ -16,6 +16,7 @@
 | 写后端代码 | `src/api/CLAUDE.md` + `docs/项目架构宪法.md` §标准形状 |
 | 写插件前端 | `src/chrome-ext/CLAUDE.md` |
 | 改架构 | `docs/项目架构宪法.md` 全文 |
+| 加语言/多语言 | `docs/加语言checklist.md`（6组联动点 + 进程重启/清缓存/回归测试） |
 | 不确定 | `docs/README.md` 索引 |
 
 > ⚠️ **提醒（100% 弹出）：** 匹配到上述文档时，先问用户：「`XX.md` 可能已过时。要我查文档还是你直接告诉我规则？」再继续。
@@ -35,7 +36,7 @@
 src/api/       — FastAPI 后端（routes/services/adapters/repositories/domain/utils）
 src/chrome-ext/ — Chrome 插件（MV3，side panel + service worker）
 docs/          — 项目文档（README.md 入口）
-db/            — MySQL schema
+src/api/db/    — MySQL schema（schema.sql）
 ```
 
 ---

@@ -1,0 +1,42 @@
+"""display builder 本地化回归 — 防「加语言漏配汇率/货币」踩坑（2026-09-01 ru 事故复盘）。
+
+加新语言时若 _make_money() 或 Config.FX_* 漏配，非 zh 语言价格会保持 CNY 原值；
+本文件断言任意非 zh 语言 build_display 输出价格已按 per_cny 换算。
+对应 docs/加语言checklist.md 三层防线中的「机器强制」层。
+"""
+
+from domain.display.builder import _fmt_dim_num, build_display
+
+# 高质商品 mapped（结构可过 evaluate_product/evaluate_supplier）
+_MAPPED = {
+    "priceCNY": {"low": 5.0, "high": 6.0}, "moq": 50, "sold": 2000,
+    "repurchase": 40.0, "positive_rate": 98.0, "wantBuy": 200,
+    "return7day": "OK", "has_service_labels": True, "unit": "件",
+    "factoryFlags": "超级工厂", "sellerType": "super_factory",
+    "certType": "SGS 实地认证", "shop_years": 5,
+    "title": "测试商品", "supplierName": "测试供应商",
+}
+
+
+def test_non_zh_price_converted_by_money():
+    """ru：price 必须按 per_cny 换算（≠ CNY 原值）。漏配汇率时此测试红。"""
+    money = {"symbol": "₽", "per_cny": 13.19, "decimals": 0}
+    d = build_display(_MAPPED, "ru", money)
+    assert d["price"]["low"] == round(5.0 * 13.19, 6)
+    assert d["price"]["high"] == round(6.0 * 13.19, 6)
+    assert d["price"]["low"] != 5.0  # 没换算 = 仍 CNY
+
+
+def test_no_money_keeps_cny():
+    """money=None（zh/模板路径）：价格保持 CNY 原值。"""
+    d = build_display(_MAPPED, "zh")
+    assert d["price"]["low"] == 5.0
+    assert d["price"]["high"] == 6.0
+
+
+def test_fmt_dim_num_ru_thousand_sep():
+    """ru 千分位用空格、小数用逗号；en 保持逗号千分位。"""
+    assert _fmt_dim_num(8900, "ru") == "8 900"
+    assert _fmt_dim_num(67.5, "ru") == "67,5"
+    assert _fmt_dim_num(8900, "en") == "8,900"
+    assert _fmt_dim_num(8900, "") == "8,900"

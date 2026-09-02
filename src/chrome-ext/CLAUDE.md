@@ -41,7 +41,7 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
     → Apify 抓取 → map_raw()
     → build_result_with_display(mapped, offer_id, lang) → evaluate 判词
       ├─ lang=zh: build_display(mapped) → 模板路径
-      └─ lang=en/vi/th: build_with_ai(mapped, lang) → Qwen AI 路径
+      └─ lang=en/vi/th/ru: build_with_ai(mapped, lang) → Qwen AI 路径
   → display JSON → SW → sidepanel.js: render()
 ```
 
@@ -131,7 +131,7 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 |---------|-------|:--:|
 | 结构化数字（价格/销量/MOQ/年限） | `dimensions[].data` — glossary 模板 + mapper 数值 | ⭐⭐⭐ 确定 |
 | 规则判词（产品/供应商 verdict） | `productEval.verdict` — glossary 模板 + 规则引擎参数 | ⭐⭐⭐ 确定 |
-| AI 判词（en/vi/th verdict） | `productEval.verdict` — Qwen 生成（`_aiGenerated` 标记） | ⭐⭐ 可能含幻觉 |
+| AI 判词（en/vi/th/ru verdict） | `productEval.verdict` — Qwen 生成（`_aiGenerated` 标记） | ⭐⭐ 可能含幻觉 |
 | 库存/排名/公司/产业带 | 各自的 display 字段 — mapper 原始值 | ⭐⭐⭐ 确定 |
 
 > **铁律：渲染数字永远用 `dimensions[].data`，禁止从 `verdict` 文本中提取数字。**
@@ -176,21 +176,21 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ ① 前端 i18n — 只翻译「壳」                               │
-│    lang/{zh,en,vi,th}.json                              │
+│    lang/{zh,en,vi,th,ru}.json                          │
 │    按钮文案、标签、提示、固定 UI 文本                      │
 │    I18N.t(key) → 每种商品一样，与数据无关                  │
 ├─────────────────────────────────────────────────────────┤
 │ ② 后端 glossary.json — 判词 + 术语（预翻译，静态）        │
 │    src/api/domain/data/glossary.json                     │
 │    规则判词、维度名、标杆文案、卖家标签、库存档位           │
-│    builder.py: _glossary(key, lang) → 4 语言平行翻译      │
+│    builder.py: _glossary(key, lang) → 5 语言平行翻译      │
 │    中文由我们产出、可穷举 → 不调 AI                        │
 ├─────────────────────────────────────────────────────────┤
 │ ③ Qwen AI 判词 — 判词语优化 + 标题/供应商名翻译            │
 │    services/ai_verdict_svc.py → build_with_ai()            │
 │    母语 system prompt（domain/display/verdict_prompts.json）│
 │    一次 Qwen 调用输出：判词(3字段) + 标题翻译 + 供应商名     │
-│    仅 lang=en/vi/th 时触发，zh 走 glossary 模板             │
+│    仅 lang=en/vi/th/ru 时触发，zh 走 glossary 模板        │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -204,7 +204,7 @@ Side Panel (HTML/CSS/JS)     Service Worker (JS)        FastAPI 后端
 
 ### i18n 操作规范
 
-- 新增 UI 文案 → 4 语言 JSON 同步追加，key 前缀 `inspect.` / `plugin.` / `report.` / `history.`
+- 新增 UI 文案 → 5 语言 JSON 同步追加，key 前缀 `inspect.` / `plugin.` / `report.` / `history.`
 - `zh.json` 是源语言，其他语言的 key 必须与 zh.json 完全一致
 - `I18N.t(key)` 找不到时返回 `key` 自身（降级显示）
 
@@ -237,7 +237,8 @@ src/chrome-ext/
     ├── zh.json           # 中文（源语言）
     ├── en.json
     ├── vi.json
-    └── th.json
+    ├── th.json
+    └── ru.json
 ```
 
 ## 八、禁止事项

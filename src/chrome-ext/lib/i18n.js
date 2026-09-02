@@ -8,7 +8,8 @@ var I18N = (function () {
     zh: { label: '中文' },
     en: { label: 'English' },
     vi: { label: 'Tiếng Việt' },
-    th: { label: 'ภาษาไทย' }
+    th: { label: 'ภาษาไทย' },
+    ru: { label: 'Русский' }
   };
 
   var current = LOCALES.en;
@@ -17,7 +18,7 @@ var I18N = (function () {
 
   function detect(cb) {
     var navLang = (navigator.language || 'en').slice(0, 2).toLowerCase();
-    var supported = ['zh', 'en', 'vi', 'th'];
+    var supported = ['zh', 'en', 'vi', 'th', 'ru'];
     var detected = supported.indexOf(navLang) !== -1 ? navLang : 'en';
 
     chrome.storage.local.get('sourcely_lang', function (items) {

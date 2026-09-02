@@ -1,1443 +1,1683 @@
 {
-  "_about": "Sourcely 术语/模板字典 — 唯一翻译数据源。4语言平行(zh/en/vi/th)。改中文KEY时必须同步检查其他3语言翻译。",
+  "_about": "Sourcely 术语/模板字典 — 唯一翻译数据源。5语言平行(zh/en/vi/th/ru)。改中文KEY时必须同步检查其他3语言翻译。",
   "24小时发货": {
     "zh": "24小时发货",
     "en": "24-Hour Dispatch",
     "vi": "Giao Hàng Trong 24 Giờ",
-    "th": "จัดส่งภายใน 24 ชม."
+    "th": "จัดส่งภายใน 24 ชม.",
+    "ru": "Отправка за 24 часа"
   },
   "48小时发货": {
     "zh": "48小时发货",
     "en": "48-Hour Dispatch",
     "vi": "Giao Hàng Trong 48 Giờ",
-    "th": "จัดส่งภายใน 48 ชม."
+    "th": "จัดส่งภายใน 48 ชม.",
+    "ru": "Отправка за 48 часов"
   },
   "7天包换": {
     "zh": "7天包换",
     "en": "7-Day Exchange",
     "vi": "Đổi Hàng 7 Ngày",
-    "th": "เปลี่ยนสินค้า 7 วัน"
+    "th": "เปลี่ยนสินค้า 7 วัน",
+    "ru": "Обмен в течение 7 дней"
   },
   "7天无理由退货": {
     "zh": "7天无理由退货",
     "en": "7-Day Returns",
     "vi": "Đổi Trả 7 Ngày",
-    "th": "คืนสินค้า 7 วัน"
+    "th": "คืนสินค้า 7 วัน",
+    "ru": "Возврат в течение 7 дней"
   },
   "SGS 实地认证": {
     "zh": "SGS 实地认证",
     "en": "SGS On-site Certification",
     "vi": "Chứng Nhận SGS Tại Chỗ",
-    "th": "การรับรอง SGS หน้างาน"
+    "th": "การรับรอง SGS หน้างาน",
+    "ru": "Сертификация SGS на месте"
   },
   "badge_repurchase_fmt": {
     "zh": "{n}% 回头率",
     "en": "{n}% repurchase",
     "vi": "Mua lại {n}%",
-    "th": "ซื้อซ้ำ {n}%"
+    "th": "ซื้อซ้ำ {n}%",
+    "ru": "Повторные покупки {n}%"
   },
   "emoji_factory": {
     "zh": "🏭 ",
     "en": "🏭 ",
     "vi": "🏭 ",
-    "th": "🏭 "
+    "th": "🏭 ",
+    "ru": "🏭 "
   },
   "emoji_rank": {
     "zh": "🏆 ",
     "en": "🏆 ",
     "vi": "🏆 ",
-    "th": "🏆 "
+    "th": "🏆 ",
+    "ru": "🏆 "
   },
   "explain_cert_has": {
     "zh": "第三方实地验厂，验证了经营资质和运营状态。",
     "en": "Third-party on-site factory audit, verifying business qualifications and operational status.",
     "vi": "Kiểm toán nhà máy tại chỗ bởi bên thứ ba, xác minh trình độ kinh doanh và tình trạng hoạt động.",
-    "th": "การตรวจโรงงานหน้างานโดยบุคคลที่สาม ตรวจสอบคุณสมบัติธุรกิจและสถานะการดำเนินงาน."
+    "th": "การตรวจโรงงานหน้างานโดยบุคคลที่สาม ตรวจสอบคุณสมบัติธุรกิจและสถานะการดำเนินงาน.",
+    "ru": "Аудит завода на месте от третьей стороны: проверены лицензии и статус работы."
   },
   "explain_cert_none": {
     "zh": "该供应商未展示第三方认证。建议取样后确认质量。",
     "en": "This supplier has not displayed third-party certification. Suggest confirming quality after sampling.",
     "vi": "Nhà cung cấp này chưa hiển thị chứng nhận bên thứ ba. Nên xác nhận chất lượng sau khi lấy mẫu.",
-    "th": "ซัพพลายเออร์นี้ยังไม่แสดงการรับรองจากบุคคลที่สาม. แนะนำยืนยันคุณภาพหลังจากสั่งตัวอย่าง."
+    "th": "ซัพพลายเออร์นี้ยังไม่แสดงการรับรองจากบุคคลที่สาม. แนะนำยืนยันคุณภาพหลังจากสั่งตัวอย่าง.",
+    "ru": "Поставщик не показал сертификацию третьей стороны. Рекомендуем проверить качество после получения образца."
   },
   "explain_company_name": {
     "zh": "政府注册的法定名称，可在企业信用系统中验证。",
     "en": "Government-registered legal name, verifiable in the enterprise credit system.",
     "vi": "Tên pháp lý đã đăng ký chính phủ, có thể xác minh trong hệ thống tín dụng doanh nghiệp.",
-    "th": "ชื่อตามกฎหมายที่จดทะเบียนกับรัฐบาล ตรวจสอบได้ในระบบเครดิตองค์กร"
+    "th": "ชื่อตามกฎหมายที่จดทะเบียนกับรัฐบาล ตรวจสอบได้ในระบบเครดิตองค์กร",
+    "ru": "Официальное зарегистрированное название, проверяемое в системе корпоративного кредита."
   },
   "explain_flags_flagship": {
     "zh": "1688 现货品类旗舰店。价格有竞争力。可放心采购；建议取样确认。",
     "en": "1688 flagship in ready-stock category. Competitive pricing. Can purchase with confidence; suggest sample confirmation.",
     "vi": "1688 flagship trong danh mục hàng có sẵn. Giá cạnh tranh. Có thể mua tự tin; nên xác nhận mẫu.",
-    "th": "1688 เรือธงในหมวดสินค้าพร้อมส่ง. ราคาแข่งขันได้. มั่นใจในการซื้อ; แนะนำยืนยันตัวอย่าง."
+    "th": "1688 เรือธงในหมวดสินค้าพร้อมส่ง. ราคาแข่งขันได้. มั่นใจในการซื้อ; แนะนำยืนยันตัวอย่าง.",
+    "ru": "Флагманский магазин 1688 в категории товаров в наличии. Цена конкурентоспособная. Можно покупать уверенно; рекомендуется подтвердить образцом."
   },
   "explain_flags_self_claimed": {
     "zh": "自行宣称工厂，无 1688 深度验厂。建议先取样验证产线和质量。",
     "en": "Self-claimed factory without 1688 advanced audit. Suggest sampling first to verify production line and quality.",
     "vi": "Tự xưng nhà máy không có kiểm toán nâng cao 1688. Nên lấy mẫu trước để xác minh dây chuyền và chất lượng.",
-    "th": "อ้างตัวเป็นโรงงานโดยไม่มีการตรวจขั้นสูงของ 1688. แนะนำสั่งตัวอย่างก่อนเพื่อตรวจสอบสายการผลิตและคุณภาพ."
+    "th": "อ้างตัวเป็นโรงงานโดยไม่มีการตรวจขั้นสูงของ 1688. แนะนำสั่งตัวอย่างก่อนเพื่อตรวจสอบสายการผลิตและคุณภาพ.",
+    "ru": "Заявляет о себе как о фабрике без углублённого аудита 1688. Рекомендуем сначала заказать образец для проверки линии и качества."
   },
   "explain_flags_shili": {
     "zh": "1688 官方验厂（系统更新中）。产能稳定 + 基础质检。建议取样试用。",
     "en": "1688 official factory audit (system updating). Stable production capacity + basic QC. Suggest sample trial.",
     "vi": "Kiểm toán nhà máy chính thức 1688 (hệ thống đang cập nhật). Năng lực sản xuất ổn định + QC cơ bản. Nên thử mẫu.",
-    "th": "การตรวจโรงงานอย่างเป็นทางการของ 1688 (ระบบกำลังอัปเดต). กำลังการผลิตเสถียร + QC พื้นฐาน. แนะนำทดลองตัวอย่าง."
+    "th": "การตรวจโรงงานอย่างเป็นทางการของ 1688 (ระบบกำลังอัปเดต). กำลังการผลิตเสถียร + QC พื้นฐาน. แนะนำทดลองตัวอย่าง.",
+    "ru": "Официальный аудит фабрики 1688 (система обновляется). Стабильные мощности + базовый контроль качества. Рекомендуем попробовать образец."
   },
   "explain_flags_super": {
     "zh": "1688 最高级别验厂认证。自有产线，从小批量试单到大货均可承接。",
     "en": "1688 highest-level factory audit certification. Own production line, handles small trials to bulk orders.",
     "vi": "Chứng nhận kiểm toán cấp cao nhất 1688. Dây chuyền sản xuất riêng, nhận từ đơn nhỏ đến số lượng lớn.",
-    "th": "การรับรองตรวจโรงงานระดับสูงสุดของ 1688. มีสายการผลิตของตัวเอง รับตั้งแต่ออเดอร์ทดลองถึงจำนวนมาก."
+    "th": "การรับรองตรวจโรงงานระดับสูงสุดของ 1688. มีสายการผลิตของตัวเอง รับตั้งแต่ออเดอร์ทดลองถึงจำนวนมาก.",
+    "ru": "Сертификация фабрики высшего уровня 1688. Собственная линия производства, принимает заказы от малых проб до крупных партий."
   },
   "explain_flags_trader": {
     "zh": "贸易商无自有工厂产能；货物来自第三方供应商。",
     "en": "Trader has no in-house factory capacity; goods sourced from third-party suppliers.",
     "vi": "Thương nhân không có năng lực sản xuất; hàng lấy từ nhà cung cấp bên thứ ba.",
-    "th": "ผู้ค้าไม่มีกำลังการผลิตของตนเอง; สินค้ามาจากซัพพลายเออร์บุคคลที่สาม."
+    "th": "ผู้ค้าไม่มีกำลังการผลิตของตนเอง; สินค้ามาจากซัพพลายเออร์บุคคลที่สาม.",
+    "ru": "Торговый посредник без собственных мощностей; товары закупаются у сторонних поставщиков."
   },
   "explain_industry_cluster": {
     "zh": "源头产地，价格有竞争力。",
     "en": "Source region, competitive pricing.",
     "vi": "Vùng sản xuất gốc, giá cạnh tranh.",
-    "th": "แหล่งผลิตต้นทาง ราคาแข่งขันได้"
+    "th": "แหล่งผลิตต้นทาง ราคาแข่งขันได้",
+    "ru": "Регион происхождения, конкурентоспособные цены."
   },
   "explain_industry_fmt": {
     "zh": "{industry}。源头产地，价格有竞争力。",
     "en": "{industry}. Source region, competitive pricing.",
     "vi": "{industry}. Vùng sản xuất gốc, giá cạnh tranh.",
-    "th": "{industry}. แหล่งผลิตต้นทาง ราคาแข่งขันได้."
+    "th": "{industry}. แหล่งผลิตต้นทาง ราคาแข่งขันได้.",
+    "ru": "{industry}. Регион происхождения, конкурентоспособные цены."
   },
   "explain_rank_none": {
     "zh": "该供应商尚未进入 1688 品类排行榜。",
     "en": "This supplier is not yet ranked on the 1688 category leaderboard.",
     "vi": "Nhà cung cấp này chưa được xếp hạng trên bảng xếp hạng danh mục 1688.",
-    "th": "ซัพพลายเออร์นี้ยังไม่ได้รับการจัดอันดับบนกระดานจัดอันดับหมวดหมู่ 1688."
+    "th": "ซัพพลายเออร์นี้ยังไม่ได้รับการจัดอันดับบนกระดานจัดอันดับหมวดหมู่ 1688.",
+    "ru": "Этот поставщик пока не входит в рейтинг категории на 1688."
   },
   "explain_sales_high": {
     "zh": "高销量意味着市场已验证 — 该品类有持续需求。",
     "en": "High sales volume indicates market validation — this category has sustained demand.",
     "vi": "Doanh số cao cho thấy thị trường đã xác nhận — danh mục này có nhu cầu bền vững.",
-    "th": "ยอดขายสูงแสดงถึงการยอมรับของตลาด — หมวดหมู่นี้มีความต้องการต่อเนื่อง."
+    "th": "ยอดขายสูงแสดงถึงการยอมรับของตลาด — หมวดหมู่นี้มีความต้องการต่อเนื่อง.",
+    "ru": "Высокий объём продаж означает проверенный рынок — у категории устойчивый спрос."
   },
   "explain_seller_factory": {
     "zh": "1688 平台认证的生产厂家，具有独立生产能力。",
     "en": "1688 platform-verified manufacturer with independent production capability.",
     "vi": "Nhà sản xuất được 1688 xác minh, có năng lực sản xuất độc lập.",
-    "th": "ผู้ผลิตที่ผ่านการรับรองจากแพลตฟอร์ม 1688 มีกำลังการผลิตอิสระ."
+    "th": "ผู้ผลิตที่ผ่านการรับรองจากแพลตฟอร์ม 1688 มีกำลังการผลิตอิสระ.",
+    "ru": "Производитель, подтверждённый платформой 1688, с независимыми производственными мощностями."
   },
   "explain_seller_trader": {
     "zh": "贸易商/代理商，非生产厂家。建议取样验证产品质量。",
     "en": "Trader/agent, not a manufacturer. Suggest sample verification of product quality.",
     "vi": "Thương nhân/đại lý, không phải nhà sản xuất. Nên xác minh chất lượng qua mẫu.",
-    "th": "ผู้ค้า/ตัวแทน ไม่ใช่ผู้ผลิต. แนะนำตรวจสอบคุณภาพผ่านตัวอย่าง."
+    "th": "ผู้ค้า/ตัวแทน ไม่ใช่ผู้ผลิต. แนะนำตรวจสอบคุณภาพผ่านตัวอย่าง.",
+    "ru": "Торговый посредник/агент, не производитель. Рекомендуем проверить качество по образцу."
   },
   "industry_chaozhou": {
     "zh": "潮州 — 陶瓷/卫浴产业带",
     "en": "Chaozhou — Ceramics/Sanitary Ware Industrial Belt",
     "vi": "Triều Châu — Vành Đai Công Nghiệp Gốm Sứ/Thiết Bị Vệ Sinh",
-    "th": "เฉาโจว — เขตอุตสาหกรรมเซรามิก/สุขภัณฑ์"
+    "th": "เฉาโจว — เขตอุตสาหกรรมเซรามิก/สุขภัณฑ์",
+    "ru": "Чаочжоу — кластер керамики/сантехники"
   },
   "industry_chenghai": {
     "zh": "澄海 — 玩具产业带",
     "en": "Chenghai — Toys Industrial Belt",
     "vi": "Trừng Hải — Vành Đai Công Nghiệp Đồ Chơi",
-    "th": "เฉิงไห่ — เขตอุตสาหกรรมของเล่น"
+    "th": "เฉิงไห่ — เขตอุตสาหกรรมของเล่น",
+    "ru": "Чэнхай — кластер игрушек"
   },
   "industry_dongguan": {
     "zh": "东莞 — 电子/玩具/模具产业带",
     "en": "Dongguan — Electronics/Toys/Molds Industrial Belt",
     "vi": "Đông Quản — Vành Đai Công Nghiệp Điện Tử/Đồ Chơi/Khuôn Mẫu",
-    "th": "ตงก่วน — เขตอุตสาหกรรมอิเล็กทรอนิกส์/ของเล่น/แม่พิมพ์"
+    "th": "ตงก่วน — เขตอุตสาหกรรมอิเล็กทรอนิกส์/ของเล่น/แม่พิมพ์",
+    "ru": "Дунгуань — кластер электроники/игрушек/пресс-форм"
   },
   "industry_fallback": {
     "zh": "中国制造产源地",
     "en": "China Manufacturing Source Region",
     "vi": "Vùng Sản Xuất Trung Quốc",
-    "th": "เขตการผลิตของจีน"
+    "th": "เขตการผลิตของจีน",
+    "ru": "Регион производства Китая"
   },
   "industry_foshan": {
     "zh": "佛山 — 家具/陶瓷产业带",
     "en": "Foshan — Furniture/Ceramics Industrial Belt",
     "vi": "Phật Sơn — Vành Đai Công Nghiệp Nội Thất/Gốm Sứ",
-    "th": "ฝอซาน — เขตอุตสาหกรรมเฟอร์นิเจอร์/เซรามิก"
+    "th": "ฝอซาน — เขตอุตสาหกรรมเฟอร์นิเจอร์/เซรามิก",
+    "ru": "Фошань — кластер мебели/керамики"
   },
   "industry_guangzhou": {
     "zh": "广州 — 服装/箱包/皮具产业带",
     "en": "Guangzhou — Apparel/Bags/Leather Goods Industrial Belt",
     "vi": "Quảng Châu — Vành Đai Công Nghiệp May Mặc/Túi/Đồ Da",
-    "th": "กวางโจว — เขตอุตสาหกรรมเสื้อผ้า/กระเป๋า/เครื่องหนัง"
+    "th": "กวางโจว — เขตอุตสาหกรรมเสื้อผ้า/กระเป๋า/เครื่องหนัง",
+    "ru": "Гуанчжоу — кластер одежды/сумок/кожгалантереи"
   },
   "industry_hangzhou": {
     "zh": "杭州 — 女装/电商供应链中心",
     "en": "Hangzhou — Women's Wear/E-Commerce Supply Chain Center",
     "vi": "Hàng Châu — Trung Tâm Chuỗi Cung Ứng Thời Trang Nữ/Thương Mại Điện Tử",
-    "th": "หางโจว — ศูนย์ห่วงโซ่อุปทานเสื้อผ้าสตรี/อีคอมเมิร์ซ"
+    "th": "หางโจว — ศูนย์ห่วงโซ่อุปทานเสื้อผ้าสตรี/อีคอมเมิร์ซ",
+    "ru": "Ханчжоу — центр цепочки поставок женской одежды/электронной коммерции"
   },
   "industry_jinjiang": {
     "zh": "晋江 — 运动服/运动鞋产业带",
     "en": "Jinjiang — Sportswear/Sneaker Industrial Belt",
     "vi": "Tấn Giang — Vành Đai Công Nghiệp Đồ Thể Thao/Giày Thể Thao",
-    "th": "จิ้นเจียง — เขตอุตสาหกรรมชุดกีฬา/รองเท้าผ้าใบ"
+    "th": "จิ้นเจียง — เขตอุตสาหกรรมชุดกีฬา/รองเท้าผ้าใบ",
+    "ru": "Цзиньцзян — кластер спортивной одежды/кроссовок"
   },
   "industry_nantong": {
     "zh": "南通 — 家纺产业带",
     "en": "Nantong — Home Textile Industrial Belt",
     "vi": "Nam Thông — Vành Đai Công Nghiệp Dệt May Gia Dụng",
-    "th": "หนานทง — เขตอุตสาหกรรมสิ่งทอภายในบ้าน"
+    "th": "หนานทง — เขตอุตสาหกรรมสิ่งทอภายในบ้าน",
+    "ru": "Наньтун — кластер домашнего текстиля"
   },
   "industry_ningbo": {
     "zh": "宁波 — 小家电/文具产业带",
     "en": "Ningbo — Small Appliances/Stationery Industrial Belt",
     "vi": "Ninh Ba — Vành Đai Công Nghiệp Thiết Bị Gia Dụng Nhỏ/Văn Phòng Phẩm",
-    "th": "หนิงปัว — เขตอุตสาหกรรมเครื่องใช้ไฟฟ้าขนาดเล็ก/เครื่องเขียน"
+    "th": "หนิงปัว — เขตอุตสาหกรรมเครื่องใช้ไฟฟ้าขนาดเล็ก/เครื่องเขียน",
+    "ru": "Нинбо — кластер мелкой бытовой техники/канцтоваров"
   },
   "industry_quanzhou": {
     "zh": "泉州 — 鞋服/箱包产业带",
     "en": "Quanzhou — Footwear/Apparel/Bags Industrial Belt",
     "vi": "Tuyền Châu — Vành Đai Công Nghiệp Giày Dép/May Mặc/Túi",
-    "th": "เฉวียนโจว — เขตอุตสาหกรรมรองเท้า/เสื้อผ้า/กระเป๋า"
+    "th": "เฉวียนโจว — เขตอุตสาหกรรมรองเท้า/เสื้อผ้า/กระเป๋า",
+    "ru": "Цюаньчжоу — кластер обуви/одежды/сумок"
   },
   "industry_shantou": {
     "zh": "汕头 — 玩具/内衣/工艺品产业带",
     "en": "Shantou — Toys/Lingerie/Crafts Industrial Belt",
     "vi": "Sán Đầu — Vành Đai Công Nghiệp Đồ Chơi/Đồ Lót/Thủ Công",
-    "th": "ซานโถว — เขตอุตสาหกรรมของเล่น/ชุดชั้นใน/หัตถกรรม"
+    "th": "ซานโถว — เขตอุตสาหกรรมของเล่น/ชุดชั้นใน/หัตถกรรม",
+    "ru": "Шаньтоу — кластер игрушек/белья/изделий ручной работы"
   },
   "industry_shaoxing": {
     "zh": "绍兴 — 纺织/面料产业带",
     "en": "Shaoxing — Textile/Fabric Industrial Belt",
     "vi": "Thiệu Hưng — Vành Đai Công Nghiệp Dệt May/Vải",
-    "th": "เช่าซิง — เขตอุตสาหกรรมสิ่งทอ/ผ้า"
+    "th": "เช่าซิง — เขตอุตสาหกรรมสิ่งทอ/ผ้า",
+    "ru": "Шаосин — кластер текстиля/тканей"
   },
   "industry_shenzhen": {
     "zh": "深圳 — 3C 电子/跨境电商货源",
     "en": "Shenzhen — 3C Electronics/Cross-Border E-Commerce Source",
     "vi": "Thâm Quyến — Nguồn Điện Tử 3C/Thương Mại Điện Tử Xuyên Biên Giới",
-    "th": "เซินเจิ้น — แหล่งอิเล็กทรอนิกส์ 3C/อีคอมเมิร์ซข้ามพรมแดน"
+    "th": "เซินเจิ้น — แหล่งอิเล็กทรอนิกส์ 3C/อีคอมเมิร์ซข้ามพรมแดน",
+    "ru": "Шэньчжэнь — источник электроники 3C/трансграничной электронной коммерции"
   },
   "industry_taizhou": {
     "zh": "台州 — 眼镜/模具/塑料产业带",
     "en": "Taizhou — Eyewear/Molds/Plastics Industrial Belt",
     "vi": "Thai Châu — Vành Đai Công Nghiệp Kính Mắt/Khuôn Mẫu/Nhựa",
-    "th": "ไทโจว — เขตอุตสาหกรรมแว่นตา/แม่พิมพ์/พลาสติก"
+    "th": "ไทโจว — เขตอุตสาหกรรมแว่นตา/แม่พิมพ์/พลาสติก",
+    "ru": "Тайчжоу — кластер очков/пресс-форм/пластмасс"
   },
   "industry_wenzhou": {
     "zh": "温州 — 鞋业/五金/眼镜产业带",
     "en": "Wenzhou — Footwear/Hardware/Eyewear Industrial Belt",
     "vi": "Ôn Châu — Vành Đai Công Nghiệp Giày Dép/Phần Cứng/Kính Mắt",
-    "th": "เวินโจว — เขตอุตสาหกรรมรองเท้า/ฮาร์ดแวร์/แว่นตา"
+    "th": "เวินโจว — เขตอุตสาหกรรมรองเท้า/ฮาร์ดแวร์/แว่นตา",
+    "ru": "Вэньчжоу — кластер обуви/метизов/очков"
   },
   "industry_yiwu": {
     "zh": "义乌/金华 — 中国小商品集散中心",
     "en": "Yiwu/Jinhua — China Small Commodity Distribution Hub",
     "vi": "Nghĩa Ô/Kim Hoa — Trung Tâm Phân Phối Hàng Hóa Nhỏ Trung Quốc",
-    "th": "อี้อู/จินหัว — ศูนย์กระจายสินค้าเบ็ดเตล็ดของจีน"
+    "th": "อี้อู/จินหัว — ศูนย์กระจายสินค้าเบ็ดเตล็ดของจีน",
+    "ru": "Иу/Цзиньхуа — центр распределения мелких товаров Китая"
   },
   "industry_yongkang": {
     "zh": "永康 — 五金/杯壶产业带",
     "en": "Yongkang — Hardware/Cups & Bottles Industrial Belt",
     "vi": "Vĩnh Khang — Vành Đai Công Nghiệp Phần Cứng/Cốc & Chai",
-    "th": "หย่งคัง — เขตอุตสาหกรรมฮาร์ดแวร์/แก้วและขวด"
+    "th": "หย่งคัง — เขตอุตสาหกรรมฮาร์ดแวร์/แก้วและขวด",
+    "ru": "Юнкан — кластер метизов/стаканов и бутылок"
   },
   "industry_zhuji": {
     "zh": "诸暨 — 袜子/珍珠产业带",
     "en": "Zhuji — Socks/Pearls Industrial Belt",
     "vi": "Chư Kỵ — Vành Đai Công Nghiệp Tất/Ngọc Trai",
-    "th": "จูจี้ — เขตอุตสาหกรรมถุงเท้า/ไข่มุก"
+    "th": "จูจี้ — เขตอุตสาหกรรมถุงเท้า/ไข่มุก",
+    "ru": "Чжуцзи — кластер носков/жемчуга"
   },
   "no_data": {
     "zh": "暂无数据",
     "en": "No data",
     "vi": "Không có dữ liệu",
-    "th": "ไม่มีข้อมูล"
+    "th": "ไม่มีข้อมูล",
+    "ru": "Нет данных"
   },
   "prod_barrier_tip_high": {
     "zh": "试错偏高（¥{price}/{moq}件起）",
     "en": "Trial cost high (¥{price}, {moq}-unit MOQ)",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "Высокая стоимость пробы (¥{price}, MOQ {moq} шт.)"
   },
   "prod_barrier_tip_low": {
     "zh": "试错极低（¥{price}/{moq}件起）",
     "en": "Trial cost minimal (¥{price}, {moq}-unit MOQ)",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "Минимальная стоимость пробы (¥{price}, MOQ {moq} шт.)"
   },
   "prod_barrier_tip_mid": {
     "zh": "试错适中（¥{price}/{moq}件起）",
     "en": "Trial cost manageable (¥{price}, {moq}-unit MOQ)",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "Умеренная стоимость пробы (¥{price}, MOQ {moq} шт.)"
   },
   "prod_dim_d1_data_fmt": {
     "zh": "月销 {n}",
     "en": "Monthly Sales {n}",
     "vi": "Doanh số tháng {n}",
-    "th": "ยอดขายต่อเดือน {n}"
+    "th": "ยอดขายต่อเดือน {n}",
+    "ru": "Продажи за месяц {n}"
   },
   "prod_dim_d1_label": {
     "zh": "🔥热销品",
     "en": "🔥 Hot Seller",
     "vi": "🔥 Bán Chạy",
-    "th": "🔥 สินค้าขายดี"
+    "th": "🔥 สินค้าขายดี",
+    "ru": "🔥 Хит продаж"
   },
   "prod_dim_d1_name": {
     "zh": "销量",
     "en": "Sales",
     "vi": "Doanh số",
-    "th": "ยอดขาย"
+    "th": "ยอดขาย",
+    "ru": "Продажи"
   },
   "prod_dim_d1_name_high": {
     "zh": "热销品",
     "en": "Hot Seller",
     "vi": "Bán Chạy",
-    "th": "สินค้าขายดี"
+    "th": "สินค้าขายดี",
+    "ru": "Хит продаж"
   },
   "prod_dim_d1_ref_fmt": {
     "zh": "标杆 >{n}",
     "en": "Benchmark >{n}",
     "vi": "Chuẩn >{n}",
-    "th": "เกณฑ์ >{n}"
+    "th": "เกณฑ์ >{n}",
+    "ru": "Порог >{n}"
   },
   "prod_dim_d2_data_fmt": {
     "zh": "复购率 {n}%",
     "en": "Repurchase Rate {n}%",
     "vi": "Tỷ lệ mua lại {n}%",
-    "th": "อัตราซื้อซ้ำ {n}%"
+    "th": "อัตราซื้อซ้ำ {n}%",
+    "ru": "Повторные покупки {n}%"
   },
   "prod_dim_d2_label": {
     "zh": "🔄高复购",
     "en": "🔄 High Repurchase",
     "vi": "🔄 Mua Lại Cao",
-    "th": "🔄 ซื้อซ้ำสูง"
+    "th": "🔄 ซื้อซ้ำสูง",
+    "ru": "🔄 Высокие повторные покупки"
   },
   "prod_dim_d2_name": {
     "zh": "复购",
     "en": "Repurchase",
     "vi": "Mua lại",
-    "th": "ซื้อซ้ำ"
+    "th": "ซื้อซ้ำ",
+    "ru": "Повторные покупки"
   },
   "prod_dim_d2_name_high": {
     "zh": "高复购",
     "en": "High Repurchase",
     "vi": "Mua Lại Cao",
-    "th": "ซื้อซ้ำสูง"
+    "th": "ซื้อซ้ำสูง",
+    "ru": "Высокие повторные покупки"
   },
   "prod_dim_d2_ref_fmt": {
     "zh": "标杆 >{n}%",
     "en": "Benchmark >{n}%",
     "vi": "Chuẩn >{n}%",
-    "th": "เกณฑ์ >{n}%"
+    "th": "เกณฑ์ >{n}%",
+    "ru": "Порог >{n}%"
   },
   "prod_dim_d3_data_fmt": {
     "zh": "¥{price}/{unit} · 起订 {moq} {unit}",
     "en": "¥{price}/{unit} · MOQ {moq} {unit}",
     "vi": "¥{price}/{unit} · MOQ {moq} {unit}",
-    "th": "¥{price}/{unit} · MOQ {moq} {unit}"
+    "th": "¥{price}/{unit} · MOQ {moq} {unit}",
+    "ru": "¥{price}/{unit} · MOQ {moq} {unit}"
   },
   "prod_dim_d3_label": {
     "zh": "💰低门槛",
     "en": "💰 Low Barrier",
     "vi": "💰 Rào Cản Thấp",
-    "th": "💰 อุปสรรคต่ำ"
+    "th": "💰 อุปสรรคต่ำ",
+    "ru": "💰 Низкий порог"
   },
   "prod_dim_d3_name": {
     "zh": "门槛",
     "en": "Barrier",
     "vi": "Rào cản",
-    "th": "อุปสรรค"
+    "th": "อุปสรรค",
+    "ru": "Порог"
   },
   "prod_dim_d3_name_high": {
     "zh": "低门槛",
     "en": "Low Barrier",
     "vi": "Rào Cản Thấp",
-    "th": "อุปสรรคต่ำ"
+    "th": "อุปสรรคต่ำ",
+    "ru": "Низкий порог"
   },
   "prod_dim_d3_name_low": {
     "zh": "高门槛",
     "en": "High Barrier",
     "vi": "Rào Cản Cao",
-    "th": "อุปสรรคสูง"
+    "th": "อุปสรรคสูง",
+    "ru": "Высокий порог"
   },
   "prod_dim_d4_data_fmt": {
     "zh": "好评率 {n}%",
     "en": "Positive Rate {n}%",
     "vi": "Tỷ lệ tốt {n}%",
-    "th": "อัตรารีวิวดี {n}%"
+    "th": "อัตรารีวิวดี {n}%",
+    "ru": "Положительные отзывы {n}%"
   },
   "prod_dim_d4_label": {
     "zh": "⭐口碑好",
     "en": "⭐ Good Reputation",
     "vi": "⭐ Uy Tín Tốt",
-    "th": "⭐ ชื่อเสียงดี"
+    "th": "⭐ ชื่อเสียงดี",
+    "ru": "⭐ Хорошая репутация"
   },
   "prod_dim_d4_name": {
     "zh": "口碑",
     "en": "Reputation",
     "vi": "Uy tín",
-    "th": "ชื่อเสียง"
+    "th": "ชื่อเสียง",
+    "ru": "Репутация"
   },
   "prod_dim_d4_name_high": {
     "zh": "口碑好",
     "en": "Good Reputation",
     "vi": "Uy Tín Tốt",
-    "th": "ชื่อเสียงดี"
+    "th": "ชื่อเสียงดี",
+    "ru": "Хорошая репутация"
   },
   "prod_dim_d4_ref_fmt": {
     "zh": "标杆 ≥{n}%",
     "en": "Benchmark ≥{n}%",
     "vi": "Chuẩn ≥{n}%",
-    "th": "เกณฑ์ ≥{n}%"
+    "th": "เกณฑ์ ≥{n}%",
+    "ru": "Порог ≥{n}%"
   },
   "prod_dim_d5_data_fmt": {
     "zh": "{n} 人想看",
     "en": "{n} want to buy",
     "vi": "{n} muốn mua",
-    "th": "{n} ต้องการซื้อ"
+    "th": "{n} ต้องการซื้อ",
+    "ru": "{n} хотят купить"
   },
   "prod_dim_d5_label": {
     "zh": "👀高关注",
     "en": "👀 High Attention",
     "vi": "👀 Quan Tâm Cao",
-    "th": "👀 ความสนใจสูง"
+    "th": "👀 ความสนใจสูง",
+    "ru": "👀 Высокий интерес"
   },
   "prod_dim_d5_name": {
     "zh": "关注",
     "en": "Attention",
     "vi": "Quan Tâm",
-    "th": "ความสนใจ"
+    "th": "ความสนใจ",
+    "ru": "Интерес"
   },
   "prod_dim_d5_name_high": {
     "zh": "高关注",
     "en": "High Attention",
     "vi": "Quan Tâm Cao",
-    "th": "ความสนใจสูง"
+    "th": "ความสนใจสูง",
+    "ru": "Высокий интерес"
   },
   "prod_dim_d5_name_low": {
     "zh": "低关注",
     "en": "Low Attention",
     "vi": "Ít Quan Tâm",
-    "th": "ความสนใจต่ำ"
+    "th": "ความสนใจต่ำ",
+    "ru": "Низкий интерес"
   },
   "prod_dim_d5_ref_fmt": {
     "zh": "标杆 >{n}",
     "en": "Benchmark >{n}",
     "vi": "Chuẩn >{n}",
-    "th": "เกณฑ์ >{n}"
+    "th": "เกณฑ์ >{n}",
+    "ru": "Порог >{n}"
   },
   "prod_dim_d6_data_no": {
     "zh": "无7天退货",
     "en": "No 7-Day Returns",
     "vi": "Không đổi trả 7 ngày",
-    "th": "ไม่มีคืนสินค้า 7 วัน"
+    "th": "ไม่มีคืนสินค้า 7 วัน",
+    "ru": "Нет возврата за 7 дней"
   },
   "prod_dim_d6_data_ok": {
     "zh": "7天无理由退货",
     "en": "7-Day Unconditional Returns",
     "vi": "Đổi trả 7 ngày không lý do",
-    "th": "คืนสินค้า 7 วันไม่มีเงื่อนไข"
+    "th": "คืนสินค้า 7 วันไม่มีเงื่อนไข",
+    "ru": "Возврат за 7 дней без условий"
   },
   "prod_dim_d6_label": {
     "zh": "🛡️7天退货",
     "en": "🛡️ 7-Day Returns",
     "vi": "🛡️ Đổi Trả 7 Ngày",
-    "th": "🛡️ คืนสินค้า 7 วัน"
+    "th": "🛡️ คืนสินค้า 7 วัน",
+    "ru": "🛡️ Возврат за 7 дней"
   },
   "prod_dim_d6_name": {
     "zh": "退货",
     "en": "Returns",
     "vi": "Đổi trả",
-    "th": "คืนสินค้า"
+    "th": "คืนสินค้า",
+    "ru": "Возврат"
   },
   "prod_dim_d6_name_high": {
     "zh": "7天退货",
     "en": "7-Day Returns",
     "vi": "Đổi Trả 7 Ngày",
-    "th": "คืนสินค้า 7 วัน"
+    "th": "คืนสินค้า 7 วัน",
+    "ru": "Возврат за 7 дней"
   },
   "prod_summary_caution": {
     "zh": "产品信号偏弱",
     "en": "Weak product signals",
     "vi": "Tín hiệu sản phẩm yếu",
-    "th": "สัญญาณสินค้าอ่อน"
+    "th": "สัญญาณสินค้าอ่อน",
+    "ru": "Сигналы продукта слабые"
   },
   "prod_summary_fatal": {
     "zh": "产品有硬伤",
     "en": "Product has fatal flaws",
     "vi": "Sản phẩm có lỗi nghiêm trọng",
-    "th": "สินค้ามีข้อบกพร่องร้ายแรง"
+    "th": "สินค้ามีข้อบกพร่องร้ายแรง",
+    "ru": "У продукта серьёзные недостатки"
   },
   "prod_summary_go": {
     "zh": "产品验证过，值得做",
     "en": "Verified product, worth it",
     "vi": "Sản phẩm đã kiểm chứng, đáng làm",
-    "th": "สินค้าผ่านการตรวจสอบ คุ้มค่า"
+    "th": "สินค้าผ่านการตรวจสอบ คุ้มค่า",
+    "ru": "Продукт проверен, стоит делать"
   },
   "prod_summary_trial": {
     "zh": "产品有支撑，需验证",
     "en": "Promising, needs verification",
     "vi": "Có tiềm năng, cần kiểm chứng",
-    "th": "มีศักยภาพ ต้องตรวจสอบ"
+    "th": "มีศักยภาพ ต้องตรวจสอบ",
+    "ru": "Многообещающе, требует проверки"
   },
   "prod_summary_watch": {
     "zh": "产品数据不足",
     "en": "Insufficient product data",
     "vi": "Thiếu dữ liệu sản phẩm",
-    "th": "ข้อมูลสินค้าไม่เพียงพอ"
+    "th": "ข้อมูลสินค้าไม่เพียงพอ",
+    "ru": "Недостаточно данных о продукте"
   },
   "prod_verdict_fatal_badrate": {
     "zh": "换品。好评率仅{positive}%——差评太多会拖垮店铺。别碰这个品{risk_note}",
     "en": "Skip this one. Only {positive}% positive reviews — too many bad reviews will drag down your store. Don't touch it.{risk_note}",
     "vi": "Bỏ qua sản phẩm này. Chỉ {positive}% đánh giá tốt — quá nhiều đánh giá xấu sẽ kéo tụt cửa hàng. Đừng đụng vào.{risk_note}",
-    "th": "ข้ามสินค้านี้ไปก่อน แค่ {positive}% รีวิวดีเท่านั้น — รีวิวแย่เยอะเกินไปจะลากคะแนนร้านคุณลง อย่าแตะต้องเลย{risk_note}"
+    "th": "ข้ามสินค้านี้ไปก่อน แค่ {positive}% รีวิวดีเท่านั้น — รีวิวแย่เยอะเกินไปจะลากคะแนนร้านคุณลง อย่าแตะต้องเลย{risk_note}",
+    "ru": "Пропустить. Только {positive}% положительных отзывов — слишком много негатива потянет магазин вниз. Не берите этот товар.{risk_note}"
   },
   "prod_verdict_skip_nodata": {
     "zh": "跳过。核心数据缺{missing_count}项——判断不了。想验证，先拿1件试；不想就换品{risk_note}",
     "en": "Skip. Core data missing ({missing_count} items) — can't judge. To verify, order 1 piece; otherwise switch products.{risk_note}",
     "vi": "Bỏ qua. Thiếu {missing_count} dữ liệu cốt lõi — chưa đánh giá được. Muốn kiểm chứng, lấy thử 1 mẫu; không thì đổi sản phẩm khác.{risk_note}",
-    "th": "ข้ามไปก่อน ข้อมูลหลักขาด {missing_count} รายการ — ประเมินไม่ได้ อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า{risk_note}"
+    "th": "ข้ามไปก่อน ข้อมูลหลักขาด {missing_count} รายการ — ประเมินไม่ได้ อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า{risk_note}",
+    "ru": "Пропустить. Не хватает ключевых данных ({missing_count} шт.) — оценить невозможно. Чтобы проверить, закажите 1 шт.; иначе смените товар.{risk_note}"
   },
   "prod_risk_note_no_return": {
     "zh": "⚠️ 该商品不支持7天无理由退货——买家无法无理由退换，需自行承担退货风险。",
     "en": "⚠️ This item does not support 7-day unconditional returns — buyers can't return it without a reason and bear the return risk themselves.",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "⚠️ Товар не поддерживает возврат за 7 дней без причин — покупатель не сможет вернуть его без объяснения и несёт риск возврата сам."
   },
   "sales_sold_fmt": {
     "zh": "{n} 已售",
     "en": "{n} sold",
     "vi": "Đã bán {n}",
-    "th": "ขายแล้ว {n}"
+    "th": "ขายแล้ว {n}",
+    "ru": "Продано {n}"
   },
   "star_limited_label": {
     "zh": "数据有限",
     "en": "Limited Data",
     "vi": "Dữ Liệu Hạn Chế",
-    "th": "ข้อมูลจำกัด"
+    "th": "ข้อมูลจำกัด",
+    "ru": "Данные ограничены"
   },
   "star_partial_label": {
     "zh": "可考虑",
     "en": "Consider",
     "vi": "Cân Nhắc",
-    "th": "พิจารณา"
+    "th": "พิจารณา",
+    "ru": "Можно рассмотреть"
   },
   "star_sufficient_label": {
     "zh": "推荐",
     "en": "Recommended",
     "vi": "Nên Dùng",
-    "th": "แนะนำ"
+    "th": "แนะนำ",
+    "ru": "Рекомендуется"
   },
   "stock_level_low": {
     "zh": "库存偏低 ⚠️",
     "en": "Low Stock ⚠️",
     "vi": "Hàng Sắp Hết ⚠️",
-    "th": "สินค้าใกล้หมด ⚠️"
+    "th": "สินค้าใกล้หมด ⚠️",
+    "ru": "Низкий запас ⚠️"
   },
   "stock_level_ok": {
     "zh": "库存充足 ✅",
     "en": "Sufficient Stock ✅",
     "vi": "Hàng Có Sẵn ✅",
-    "th": "สินค้าพร้อมส่ง ✅"
+    "th": "สินค้าพร้อมส่ง ✅",
+    "ru": "Достаточно запасов ✅"
   },
   "stock_level_unknown": {
     "zh": "库存未公开 ⚠️",
     "en": "Stock Not Published ⚠️",
     "vi": "Hàng Không Công Khai ⚠️",
-    "th": "ไม่เปิดเผยสต็อก ⚠️"
+    "th": "ไม่เปิดเผยสต็อก ⚠️",
+    "ru": "Запас не раскрыт ⚠️"
   },
   "summary_conditional_ok": {
     "zh": "试。品有基础（{prod_num}）、厂能配合（{good_parts}）。想推进，先少量拿",
     "en": "Try. Product has a base ({prod_num}), supplier works ({good_parts}). To move forward, start small.",
     "vi": "Nên thử. Sản phẩm có nền tảng ({prod_num}), nhà cung cấp hợp tác được ({good_parts}). Muốn tiến xa, lấy ít trước.",
-    "th": "ลองได้เลย สินค้ามีฐาน ({prod_num}) โรงงานให้ความร่วมมือ ({good_parts}) อยากเดินหน้าให้เริ่มสั่งจำนวนน้อย"
+    "th": "ลองได้เลย สินค้ามีฐาน ({prod_num}) โรงงานให้ความร่วมมือ ({good_parts}) อยากเดินหน้าให้เริ่มสั่งจำนวนน้อย",
+    "ru": "Попробуйте. У товара есть база ({prod_num}), поставщик работает ({good_parts}). Чтобы двигаться дальше, начните с малого."
   },
   "summary_conditional_careful": {
     "zh": "谨慎试。品有信号（{prod_num}）、厂有短板（{bad_parts}）。想试，先少量拿",
     "en": "Try with care. Product shows some signal ({prod_num}), supplier has gaps ({bad_parts}). If testing, start small.",
     "vi": "Thử nhưng thận trọng. Sản phẩm có tín hiệu ({prod_num}), nhà cung cấp còn điểm yếu ({bad_parts}). Muốn thử, lấy ít trước.",
-    "th": "ลองแบบระวัง สินค้ามีสัญญาณ ({prod_num}) โรงงานมีจุดอ่อน ({bad_parts}) อยากลองให้เริ่มสั่งจำนวนน้อย"
+    "th": "ลองแบบระวัง สินค้ามีสัญญาณ ({prod_num}) โรงงานมีจุดอ่อน ({bad_parts}) อยากลองให้เริ่มสั่งจำนวนน้อย",
+    "ru": "Пробуйте осторожно. У товара есть сигналы ({prod_num}), у поставщика есть слабые места ({bad_parts}). Если пробуете, начните с малого."
   },
   "summary_conditional_factory_strong": {
     "zh": "试。厂靠得住（{good_parts}）、品没完全验证（{prod_num}）。想推进，先少量拿",
     "en": "Try. Supplier is solid ({good_parts}), product not fully proven ({prod_num}). To move forward, start small.",
     "vi": "Nên thử. Nhà cung cấp đáng tin ({good_parts}), sản phẩm chưa được kiểm chứng đầy đủ ({prod_num}). Muốn tiến xa, lấy ít trước.",
-    "th": "ลองได้เลย โรงงานเชื่อถือได้ ({good_parts}) สินค้ายังไม่ผ่านการยืนยันเต็มที่ ({prod_num}) อยากเดินหน้าให้เริ่มสั่งจำนวนน้อย"
+    "th": "ลองได้เลย โรงงานเชื่อถือได้ ({good_parts}) สินค้ายังไม่ผ่านการยืนยันเต็มที่ ({prod_num}) อยากเดินหน้าให้เริ่มสั่งจำนวนน้อย",
+    "ru": "Пробуйте. Поставщик надёжен ({good_parts}), товар не полностью проверен ({prod_num}). Чтобы двигаться дальше, начните с малого."
   },
   "summary_conditional_supplier_weak": {
     "zh": "试。品有量（{prod_num}）、厂是短板（{bad_parts}）。想做，先比价再拿样",
     "en": "Try. Product moves ({prod_num}), supplier is the weak link ({bad_parts}). To proceed, compare prices and sample.",
     "vi": "Nên thử. Sản phẩm có lượng bán ({prod_num}), nhà cung cấp là điểm yếu ({bad_parts}). Muốn làm, so giá rồi lấy mẫu.",
-    "th": "ลองได้เลย สินค้ามียอดขาย ({prod_num}) โรงงานเป็นจุดอ่อน ({bad_parts}) อยากทำให้เทียบราคาก่อนแล้วสั่งตัวอย่าง"
+    "th": "ลองได้เลย สินค้ามียอดขาย ({prod_num}) โรงงานเป็นจุดอ่อน ({bad_parts}) อยากทำให้เทียบราคาก่อนแล้วสั่งตัวอย่าง",
+    "ru": "Пробуйте. Товар продаётся ({prod_num}), поставщик — слабое звено ({bad_parts}). Чтобы начать, сравните цены и закажите образец."
   },
   "summary_go_both": {
     "zh": "做。品验证过（{prod_num}）、厂靠得住（{good_parts}）。想推进，先拿样确认规格",
     "en": "Go. Product proven ({prod_num}), supplier solid ({good_parts}). To move forward, sample to confirm specs.",
     "vi": "Nên làm. Sản phẩm đã được kiểm chứng ({prod_num}), nhà cung cấp đáng tin ({good_parts}). Muốn tiến xa, lấy mẫu xác nhận thông số.",
-    "th": "ทำเลย สินค้าผ่านการยืนยัน ({prod_num}) โรงงานเชื่อถือได้ ({good_parts}) อยากเดินหน้าให้สั่งตัวอย่างเพื่อยืนยันสเปก"
+    "th": "ทำเลย สินค้าผ่านการยืนยัน ({prod_num}) โรงงานเชื่อถือได้ ({good_parts}) อยากเดินหน้าให้สั่งตัวอย่างเพื่อยืนยันสเปก",
+    "ru": "Делайте. Товар проверен ({prod_num}), поставщик надёжен ({good_parts}). Чтобы двигаться дальше, закажите образец для подтверждения спецификаций."
   },
   "summary_go_product_ok": {
     "zh": "做。品有量（{prod_num}）、厂过关但缺背书（{bad_parts}）。想推进，先拿样验货",
     "en": "Go. Product sells ({prod_num}), supplier works but lacks backing ({bad_parts}). To move forward, sample and inspect.",
     "vi": "Nên làm. Sản phẩm bán được ({prod_num}), nhà cung cấp đạt nhưng thiếu chứng nhận ({bad_parts}). Muốn tiến xa, lấy mẫu kiểm tra.",
-    "th": "ทำเลย สินค้าขายได้ ({prod_num}) โรงงานผ่านแต่ขาดการรับรอง ({bad_parts}) อยากเดินหน้าให้สั่งตัวอย่างตรวจสอบก่อน"
+    "th": "ทำเลย สินค้าขายได้ ({prod_num}) โรงงานผ่านแต่ขาดการรับรอง ({bad_parts}) อยากเดินหน้าให้สั่งตัวอย่างตรวจสอบก่อน",
+    "ru": "Делайте. Товар продаётся ({prod_num}), поставщик подходит, но не хватает подтверждения ({bad_parts}). Чтобы двигаться дальше, закажите образец и проверьте."
   },
   "summary_headline_conditional": {
     "zh": "🟡 有条件做",
     "en": "🟡 Conditional",
     "vi": "🟡 Có điều kiện",
-    "th": "🟡 มีเงื่อนไข"
+    "th": "🟡 มีเงื่อนไข",
+    "ru": "🟡 С условиями"
   },
   "summary_headline_conditional_short": {
     "zh": "可考虑",
     "en": "Maybe",
     "vi": "Cân nhắc",
-    "th": "พอใช้"
+    "th": "พอใช้",
+    "ru": "Можно рассмотреть"
   },
   "summary_headline_go": {
     "zh": "🟢 可以出手",
     "en": "🟢 Go for It",
     "vi": "🟢 Nên mua",
-    "th": "🟢 ซื้อได้เลย"
+    "th": "🟢 ซื้อได้เลย",
+    "ru": "🟢 Можно действовать"
   },
   "summary_headline_go_short": {
     "zh": "推荐",
     "en": "Go",
     "vi": "Nên",
-    "th": "แนะนำ"
+    "th": "แนะนำ",
+    "ru": "Рекомендуется"
   },
   "summary_headline_no": {
     "zh": "🔴 不建议",
     "en": "🔴 Not Recommended",
     "vi": "🔴 Không nên",
-    "th": "🔴 ไม่แนะนำ"
+    "th": "🔴 ไม่แนะนำ",
+    "ru": "🔴 Не рекомендуется"
   },
   "summary_headline_no_short": {
     "zh": "不推荐",
     "en": "Skip",
     "vi": "Bỏ qua",
-    "th": "ข้าม"
+    "th": "ข้าม",
+    "ru": "Пропустить"
   },
   "summary_headline_wait": {
     "zh": "⬜ 等一等",
     "en": "⬜ Wait for Data",
     "vi": "⬜ Chờ thêm dữ liệu",
-    "th": "⬜ รอข้อมูล"
+    "th": "⬜ รอข้อมูล",
+    "ru": "⬜ Подождите"
   },
   "summary_headline_wait_short": {
     "zh": "数据不足",
     "en": "No Data",
     "vi": "Thiếu DL",
-    "th": "รอข้อมูล"
+    "th": "รอข้อมูล",
+    "ru": "Нет данных"
   },
   "summary_no_product_fatal": {
     "zh": "别做。硬伤在品——想推进，换品，别在这一单花钱",
     "en": "Don't. The problem is the product. If anything, switch products — don't spend on this one.",
     "vi": "Đừng làm. Vấn đề nằm ở sản phẩm — muốn tiến xa thì đổi sản phẩm, đừng tiêu tiền vào đơn này.",
-    "th": "อย่าทำ ปัญหาอยู่ที่สินค้า — อยากเดินหน้าให้เปลี่ยนสินค้า อย่าเสียเงินกับออเดอร์นี้"
+    "th": "อย่าทำ ปัญหาอยู่ที่สินค้า — อยากเดินหน้าให้เปลี่ยนสินค้า อย่าเสียเงินกับออเดอร์นี้",
+    "ru": "Не делайте. Проблема в товаре — если что-то менять, меняйте товар; не тратьте деньги на этот заказ."
   },
   "summary_no_supplier_fatal": {
     "zh": "别做。硬伤在厂——想推进，换厂，别在这一单花钱",
     "en": "Don't. The problem is the supplier. If anything, switch suppliers — don't spend on this one.",
     "vi": "Đừng làm. Vấn đề nằm ở nhà cung cấp — muốn tiến xa thì đổi nhà cung cấp, đừng tiêu tiền vào đơn này.",
-    "th": "อย่าทำ ปัญหาอยู่ที่โรงงาน — อยากเดินหน้าให้เปลี่ยนโรงงาน อย่าเสียเงินกับออเดอร์นี้"
+    "th": "อย่าทำ ปัญหาอยู่ที่โรงงาน — อยากเดินหน้าให้เปลี่ยนโรงงาน อย่าเสียเงินกับออเดอร์นี้",
+    "ru": "Не делайте. Проблема в поставщике — если что-то менять, меняйте поставщика; не тратьте деньги на этот заказ."
   },
   "summary_wait_data": {
     "zh": "别急。核心数据不够——判断不了。想判断，先补数据，或换数据全的品",
     "en": "Hold off. Core data missing — can't judge yet. To decide, get more data or switch products.",
     "vi": "Đừng vội. Dữ liệu cốt lõi chưa đủ — chưa đánh giá được. Muốn quyết định, bổ sung dữ liệu hoặc đổi sản phẩm có đủ dữ liệu.",
-    "th": "อย่าเพิ่งรีบ ข้อมูลหลักไม่พอ — ยังประเมินไม่ได้ อยากตัดสินใจให้เก็บข้อมูลเพิ่ม หรือเปลี่ยนสินค้าที่ข้อมูลครบ"
+    "th": "อย่าเพิ่งรีบ ข้อมูลหลักไม่พอ — ยังประเมินไม่ได้ อยากตัดสินใจให้เก็บข้อมูลเพิ่ม หรือเปลี่ยนสินค้าที่ข้อมูลครบ",
+    "ru": "Не спешите. Не хватает ключевых данных — оценить пока нельзя. Чтобы решить, соберите больше данных или выберите товар с полными данными."
   },
   "supp_action_check_delivery": {
     "zh": "想长期合作，先拿样确认交期",
     "en": "For a long-term partnership, sample to confirm delivery",
     "vi": "Muốn hợp tác lâu dài, lấy mẫu xác nhận thời gian giao hàng",
-    "th": "อยากร่วมงานระยะยาว ให้สั่งตัวอย่างเพื่อยืนยันเวลาจัดส่ง"
+    "th": "อยากร่วมงานระยะยาว ให้สั่งตัวอย่างเพื่อยืนยันเวลาจัดส่ง",
+    "ru": "Для долгосрочного сотрудничества закажите образец и подтвердите срок поставки"
   },
   "supp_action_compare": {
     "zh": "想合作，先比价确认优势",
     "en": "To commit, compare prices for an advantage",
     "vi": "Muốn hợp tác, so giá để xác nhận lợi thế",
-    "th": "อยากร่วมงาน ให้เทียบราคาเพื่อยืนยันความได้เปรียบ"
+    "th": "อยากร่วมงาน ให้เทียบราคาเพื่อยืนยันความได้เปรียบ",
+    "ru": "Чтобы сотрудничать, сравните цены и подтвердите преимущество"
   },
   "supp_action_compare_inspect": {
     "zh": "想推进，先比价再拿样",
     "en": "To move forward, compare prices and sample first",
     "vi": "Muốn tiến xa, so giá rồi lấy mẫu trước",
-    "th": "อยากเดินหน้า ให้เทียบราคาก่อนแล้วค่อยสั่งตัวอย่าง"
+    "th": "อยากเดินหน้า ให้เทียบราคาก่อนแล้วค่อยสั่งตัวอย่าง",
+    "ru": "Чтобы двигаться дальше, сравните цены и закажите образец"
   },
   "supp_action_inspect": {
     "zh": "想下单，先拿样验货",
     "en": "To order, sample and inspect first",
     "vi": "Muốn đặt hàng, lấy mẫu kiểm tra trước",
-    "th": "อยากสั่งซื้อ ให้สั่งตัวอย่างตรวจสอบก่อน"
+    "th": "อยากสั่งซื้อ ให้สั่งตัวอย่างตรวจสอบก่อน",
+    "ru": "Чтобы заказать, сначала закажите образец и проверьте"
   },
   "supp_action_ok": {
     "zh": "想合作，先拿样确认规格",
     "en": "To partner, sample to confirm specs",
     "vi": "Muốn hợp tác, lấy mẫu xác nhận thông số",
-    "th": "อยากร่วมงาน ให้สั่งตัวอย่างเพื่อยืนยันสเปก"
+    "th": "อยากร่วมงาน ให้สั่งตัวอย่างเพื่อยืนยันสเปก",
+    "ru": "Чтобы сотрудничать, закажите образец и подтвердите спецификации"
   },
   "supp_bad_cert_none": {
     "zh": "无第三方验厂",
     "en": "no third-party audit",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "нет стороннего аудита"
   },
   "supp_bad_id_trader": {
     "zh": "贸易商、有加价",
     "en": "trader, markup expected",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "торговый посредник, наценка"
   },
   "supp_bad_years_new": {
     "zh": "新店",
     "en": "new shop",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "новый магазин"
   },
   "supp_cert_deep_audit": {
     "zh": "深度验厂",
     "en": "deep audit",
     "vi": "kiểm toán chuyên sâu",
-    "th": "ตรวจสอบเชิงลึก"
+    "th": "ตรวจสอบเชิงลึก",
+    "ru": "углублённый аудит"
   },
   "supp_cert_onsite": {
     "zh": "实地认证",
     "en": "onsite verified",
     "vi": "xác minh tại chỗ",
-    "th": "ตรวจสอบหน้างาน"
+    "th": "ตรวจสอบหน้างาน",
+    "ru": "проверено на месте"
   },
   "supp_desc_lt1": {
     "zh": "不足1年",
     "en": "<1 year",
     "vi": "<1 năm",
-    "th": "<1 ปี"
+    "th": "<1 ปี",
+    "ru": "<1 года"
   },
   "supp_desc_unknown": {
     "zh": "年限未知",
     "en": "years unknown",
     "vi": "không rõ số năm",
-    "th": "ไม่ทราบจำนวนปี"
+    "th": "ไม่ทราบจำนวนปี",
+    "ru": "лет неизвестно"
   },
   "supp_desc_yrs": {
     "zh": "{n}年",
     "en": "{n}y",
     "vi": "{n} năm",
-    "th": "{n} ปี"
+    "th": "{n} ปี",
+    "ru": "{n} г."
   },
   "supp_desc_yrs_plus": {
     "zh": "{n}年+",
     "en": "{n}y+",
     "vi": "{n} năm+",
-    "th": "{n} ปี+"
+    "th": "{n} ปี+",
+    "ru": "{n} г.+"
   },
   "supp_dim_d1_label_adv": {
     "zh": "🏭认证工厂",
     "en": "🏭 Verified Factory",
     "vi": "🏭 Nhà Máy Được Chứng Nhận",
-    "th": "🏭 โรงงานที่ผ่านการรับรอง"
+    "th": "🏭 โรงงานที่ผ่านการรับรอง",
+    "ru": "🏭 Тип поставщика"
   },
   "supp_dim_d1_label_factory": {
     "zh": "🏭工厂直供",
     "en": "🏭 Factory Direct",
     "vi": "🏭 Nhà Máy Cung Cấp Trực Tiếp",
-    "th": "🏭 โรงงานจำหน่ายตรง"
+    "th": "🏭 โรงงานจำหน่ายตรง",
+    "ru": "🏭 Тип поставщика"
   },
   "supp_dim_d1_label_trader": {
     "zh": "⚠️类型",
     "en": "⚠️ Type",
     "vi": "⚠️ Loại",
-    "th": "⚠️ ประเภท"
+    "th": "⚠️ ประเภท",
+    "ru": "⚠️ Тип поставщика"
   },
   "supp_dim_d1_name": {
     "zh": "身份",
     "en": "Identity",
     "vi": "Danh Tính",
-    "th": "ประเภท"
+    "th": "ประเภท",
+    "ru": "Тип поставщика"
   },
   "supp_dim_d1_name_adv": {
     "zh": "认证工厂",
     "en": "Verified Factory",
     "vi": "Nhà Máy Được Chứng Nhận",
-    "th": "โรงงานที่ผ่านการรับรอง"
+    "th": "โรงงานที่ผ่านการรับรอง",
+    "ru": "Тип поставщика"
   },
   "supp_dim_d1_name_factory": {
     "zh": "工厂直供",
     "en": "Factory Direct",
     "vi": "Nhà Máy Cung Cấp Trực Tiếp",
-    "th": "โรงงานจำหน่ายตรง"
+    "th": "โรงงานจำหน่ายตรง",
+    "ru": "Тип поставщика"
   },
   "supp_dim_d1_name_trader": {
     "zh": "贸易商",
     "en": "Trader",
     "vi": "Công Ty",
-    "th": "บริษัท"
+    "th": "บริษัท",
+    "ru": "Тип поставщика"
   },
   "supp_dim_d2_data_no_cert": {
     "zh": "无第三方认证",
     "en": "No Third-Party Certification",
     "vi": "Không Có Chứng Nhận Bên Thứ Ba",
-    "th": "ไม่มีการรับรองจากบุคคลที่สาม"
+    "th": "ไม่มีการรับรองจากบุคคลที่สาม",
+    "ru": "Нет сертификации третьей стороны"
   },
   "supp_dim_d2_label_deep": {
     "zh": "📋深度验厂",
     "en": "📋 Deep Factory Audit",
     "vi": "📋 Kiểm Toán Nhà Máy Chuyên Sâu",
-    "th": "📋 การตรวจสอบโรงงานเชิงลึก"
+    "th": "📋 การตรวจสอบโรงงานเชิงลึก",
+    "ru": "📋 Углублённый аудит фабрики"
   },
   "supp_dim_d2_name": {
     "zh": "认证",
     "en": "Certification",
     "vi": "Chứng Nhận",
-    "th": "การรับรอง"
+    "th": "การรับรอง",
+    "ru": "Сертификация"
   },
   "supp_dim_d2_name_deep": {
     "zh": "深度验厂",
     "en": "Deep Factory Audit",
     "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",
-    "th": "การตรวจสอบโรงงานเชิงลึก"
+    "th": "การตรวจสอบโรงงานเชิงลึก",
+    "ru": "Углублённый аудит фабрики"
   },
   "supp_dim_d3_data_fmt": {
     "zh": "经营 {n} 年",
     "en": "{n} years in business",
     "vi": "Kinh doanh {n} năm",
-    "th": "ดำเนินกิจการ {n} ปี"
+    "th": "ดำเนินกิจการ {n} ปี",
+    "ru": "В бизнесе {n} г."
   },
   "supp_dim_d3_data_short": {
     "zh": "经营不足 1 年",
     "en": "Less than 1 year",
     "vi": "Kinh doanh dưới 1 năm",
-    "th": "ดำเนินกิจการน้อยกว่า 1 ปี"
+    "th": "ดำเนินกิจการน้อยกว่า 1 ปี",
+    "ru": "Менее 1 года"
   },
   "supp_dim_d3_label_new": {
     "zh": "📅新店",
     "en": "📅 New Store",
     "vi": "📅 Cửa Hàng Mới",
-    "th": "📅 ร้านใหม่"
+    "th": "📅 ร้านใหม่",
+    "ru": "📅 Новый магазин"
   },
   "supp_dim_d3_label_old": {
     "zh": "📅老店",
     "en": "📅 Established",
     "vi": "📅 Cửa Hàng Lâu Năm",
-    "th": "📅 ร้านเก่า"
+    "th": "📅 ร้านเก่า",
+    "ru": "📅 Опытный магазин"
   },
   "supp_dim_d3_name": {
     "zh": "年限",
     "en": "Years",
     "vi": "Số Năm",
-    "th": "อายุร้าน"
+    "th": "อายุร้าน",
+    "ru": "Стаж"
   },
   "supp_dim_d3_name_new": {
     "zh": "新店",
     "en": "New Store",
     "vi": "Cửa Hàng Mới",
-    "th": "ร้านใหม่"
+    "th": "ร้านใหม่",
+    "ru": "Новый магазин"
   },
   "supp_dim_d3_name_old": {
     "zh": "老店",
     "en": "Established",
     "vi": "Cửa Hàng Lâu Năm",
-    "th": "ร้านเก่า"
+    "th": "ร้านเก่า",
+    "ru": "Опытный магазин"
   },
   "supp_dim_d3_ref_fmt": {
     "zh": "标杆 ≥{n}年",
     "en": "Benchmark ≥{n}y",
     "vi": "Chuẩn ≥{n} năm",
-    "th": "เกณฑ์ ≥{n} ปี"
+    "th": "เกณฑ์ ≥{n} ปี",
+    "ru": "Порог ≥{n} г."
   },
   "supp_fb_insufficient": {
     "zh": "资质不足",
     "en": "insufficient credentials",
     "vi": "không đủ chứng nhận",
-    "th": "คุณสมบัติไม่เพียงพอ"
+    "th": "คุณสมบัติไม่เพียงพอ",
+    "ru": "недостаточно данных"
   },
   "supp_fb_limited": {
     "zh": "数据有限",
     "en": "limited data",
     "vi": "dữ liệu hạn chế",
-    "th": "ข้อมูลจำกัด"
+    "th": "ข้อมูลจำกัด",
+    "ru": "ограниченные данные"
   },
   "supp_good_cert_basic": {
     "zh": "{cert_text}认证",
     "en": "{cert_text} certified",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "{cert_text} сертификация"
   },
   "supp_good_cert_deep": {
     "zh": "{cert_text}认证",
     "en": "{cert_text} certified",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "{cert_text} сертификация"
   },
   "supp_good_id_factory": {
     "zh": "工厂直供",
     "en": "Factory-direct — no middleman",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "Напрямую с фабрики — без посредника"
   },
   "supp_good_id_super": {
     "zh": "实力工厂、可追溯",
     "en": "Established factory, traceable",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "Надёжная фабрика, отслеживаемая"
   },
   "supp_good_years_old": {
     "zh": "{years}年",
     "en": "{years} yrs",
     "vi": "",
-    "th": ""
+    "th": "",
+    "ru": "{years} г."
   },
   "supp_help_no_cert": {
     "zh": "第三方机构（如 TUV、SGS、BV）实地审核工厂。该供应商未经第三方验厂——在1688平台，中小工厂无此认证属于常态。",
     "en": "Third-party agencies (e.g. TUV, SGS, BV) audit factories on-site. This supplier has no third-party factory audit — on 1688, this is normal for small/medium factories.",
     "vi": "Các tổ chức bên thứ ba (như TUV, SGS, BV) kiểm toán nhà máy tại chỗ. Nhà cung cấp này chưa có kiểm toán bên thứ ba — trên 1688, điều này là bình thường với nhà máy vừa và nhỏ.",
-    "th": "หน่วยงานภายนอก (เช่น TUV, SGS, BV) ตรวจสอบโรงงานหน้างาน ซัพพลายเออร์นี้ไม่มีการตรวจสอบจากบุคคลที่สาม — ใน 1688 เป็นเรื่องปกติสำหรับโรงงานขนาดเล็ก/กลาง"
+    "th": "หน่วยงานภายนอก (เช่น TUV, SGS, BV) ตรวจสอบโรงงานหน้างาน ซัพพลายเออร์นี้ไม่มีการตรวจสอบจากบุคคลที่สาม — ใน 1688 เป็นเรื่องปกติสำหรับโรงงานขนาดเล็ก/กลาง",
+    "ru": "Сторонние агентства (например, TUV, SGS, BV) проводят аудит фабрик на месте. У этого поставщика нет стороннего аудита — на 1688 это нормально для малых и средних фабрик."
   },
   "supp_help_verified": {
     "zh": "1688官方认证：年销售额达标、信誉良好的优质商家，享受平台流量扶持。",
     "en": "1688 Verified Supplier: Meets annual sales thresholds with good reputation, receives platform traffic support.",
     "vi": "Nhà cung cấp được 1688 xác minh: Đạt doanh số hàng năm, uy tín tốt, nhận hỗ trợ lưu lượng nền tảng.",
-    "th": "ผู้ขายที่ผ่านการรับรองจาก 1688: มียอดขายประจำปีตามเกณฑ์ ชื่อเสียงดี ได้รับการสนับสนุนจากแพลตฟอร์ม"
+    "th": "ผู้ขายที่ผ่านการรับรองจาก 1688: มียอดขายประจำปีตามเกณฑ์ ชื่อเสียงดี ได้รับการสนับสนุนจากแพลตฟอร์ม",
+    "ru": "Проверенный поставщик 1688: достигает годового объёма продаж с хорошей репутацией, получает поддержку трафика платформы."
   },
   "supp_reason_no_cert": {
     "zh": "无第三方认证",
     "en": "no third-party cert",
     "vi": "không có chứng nhận bên thứ ba",
-    "th": "ไม่มีการรับรองจากบุคคลที่สาม"
+    "th": "ไม่มีการรับรองจากบุคคลที่สาม",
+    "ru": "нет сертификации третьей стороны"
   },
   "supp_reason_sep": {
     "zh": "、",
     "en": ", ",
     "vi": ", ",
-    "th": ", "
+    "th": ", ",
+    "ru": ", "
   },
   "supp_reason_short": {
     "zh": "年限尚短",
     "en": "short history",
     "vi": "lịch sử ngắn",
-    "th": "ประวัติสั้น"
+    "th": "ประวัติสั้น",
+    "ru": "короткая история"
   },
   "supp_risk_no_cert": {
     "zh": "无第三方验厂背书在1688是常态，拿样是最直接的验证方式",
     "en": "No third-party factory audit is normal on 1688 — sampling is the most direct way to verify",
     "vi": "Không có kiểm toán bên thứ ba là bình thường trên 1688 — lấy mẫu là cách xác minh trực tiếp nhất",
-    "th": "การไม่มีการตรวจสอบจากบุคคลที่สามเป็นเรื่องปกติใน 1688 — การสั่งตัวอย่างเป็นวิธีตรวจสอบที่ตรงที่สุด"
+    "th": "การไม่มีการตรวจสอบจากบุคคลที่สามเป็นเรื่องปกติใน 1688 — การสั่งตัวอย่างเป็นวิธีตรวจสอบที่ตรงที่สุด",
+    "ru": "Отсутствие стороннего аудита фабрики на 1688 — норма; заказ образца — самый прямой способ проверки"
   },
   "supp_summary_caution": {
     "zh": "供应商信号偏弱",
     "en": "Weak supplier signals",
     "vi": "Tín hiệu nhà cung cấp yếu",
-    "th": "สัญญาณซัพพลายเออร์อ่อน"
+    "th": "สัญญาณซัพพลายเออร์อ่อน",
+    "ru": "Сигналы поставщика слабые"
   },
   "supp_summary_fatal": {
     "zh": "供应商有硬伤",
     "en": "Supplier has fatal flaws",
     "vi": "Nhà cung cấp có lỗi nghiêm trọng",
-    "th": "ซัพพลายเออร์มีข้อบกพร่องร้ายแรง"
+    "th": "ซัพพลายเออร์มีข้อบกพร่องร้ายแรง",
+    "ru": "У поставщика серьёзные недостатки"
   },
   "supp_summary_skip": {
     "zh": "供应商信息不足",
     "en": "Insufficient supplier info",
     "vi": "Thiếu thông tin nhà cung cấp",
-    "th": "ข้อมูลซัพพลายเออร์ไม่เพียงพอ"
+    "th": "ข้อมูลซัพพลายเออร์ไม่เพียงพอ",
+    "ru": "Недостаточно информации о поставщике"
   },
   "supp_summary_trust": {
     "zh": "供应商可信",
     "en": "Trusted supplier",
     "vi": "Nhà cung cấp đáng tin",
-    "th": "ซัพพลายเออร์น่าเชื่อถือ"
+    "th": "ซัพพลายเออร์น่าเชื่อถือ",
+    "ru": "Надёжный поставщик"
   },
   "supp_summary_usable": {
     "zh": "供应商可用，留意短板",
     "en": "Usable, watch the gaps",
     "vi": "Dùng được, lưu ý điểm yếu",
-    "th": "ใช้ได้ ระวังจุดอ่อน"
+    "th": "ใช้ได้ ระวังจุดอ่อน",
+    "ru": "Можно использовать, следите за слабыми местами"
   },
   "supp_verdict_caution_weak2": {
     "zh": "谨慎。{bad_parts}——{action}",
     "en": "Proceed with caution. {bad_parts} — {action}",
     "vi": "Thận trọng. {bad_parts} — {action}",
-    "th": "ระวังไว้ก่อน {bad_parts} — {action}"
+    "th": "ระวังไว้ก่อน {bad_parts} — {action}",
+    "ru": "С осторожностью. {bad_parts} — {action}"
   },
   "supp_verdict_fatal_blackbox": {
     "zh": "别碰。对面是谁都不知道——身份、认证、年限全空。没法追溯，出了事你连人都找不到",
     "en": "Don't touch it. You don't even know who's on the other side — no identity, no certification, no history. Can't trace them; if something goes wrong you can't even find them.",
     "vi": "Đừng đụng vào. Không biết đối tác là ai — không có danh tính, chứng nhận, lịch sử. Không thể truy vết; xảy ra vấn đề thì tìm cũng không ra người.",
-    "th": "อย่าแตะต้องเลย ไม่รู้ด้วยซ้ำว่าอีกฝ่ายเป็นใคร — ไม่มีตัวตน ไม่มีการรับรอง ไม่มีประวัติ สืบหาตัวก็ไม่ได้ หากมีปัญหาอะไรเกิดขึ้นหาคนก็ไม่เจอ"
+    "th": "อย่าแตะต้องเลย ไม่รู้ด้วยซ้ำว่าอีกฝ่ายเป็นใคร — ไม่มีตัวตน ไม่มีการรับรอง ไม่มีประวัติ สืบหาตัวก็ไม่ได้ หากมีปัญหาอะไรเกิดขึ้นหาคนก็ไม่เจอ",
+    "ru": "Не трогайте. Вы даже не знаете, кто по ту сторону — нет статуса, сертификации, истории. Невозможно отследить; если что-то пойдёт не так, вы не найдёте никого."
   },
   "supp_verdict_skip_nodata": {
     "zh": "跳过。关键信息不够（{missing_count}项缺失）——判断不了这个厂靠不靠谱",
     "en": "Skip. Key info is missing ({missing_count} items) — can't judge whether this supplier is reliable.",
     "vi": "Bỏ qua. Thiếu thông tin quan trọng ({missing_count} mục) — chưa đánh giá được nhà cung cấp này có đáng tin không.",
-    "th": "ข้ามไปก่อน ข้อมูลสำคัญขาด ({missing_count} รายการ) — ประเมินไม่ได้ว่าโรงงานนี้เชื่อถือได้ไหม"
+    "th": "ข้ามไปก่อน ข้อมูลสำคัญขาด ({missing_count} รายการ) — ประเมินไม่ได้ว่าโรงงานนี้เชื่อถือได้ไหม",
+    "ru": "Пропустить. Не хватает ключевой информации ({missing_count} шт.) — нельзя оценить, надёжен ли этот поставщик."
   },
   "supp_verdict_trust_strong2": {
     "zh": "可信。{good_parts}。拿样确认款式，可放心合作",
     "en": "Trustworthy. {good_parts}. Sample to confirm the specs, then partner with confidence.",
     "vi": "Đáng tin cậy. {good_parts}. Lấy mẫu xác nhận mẫu mã, yên tâm hợp tác.",
-    "th": "น่าเชื่อถือ {good_parts} สั่งตัวอย่างยืนยันสเปกแล้วร่วมงานได้อย่างมั่นใจ"
+    "th": "น่าเชื่อถือ {good_parts} สั่งตัวอย่างยืนยันสเปกแล้วร่วมงานได้อย่างมั่นใจ",
+    "ru": "Надёжен. {good_parts}. Закажите образец для подтверждения спецификаций — можно сотрудничать с уверенностью."
   },
   "supp_verdict_usable_ok": {
     "zh": "可用。{good_parts}。但{bad_parts}。{action}",
     "en": "Usable. {good_parts}. But {bad_parts}. {action}",
     "vi": "Dùng được. {good_parts}. Nhưng {bad_parts}. {action}",
-    "th": "ใช้ได้ {good_parts} แต่ {bad_parts} {action}"
+    "th": "ใช้ได้ {good_parts} แต่ {bad_parts} {action}",
+    "ru": "Можно использовать. {good_parts}. Но {bad_parts}. {action}"
   },
   "supp_verdict_usable_ok_nobad": {
     "zh": "可用。{good_parts}。{action}",
     "en": "Usable. {good_parts}. {action}",
     "vi": "Dùng được. {good_parts}. {action}",
-    "th": "ใช้ได้ {good_parts} {action}"
+    "th": "ใช้ได้ {good_parts} {action}",
+    "ru": "Можно использовать. {good_parts}. {action}"
   },
   "supplier_grade_caution": {
     "zh": "🔴 谨慎",
     "en": "🔴 Caution",
     "vi": "🔴 Thận Trọng",
-    "th": "🔴 ระมัดระวัง"
+    "th": "🔴 ระมัดระวัง",
+    "ru": "🔴 Осторожно"
   },
   "supplier_grade_ok": {
     "zh": "⚠️ 可合作",
     "en": "⚠️ Workable",
     "vi": "⚠️ Có Thể Hợp Tác",
-    "th": "⚠️ ร่วมมือได้"
+    "th": "⚠️ ร่วมมือได้",
+    "ru": "⚠️ Можно сотрудничать"
   },
   "supplier_grade_unknown": {
     "zh": "⬜ 数据不足",
     "en": "⬜ Not Enough Data",
     "vi": "⬜ Thiếu Dữ Liệu",
-    "th": "⬜ ข้อมูลไม่เพียงพอ"
+    "th": "⬜ ข้อมูลไม่เพียงพอ",
+    "ru": "⬜ Недостаточно данных"
   },
   "supplier_grade_verified": {
     "zh": "✅ 可信",
     "en": "✅ Verified",
     "vi": "✅ Đáng Tin",
-    "th": "✅ เชื่อถือได้"
+    "th": "✅ เชื่อถือได้",
+    "ru": "✅ Надёжен"
   },
   "tier_advanced_lt2y": {
     "zh": "平台认证，<2年，建议验货",
     "en": "Platform verified, <2y, inspect recommended",
     "vi": "Đã xác minh nền tảng, <2 năm, nên kiểm tra",
-    "th": "แพลตฟอร์มรับรอง, <2 ปี, แนะนำให้ตรวจสอบ"
+    "th": "แพลตฟอร์มรับรอง, <2 ปี, แนะนำให้ตรวจสอบ",
+    "ru": "Проверен платформой, <2 г., рекомендуется проверка"
   },
   "tier_factory_1y": {
     "zh": "生产厂家，1年+，建议样品验证",
     "en": "Manufacturer, 1y+, sample verification advised",
     "vi": "Nhà sản xuất, 1 năm+, nên xác minh mẫu",
-    "th": "ผู้ผลิต, 1 ปี+, แนะนำตรวจสอบตัวอย่าง"
+    "th": "ผู้ผลิต, 1 ปี+, แนะนำตรวจสอบตัวอย่าง",
+    "ru": "Производитель, 1 г.+, рекомендуется проверка образца"
   },
   "tier_insufficient": {
     "zh": "无认证，<1年，建议手动验证",
     "en": "No cert, <1y, manual verification advised",
     "vi": "Không chứng nhận, <1 năm, nên xác minh thủ công",
-    "th": "ไม่มีการรับรอง, <1 ปี, แนะนำตรวจสอบด้วยตนเอง"
+    "th": "ไม่มีการรับรอง, <1 ปี, แนะนำตรวจสอบด้วยตนเอง",
+    "ru": "Нет сертификации, <1 г., рекомендуется ручная проверка"
   },
   "tier_no_cert_1y": {
     "zh": "无认证，1年+，建议样品验证",
     "en": "No cert, 1y+, sample verification advised",
     "vi": "Không chứng nhận, 1 năm+, nên xác minh mẫu",
-    "th": "ไม่มีการรับรอง, 1 ปี+, แนะนำตรวจสอบตัวอย่าง"
+    "th": "ไม่มีการรับรอง, 1 ปี+, แนะนำตรวจสอบตัวอย่าง",
+    "ru": "Нет сертификации, 1 г.+, рекомендуется проверка образца"
   },
   "tier_sufficient_2y": {
     "zh": "平台认证 + 2年+，样品风险低",
     "en": "Platform verified + 2y+, low sample risk",
     "vi": "Đã xác minh nền tảng + 2 năm+, rủi ro lấy mẫu thấp",
-    "th": "แพลตฟอร์มรับรอง + 2 ปี+, ความเสี่ยงตัวอย่างต่ำ"
+    "th": "แพลตฟอร์มรับรอง + 2 ปี+, ความเสี่ยงตัวอย่างต่ำ",
+    "ru": "Проверен платформой + 2 г.+, низкий риск образца"
   },
   "trust_sold_fmt": {
     "zh": "{n}+ 已售",
     "en": "{n}+ sold",
     "vi": "Đã bán {n}+",
-    "th": "ขายแล้ว {n}+"
+    "th": "ขายแล้ว {n}+",
+    "ru": "Продано {n}+"
   },
   "trust_years_fmt": {
     "zh": "{n}年 1688",
     "en": "{n}y on 1688",
     "vi": "{n} năm trên 1688",
-    "th": "{n} ปีบน 1688"
+    "th": "{n} ปีบน 1688",
+    "ru": "{n} г. на 1688"
   },
   "unit_个": {
     "zh": "个",
     "en": "pcs",
     "vi": "cái",
-    "th": "ชิ้น"
+    "th": "ชิ้น",
+    "ru": "шт."
   },
   "unit_件": {
     "zh": "件",
     "en": "pcs",
     "vi": "cái",
-    "th": "ชิ้น"
+    "th": "ชิ้น",
+    "ru": "шт."
   },
   "unit_克": {
     "zh": "克",
     "en": "g",
     "vi": "g",
-    "th": "ก."
+    "th": "ก.",
+    "ru": "г"
   },
   "unit_副": {
     "zh": "副",
     "en": "pair",
     "vi": "đôi",
-    "th": "คู่"
+    "th": "คู่",
+    "ru": "пара"
   },
   "unit_包": {
     "zh": "包",
     "en": "pack",
     "vi": "gói",
-    "th": "แพ็ค"
+    "th": "แพ็ค",
+    "ru": "упак."
   },
   "unit_千克": {
     "zh": "千克",
     "en": "kg",
     "vi": "kg",
-    "th": "กก."
+    "th": "กก.",
+    "ru": "кг"
   },
   "unit_双": {
     "zh": "双",
     "en": "pair",
     "vi": "đôi",
-    "th": "คู่"
+    "th": "คู่",
+    "ru": "пара"
   },
   "unit_只": {
     "zh": "只",
     "en": "pcs",
     "vi": "cái",
-    "th": "ชิ้น"
+    "th": "ชิ้น",
+    "ru": "шт."
   },
   "unit_吨": {
     "zh": "吨",
     "en": "t",
     "vi": "tấn",
-    "th": "ตัน"
+    "th": "ตัน",
+    "ru": "т"
   },
   "unit_套": {
     "zh": "套",
     "en": "set",
     "vi": "bộ",
-    "th": "ชุด"
+    "th": "ชุด",
+    "ru": "компл."
   },
   "unit_对": {
     "zh": "对",
     "en": "pair",
     "vi": "đôi",
-    "th": "คู่"
+    "th": "คู่",
+    "ru": "пара"
   },
   "unit_平方米": {
     "zh": "平方米",
     "en": "m²",
     "vi": "m²",
-    "th": "ตร.ม."
+    "th": "ตร.ม.",
+    "ru": "м²"
   },
   "unit_把": {
     "zh": "把",
     "en": "pcs",
     "vi": "cái",
-    "th": "ชิ้น"
+    "th": "ชิ้น",
+    "ru": "шт."
   },
   "unit_条": {
     "zh": "条",
     "en": "pcs",
     "vi": "cái",
-    "th": "ชิ้น"
+    "th": "ชิ้น",
+    "ru": "шт."
   },
   "unit_瓶": {
     "zh": "瓶",
     "en": "bottle",
     "vi": "chai",
-    "th": "ขวด"
+    "th": "ขวด",
+    "ru": "бутылка"
   },
   "unit_盒": {
     "zh": "盒",
     "en": "box",
     "vi": "hộp",
-    "th": "กล่อง"
+    "th": "กล่อง",
+    "ru": "коробка"
   },
   "unit_码": {
     "zh": "码",
     "en": "yd",
     "vi": "yd",
-    "th": "หลา"
+    "th": "หลา",
+    "ru": "ярд"
   },
   "unit_箱": {
     "zh": "箱",
     "en": "carton",
     "vi": "thùng",
-    "th": "ลัง"
+    "th": "ลัง",
+    "ru": "ящик"
   },
   "unit_米": {
     "zh": "米",
     "en": "m",
     "vi": "m",
-    "th": "ม."
+    "th": "ม.",
+    "ru": "м"
   },
   "unit_袋": {
     "zh": "袋",
     "en": "pack",
     "vi": "túi",
-    "th": "ถุง"
+    "th": "ถุง",
+    "ru": "пакет"
   },
   "不适用": {
     "zh": "不适用",
     "en": "N/A",
     "vi": "Không Áp Dụng",
-    "th": "ไม่เกี่ยวข้อง"
+    "th": "ไม่เกี่ยวข้อง",
+    "ru": "Н/П"
   },
   "严选晚发必赔": {
     "zh": "严选晚发必赔",
     "en": "On-Time Guaranteed",
     "vi": "Đảm Bảo Giao Đúng Hạn",
-    "th": "รับประกันจัดส่งตรงเวลา"
+    "th": "รับประกันจัดส่งตรงเวลา",
+    "ru": "Гарантия своевременной доставки"
   },
   "买家保障": {
     "zh": "买家保障",
     "en": "Buyer Protection",
     "vi": "Bảo Vệ Người Mua",
-    "th": "คุ้มครองผู้ซื้อ"
+    "th": "คุ้มครองผู้ซื้อ",
+    "ru": "Защита покупателя"
   },
   "产业带": {
     "zh": "产业带",
     "en": "Industrial Cluster",
     "vi": "Cụm Công Nghiệp",
-    "th": "กลุ่มอุตสาหกรรม"
+    "th": "กลุ่มอุตสาหกรรม",
+    "ru": "Промышленный кластер"
   },
   "免费拿样": {
     "zh": "免费拿样",
     "en": "Free Sample",
     "vi": "Mẫu Miễn Phí",
-    "th": "ตัวอย่างฟรี"
+    "th": "ตัวอย่างฟรี",
+    "ru": "Бесплатный образец"
   },
   "包邮": {
     "zh": "包邮",
     "en": "Free Shipping",
     "vi": "Miễn Phí Vận Chuyển",
-    "th": "จัดส่งฟรี"
+    "th": "จัดส่งฟรี",
+    "ru": "Бесплатная доставка"
   },
   "品类排名": {
     "zh": "品类排名",
     "en": "Category Rank",
     "vi": "Xếp Hạng Ngành Hàng",
-    "th": "อันดับหมวดหมู่"
+    "th": "อันดับหมวดหมู่",
+    "ru": "Рейтинг категории"
   },
   "品质不符包赔": {
     "zh": "品质不符包赔",
     "en": "Quality Guaranteed",
     "vi": "Đảm Bảo Chất Lượng",
-    "th": "รับประกันคุณภาพ"
+    "th": "รับประกันคุณภาพ",
+    "ru": "Гарантия качества"
   },
   "回头率": {
     "zh": "回头率",
     "en": "Repurchase Rate",
     "vi": "Tỷ Lệ Mua Lại",
-    "th": "อัตราการซื้อซ้ำ"
+    "th": "อัตราการซื้อซ้ำ",
+    "ru": "Повторные покупки"
   },
   "实力商家": {
     "zh": "实力商家",
     "en": "Verified Seller",
     "vi": "Người Bán Được Xác Minh",
-    "th": "ผู้ขายที่ผ่านการรับรอง"
+    "th": "ผู้ขายที่ผ่านการรับรอง",
+    "ru": "Проверенный продавец"
   },
   "实力工厂": {
     "zh": "实力工厂",
     "en": "Verified Factory",
     "vi": "Nhà Máy Đã Kiểm Định",
-    "th": "โรงงานที่ผ่านการรับรอง"
+    "th": "โรงงานที่ผ่านการรับรอง",
+    "ru": "Проверенная фабрика"
   },
   "实地认证": {
     "zh": "实地认证",
     "en": "On-site Certification",
     "vi": "Chứng Nhận Tại Chỗ",
-    "th": "การรับรองหน้างาน"
+    "th": "การรับรองหน้างาน",
+    "ru": "Сертификация на месте"
   },
   "工厂直供": {
     "zh": "工厂直供",
     "en": "Factory Direct",
     "vi": "Nhà Máy Cung Cấp Trực Tiếp",
-    "th": "โรงงานจำหน่ายตรง"
+    "th": "โรงงานจำหน่ายตรง",
+    "ru": "Напрямую с фабрики"
   },
   "批发价": {
     "zh": "批发价",
     "en": "Wholesale Price",
     "vi": "Giá Sỉ",
-    "th": "ราคาส่ง"
+    "th": "ราคาส่ง",
+    "ru": "Оптовая цена"
   },
   "支持混批": {
     "zh": "支持混批",
     "en": "Mixed Batch OK",
     "vi": "Hỗ Trợ Đơn Hàng Nhỏ",
-    "th": "รับออเดอร์คละ"
+    "th": "รับออเดอร์คละ",
+    "ru": "Смешанные партии — да"
   },
   "晚发必赔": {
     "zh": "晚发必赔",
     "en": "Late Delivery Compensation",
     "vi": "Bồi Thường Giao Hàng Trễ",
-    "th": "ชดเชยหากจัดส่งล่าช้า"
+    "th": "ชดเชยหากจัดส่งล่าช้า",
+    "ru": "Компенсация за задержку доставки"
   },
   "普通商家": {
     "zh": "普通商家",
     "en": "Standard Seller",
     "vi": "Nhà Bán Hàng Thường",
-    "th": "ผู้ขายทั่วไป"
+    "th": "ผู้ขายทั่วไป",
+    "ru": "Обычный продавец"
   },
   "暂无排名": {
     "zh": "暂无排名",
     "en": "No Ranking",
     "vi": "Chưa Có Xếp Hạng",
-    "th": "ยังไม่มีอันดับ"
+    "th": "ยังไม่มีอันดับ",
+    "ru": "Нет рейтинга"
   },
   "暂无认证": {
     "zh": "暂无认证",
     "en": "No Certification",
     "vi": "Chưa Có Chứng Nhận",
-    "th": "ยังไม่มีการรับรอง"
+    "th": "ยังไม่มีการรับรอง",
+    "ru": "Нет сертификации"
   },
   "深度验厂": {
     "zh": "深度验厂",
     "en": "Deep Factory Audit",
     "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",
-    "th": "การตรวจสอบโรงงานเชิงลึก"
+    "th": "การตรวจสอบโรงงานเชิงลึก",
+    "ru": "Углублённый аудит фабрики"
   },
   "源头产地": {
     "zh": "源头产地",
     "en": "Source Region",
     "vi": "Vùng Sản Xuất Gốc",
-    "th": "แหล่งผลิตต้นทาง"
+    "th": "แหล่งผลิตต้นทาง",
+    "ru": "Регион происхождения"
   },
   "源头工厂": {
     "zh": "源头工厂",
     "en": "Factory",
     "vi": "Nhà Máy",
-    "th": "โรงงาน"
+    "th": "โรงงาน",
+    "ru": "Фабрика"
   },
   "源头旗舰": {
     "zh": "源头旗舰",
     "en": "Flagship Factory",
     "vi": "Nhà Máy Flagship",
-    "th": "โรงงานเรือธง"
+    "th": "โรงงานเรือธง",
+    "ru": "Флагманская фабрика"
   },
   "现货": {
     "zh": "现货",
     "en": "In Stock / Ready Stock",
     "vi": "Hàng Có Sẵn",
-    "th": "สินค้าพร้อมส่ง"
+    "th": "สินค้าพร้อมส่ง",
+    "ru": "В наличии"
   },
   "生产厂家": {
     "zh": "生产厂家",
     "en": "Manufacturer",
     "vi": "Nhà Sản Xuất",
-    "th": "ผู้ผลิต"
+    "th": "ผู้ผลิต",
+    "ru": "Производитель"
   },
   "第三方验厂": {
     "zh": "第三方验厂",
     "en": "Third-Party Factory Audit",
     "vi": "Kiểm Toán Bên Thứ Ba",
-    "th": "การตรวจสอบโดยบุคคลที่สาม"
+    "th": "การตรวจสอบโดยบุคคลที่สาม",
+    "ru": "Аудит фабрики третьей стороной"
   },
   "累计销量": {
     "zh": "累计销量",
     "en": "Total Sales",
     "vi": "Tổng Doanh Số",
-    "th": "ยอดขายรวม"
+    "th": "ยอดขายรวม",
+    "ru": "Общий объём продаж"
   },
   "贸易商": {
     "zh": "贸易商",
     "en": "Trader",
     "vi": "Công Ty",
-    "th": "บริษัท"
+    "th": "บริษัท",
+    "ru": "Посредник"
   },
   "超级工厂": {
     "zh": "超级工厂",
     "en": "Super Factory",
     "vi": "Siêu Nhà Máy",
-    "th": "ซูเปอร์แฟคทอรี่"
+    "th": "ซูเปอร์แฟคทอรี่",
+    "ru": "Супер-фабрика"
   },
   "跨境专供": {
     "zh": "跨境专供",
     "en": "Cross-Border Supply",
     "vi": "Cung Cấp Xuyên Biên Giới",
-    "th": "ซัพพลายข้ามพรมแดน"
+    "th": "ซัพพลายข้ามพรมแดน",
+    "ru": "Трансграничные поставки"
   },
   "通品工厂": {
     "zh": "通品工厂",
     "en": "Standard Factory",
     "vi": "Nhà Máy Tiêu Chuẩn",
-    "th": "โรงงานมาตรฐาน"
+    "th": "โรงงานมาตรฐาน",
+    "ru": "Стандартная фабрика"
   },
   "集散地": {
     "zh": "集散地",
     "en": "Distribution Hub",
     "vi": "Trung Tâm Phân Phối",
-    "th": "ศูนย์กระจายสินค้า"
+    "th": "ศูนย์กระจายสินค้า",
+    "ru": "Центр распределения"
   },
   "非生产厂家": {
     "zh": "非生产厂家",
     "en": "Non-Manufacturer",
     "vi": "Không Phải Nhà Sản Xuất",
-    "th": "ไม่ใช่ผู้ผลิต"
+    "th": "ไม่ใช่ผู้ผลิต",
+    "ru": "Не производитель"
   },
   "prod_verdict_go_repurchase": {
     "zh": "值得做。销量{sold}件、复购{repurchase}%，需求稳。想推进，先拿样。{risk_note}",
     "en": "Worth doing. {sold} sold + {repurchase}% repeat, demand holds. To move forward, sample first. {risk_note}",
     "vi": "Đáng làm. {sold} đã bán + {repurchase}% mua lại, nhu cầu ổn định. Muốn tiến xa, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะทำ ขายไป {sold} ชิ้น + ซื้อซ้ำ {repurchase}% ความต้องการคงที่ อยากเดินหน้าต่อ ให้สั่งตัวอย่างก่อน {risk_note}"
+    "th": "คุ้มค่าที่จะทำ ขายไป {sold} ชิ้น + ซื้อซ้ำ {repurchase}% ความต้องการคงที่ อยากเดินหน้าต่อ ให้สั่งตัวอย่างก่อน {risk_note}",
+    "ru": "Стоит делать. {sold} продано + повторных {repurchase}%, спрос стабилен. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
   },
   "prod_verdict_go_hot_wanted": {
     "zh": "值得做。热销{sold}件、{wanted}人想看，需求双验证。想推进，先拿样。{risk_note}",
     "en": "Worth doing. {sold} sold + {wanted} want-buys, demand double-checked. To move forward, sample first. {risk_note}",
     "vi": "Đáng làm. {sold} bán chạy + {wanted} người muốn mua, nhu cầu được xác nhận đôi lần. Muốn tiến xa, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + {wanted} คนสนใจ ความต้องการยืนยันสองชั้น อยากเดินหน้า ให้สั่งตัวอย่างก่อน {risk_note}"
+    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + {wanted} คนสนใจ ความต้องการยืนยันสองชั้น อยากเดินหน้า ให้สั่งตัวอย่างก่อน {risk_note}",
+    "ru": "Стоит делать. {sold} продано + {wanted} хотят купить, спрос подтверждён дважды. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
   },
   "prod_verdict_go_hot_repeat": {
     "zh": "值得做。热销{sold}件、复购{repurchase}%，卖得动有人回头。想推进，先拿样。{risk_note}",
     "en": "Worth doing. {sold} sold + {repurchase}% repeat — it moves, buyers return. To move forward, sample first. {risk_note}",
     "vi": "Đáng làm. Bán chạy {sold} + {repurchase}% mua lại — bán được và khách quay lại. Muốn tiến xa, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + ซื้อซ้ำ {repurchase}% — ขายคล่องมีลูกค้ากลับมา อยากเดินหน้า สั่งตัวอย่างก่อน {risk_note}"
+    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + ซื้อซ้ำ {repurchase}% — ขายคล่องมีลูกค้ากลับมา อยากเดินหน้า สั่งตัวอย่างก่อน {risk_note}",
+    "ru": "Стоит делать. {sold} продано + {repurchase}% повторных — продаётся, покупатели возвращаются. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
   },
   "prod_verdict_trial_hot_unknown": {
     "zh": "小批量试。热销{sold}件但复购未知——不确定回头。想验证，先拿少量。{risk_note}",
     "en": "Try small. {sold} sold but repurchase unknown — unclear if buyers return. To verify, order small. {risk_note}",
     "vi": "Thử với số lượng nhỏ. Bán chạy {sold} nhưng tỷ lệ mua lại chưa rõ — không chắc khách có quay lại không. Muốn kiểm chứng, lấy ít trước. {risk_note}",
-    "th": "ลองสั่งจำนวนน้อย ขายดี {sold} ชิ้น แต่ยอดซื้อซ้ำไม่ทราบ — ไม่แน่ใจว่าลูกค้าจะกลับมาซื้อไหม อยากยืนยันให้สั่งจำนวนน้อยก่อน {risk_note}"
+    "th": "ลองสั่งจำนวนน้อย ขายดี {sold} ชิ้น แต่ยอดซื้อซ้ำไม่ทราบ — ไม่แน่ใจว่าลูกค้าจะกลับมาซื้อไหม อยากยืนยันให้สั่งจำนวนน้อยก่อน {risk_note}",
+    "ru": "Попробуйте малыми партиями. {sold} продано, но повторные покупки неизвестны — неясно, вернутся ли покупатели. Чтобы проверить, закажите немного. {risk_note}"
   },
   "prod_verdict_trial_wanted_low": {
     "zh": "小批量试。{wanted}人想看但才卖{sold}件——需求在没验证。想验证，拿少量试水。{risk_note}",
     "en": "Try small. {wanted} want-buys but only {sold} sold — demand unproven. To verify, try a little. {risk_note}",
     "vi": "Thử với số lượng nhỏ. {wanted} người muốn mua nhưng mới bán {sold} — nhu cầu chưa được kiểm chứng. Muốn kiểm chứng, lấy ít thử. {risk_note}",
-    "th": "ลองสั่งจำนวนน้อย {wanted} คนสนใจ แต่ขายได้แค่ {sold} ชิ้น — ความต้องการยังไม่ยืนยัน อยากยืนยันให้สั่งลองจำนวนน้อย {risk_note}"
+    "th": "ลองสั่งจำนวนน้อย {wanted} คนสนใจ แต่ขายได้แค่ {sold} ชิ้น — ความต้องการยังไม่ยืนยัน อยากยืนยันให้สั่งลองจำนวนน้อย {risk_note}",
+    "ru": "Попробуйте малыми партиями. {wanted} хотят купить, но продано только {sold} — спрос не подтверждён. Чтобы проверить, попробуйте немного. {risk_note}"
   },
   "prod_verdict_trial_rep_low": {
     "zh": "值得试。复购{repurchase}%、销量{sold}件——老客复购好，客户群还小。想试，先拿样。{risk_note}",
     "en": "Worth trying. {repurchase}% repeat, {sold} sold — loyal but small base. To test, sample first. {risk_note}",
     "vi": "Đáng thử. {repurchase}% mua lại, {sold} đã bán — khách trung thành nhưng lượng còn nhỏ. Muốn thử, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะลอง ซื้อซ้ำ {repurchase}% ขาย {sold} ชิ้น — ลูกค้าประจำดีแต่ฐานยังเล็ก อยากลองให้สั่งตัวอย่างก่อน {risk_note}"
+    "th": "คุ้มค่าที่จะลอง ซื้อซ้ำ {repurchase}% ขาย {sold} ชิ้น — ลูกค้าประจำดีแต่ฐานยังเล็ก อยากลองให้สั่งตัวอย่างก่อน {risk_note}",
+    "ru": "Стоит попробовать. {repurchase}% повторных, {sold} продано — лояльные, но база мала. Чтобы попробовать, сначала закажите образец. {risk_note}"
   },
   "prod_verdict_trial_medium3": {
     "zh": "小批量试。{highlight_count}个维度有亮点——有支撑不够强。想试，少量拿。{risk_note}",
     "en": "Try small. {highlight_count} dimensions show promise — support but not enough. To test, order small. {risk_note}",
     "vi": "Thử với số lượng nhỏ. {highlight_count} tiêu chí có điểm sáng — có hỗ trợ nhưng chưa đủ mạnh. Muốn thử, lấy ít trước. {risk_note}",
-    "th": "ลองสั่งจำนวนน้อย {highlight_count} มิติมีจุดเด่น — มีน้ำหนักแต่ยังไม่พอ อยากลองให้สั่งจำนวนน้อย {risk_note}"
+    "th": "ลองสั่งจำนวนน้อย {highlight_count} มิติมีจุดเด่น — มีน้ำหนักแต่ยังไม่พอ อยากลองให้สั่งจำนวนน้อย {risk_note}",
+    "ru": "Попробуйте малыми партиями. {highlight_count} показателей многообещающие — поддержка есть, но недостаточная. Чтобы попробовать, закажите немного. {risk_note}"
   },
   "prod_verdict_caution_hot_low": {
     "zh": "谨慎。热销{sold}件但复购仅{repurchase}%——可能冲动消费。想推进，小批试。{risk_note}",
     "en": "Be careful. {sold} sold but only {repurchase}% repeat — possible impulse buys. To move forward, run small. {risk_note}",
     "vi": "Thận trọng. Bán chạy {sold} nhưng chỉ {repurchase}% mua lại — có thể là mua bốc đồng. Muốn tiến xa, thử với số lượng nhỏ. {risk_note}",
-    "th": "ระวังให้ดี ขายดี {sold} ชิ้น แต่ซื้อซ้ำแค่ {repurchase}% — อาจเป็นการซื้อตามอารมณ์ อยากเดินหน้าให้ลองสั่งจำนวนน้อย {risk_note}"
+    "th": "ระวังให้ดี ขายดี {sold} ชิ้น แต่ซื้อซ้ำแค่ {repurchase}% — อาจเป็นการซื้อตามอารมณ์ อยากเดินหน้าให้ลองสั่งจำนวนน้อย {risk_note}",
+    "ru": "Осторожно. {sold} продано, но повторных только {repurchase}% — возможны импульсивные покупки. Чтобы двигаться дальше, пробуйте малыми партиями. {risk_note}"
   },
   "prod_verdict_caution_rep_low": {
     "zh": "谨慎。复购{repurchase}%但销量{sold}件——客户群小。想推进，先拿样测需求。{risk_note}",
     "en": "Be careful. {repurchase}% repeat but {sold} sold — small base. To move forward, sample to test demand. {risk_note}",
     "vi": "Thận trọng. {repurchase}% mua lại nhưng mới bán {sold} — lượng khách còn nhỏ. Muốn tiến xa, lấy mẫu kiểm tra nhu cầu. {risk_note}",
-    "th": "ระวังให้ดี ซื้อซ้ำ {repurchase}% แต่ขายได้ {sold} ชิ้น — ฐานลูกค้าเล็ก อยากเดินหน้าให้สั่งตัวอย่างเพื่อทดสอบความต้องการ {risk_note}"
+    "th": "ระวังให้ดี ซื้อซ้ำ {repurchase}% แต่ขายได้ {sold} ชิ้น — ฐานลูกค้าเล็ก อยากเดินหน้าให้สั่งตัวอย่างเพื่อทดสอบความต้องการ {risk_note}",
+    "ru": "Осторожно. {repurchase}% повторных, но {sold} продано — база мала. Чтобы двигаться дальше, закажите образец для проверки спроса. {risk_note}"
   },
   "prod_verdict_watch_medium12": {
     "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。想验证，先拿 1 件试；不想就换品。{risk_note}",
     "en": "Hold off. Only {highlight_count} dimension(s) show promise — not enough to build on. To verify, order 1 piece; otherwise switch products. {risk_note}",
     "vi": "Chờ xem. Chỉ {highlight_count} tiêu chí có điểm sáng — chưa đủ mạnh. Muốn kiểm chứng, lấy thử 1 mẫu; không thì đổi sản phẩm. {risk_note}",
-    "th": "รอดูไปก่อน มีแค่ {highlight_count} มิติที่มีจุดเด่น — ยังไม่พอจะต่อยอด อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า {risk_note}"
+    "th": "รอดูไปก่อน มีแค่ {highlight_count} มิติที่มีจุดเด่น — ยังไม่พอจะต่อยอด อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า {risk_note}",
+    "ru": "Подождите. Только {highlight_count} показателей многообещающие — недостаточно для развития. Чтобы проверить, закажите 1 шт.; иначе смените товар. {risk_note}"
   },
   "prod_verdict_watch_flat": {
     "zh": "观望。全维度平平——没看到足够亮点。想验证，先拿 1 件试；不想就换品。{risk_note}",
     "en": "Hold off. Nothing stands out across the board — no strong signals yet. To verify, order 1 piece; otherwise switch products. {risk_note}",
     "vi": "Chờ xem. Mọi tiêu chí đều bình thường — chưa thấy điểm sáng đủ rõ. Muốn kiểm chứng, lấy thử 1 mẫu; không thì đổi sản phẩm. {risk_note}",
-    "th": "รอดูไปก่อน ทุกมิติเรียบๆ — ยังไม่เห็นจุดเด่นพอ อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า {risk_note}"
+    "th": "รอดูไปก่อน ทุกมิติเรียบๆ — ยังไม่เห็นจุดเด่นพอ อยากยืนยันให้สั่งลอง 1 ชิ้น ไม่ก็เปลี่ยนสินค้า {risk_note}",
+    "ru": "Подождите. Всё ровно — сильных сигналов пока нет. Чтобы проверить, закажите 1 шт.; иначе смените товар. {risk_note}"
   }
 }

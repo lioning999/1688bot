@@ -40,6 +40,7 @@
   "history.limitFull": "⚠️ Đã đạt giới hạn. Phân tích mới sẽ tự xóa các bản ghi cũ nhất chưa yêu thích. {fav} để giữ lại.",
 
   "msg.LOGIN_REQUIRED": "Vui lòng đăng nhập",
+  "msg.BOT_AUTH_FAILED": "Xác thực bot thất bại",
   "msg.INTERNAL_ERROR": "Lỗi máy chủ nội bộ, vui lòng thử lại sau.",
   "msg.PROXY_HOST_DENIED": "Không cho phép truy cập tên miền này.",
   "msg.PROXY_FETCH_FAILED": "Không tải được hình ảnh.",
@@ -58,6 +59,7 @@
   "msg.FETCH_FAILED_RETRY_TOMORROW": "Liên kết này liên tục lấy dữ liệu thất bại, vui lòng thử lại vào ngày mai hoặc liên hệ WhatsApp.",
   "msg.APIFY_QUOTA_EXHAUSTED": "Hạn mức dịch vụ phân tích hôm nay đã hết, vui lòng thử lại vào ngày mai.",
   "msg.FETCH_FAILED_RETRY_LATER": "Lấy dữ liệu thất bại, vui lòng thử lại sau.",
+  "msg.FETCH_EMPTY_QUOTA_SAVED": "Lấy dữ liệu thất bại — lần này không trừ lượt phân tích. Thử lại sau, hoặc nâng cấp PRO để mở thêm tính năng.",
   "msg.PRODUCT_NOT_FOUND": "Sản phẩm có thể đã bị gỡ xuống, vui lòng kiểm tra và thử lại.",
   "msg.TIMEOUT_RETRY": "Hết thời gian chờ lấy dữ liệu. Vui lòng thử lại sau.",
   "msg.IPC_ERROR": "Lỗi giao tiếp. Vui lòng tải lại tiện ích.",
