@@ -1597,11 +1597,11 @@
     "ru": "Стоит делать. {sold} продано + {wanted} хотят купить, спрос подтверждён дважды. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
   },
   "prod_verdict_trial_hot_unknown": {
-    "zh": "小批量试。热销{sold}件但复购未知——不确定回头。想验证，先拿少量。{risk_note}",
-    "en": "Try small. {sold} sold but repurchase unknown — unclear if buyers return. To verify, order small. {risk_note}",
-    "vi": "Thử với số lượng nhỏ. Bán chạy {sold} nhưng tỷ lệ mua lại chưa rõ — không chắc khách có quay lại không. Muốn kiểm chứng, lấy ít trước. {risk_note}",
-    "th": "ลองสั่งจำนวนน้อย ขายดี {sold} ชิ้น แต่ยอดซื้อซ้ำไม่ทราบ — ไม่แน่ใจว่าลูกค้าจะกลับมาซื้อไหม อยากยืนยันให้สั่งจำนวนน้อยก่อน {risk_note}",
-    "ru": "Попробуйте малыми партиями. {sold} продано, но повторные покупки неизвестны — неясно, вернутся ли покупатели. Чтобы проверить, закажите немного. {risk_note}"
+    "zh": "小批量试。热销{sold}件但潜在需求没跟上——销量单信号撑不起结论。想验证，先拿少量。{risk_note}",
+    "en": "Try small. {sold} sold, but potential demand hasn't kept up — hot sales alone can't support a verdict. To verify, order small. {risk_note}",
+    "vi": "Thử với số lượng nhỏ. Bán chạy {sold} nhưng nhu cầu tiềm năng chưa theo kịp — riêng doanh số không đủ để kết luận. Muốn kiểm chứng, lấy ít trước. {risk_note}",
+    "th": "ลองสั่งจำนวนน้อย ขายดี {sold} ชิ้น แต่ความต้องการยังตามไม่ทัน — ยอดขายอย่างเดียวพอจะสรุปไม่ได้ อยากยืนยันให้สั่งจำนวนน้อยก่อน {risk_note}",
+    "ru": "Попробуйте малыми партиями. {sold} продано, но потенциальный спрос отстаёт — один лишь объём продаж не даёт оснований для вывода. Чтобы проверить, закажите немного. {risk_note}"
   },
   "prod_verdict_trial_wanted_low": {
     "zh": "小批量试。{wanted}人想看但才卖{sold}件——需求在没验证。想验证，拿少量试水。{risk_note}",
