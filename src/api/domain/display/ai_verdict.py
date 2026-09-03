@@ -153,19 +153,13 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
     if sold is not None:
         items.append(f"sales: {sold} units (hot threshold: >1000, potential: >100)")
 
-    repurchase = signals.get("repurchase")
-    if repurchase is not None:
-        items.append(f"repurchase rate: {repurchase}% (high threshold: >30%, baseline: >10%)")
-
+    # v2: 产品侧不再读取复购率/好评率（店铺级数据已归供应商评分），
+    # 产品 must_mention 只允许真实产品级信号（销量/价格/MOQ/关注/退货风险）。
     price = signals.get("display_price")
     moq = signals.get("moq")
     unit = str(signals.get("unit", ""))
     if price is not None and moq is not None:
         items.append(f"price: {_fmt_money(float(price), money)}/{unit}, MOQ: {moq} {unit}")
-
-    positive = signals.get("positive")
-    if positive is not None:
-        items.append(f"positive review rate: {positive}% (excellent: ≥98%, good: ≥95%)")
 
     wanted = signals.get("wanted")
     if wanted is not None:
@@ -174,12 +168,6 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
     risk_flag = signals.get("risk_flag")
     if risk_flag == "no_return":
         items.append("WARNING: no 7-day unconditional return — buyers bear return risk")
-
-    if (repurchase is not None and repurchase > 30
-            and (sold is None or sold <= 100)):
-        items.append("ANOMALY: high repurchase rate but very low sales — "
-                     "possible listing switch or review manipulation. "
-                     "Check factory's other products.")
 
     return items
 
@@ -233,8 +221,8 @@ def _pack_product_must_not_say(p_tier: str, product_raw: dict[str, Any]) -> list
     signals: dict[str, Any] = product_raw.get("signals", {})
     if signals.get("sold") is None:
         items.append("proven sales record")
-    if signals.get("repurchase") is None:
-        items.extend(["high customer loyalty", "verified repurchase rate"])
+    # v2: 产品永不携带复购数据 → 无条件禁止产品判词声称「复购/忠诚」（那是店铺级，不是产品卖点）
+    items.extend(["high customer loyalty", "verified repurchase rate"])
 
     return items
 

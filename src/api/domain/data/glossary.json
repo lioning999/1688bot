@@ -35,13 +35,6 @@
     "th": "การรับรอง SGS หน้างาน",
     "ru": "Сертификация SGS на месте"
   },
-  "badge_repurchase_fmt": {
-    "zh": "{n}% 回头率",
-    "en": "{n}% repurchase",
-    "vi": "Mua lại {n}%",
-    "th": "ซื้อซ้ำ {n}%",
-    "ru": "Повторные покупки {n}%"
-  },
   "emoji_factory": {
     "zh": "🏭 ",
     "en": "🏭 ",
@@ -350,41 +343,6 @@
     "th": "เกณฑ์ >{n}",
     "ru": "Порог >{n}"
   },
-  "prod_dim_d2_data_fmt": {
-    "zh": "复购率 {n}%",
-    "en": "Repurchase Rate {n}%",
-    "vi": "Tỷ lệ mua lại {n}%",
-    "th": "อัตราซื้อซ้ำ {n}%",
-    "ru": "Повторные покупки {n}%"
-  },
-  "prod_dim_d2_label": {
-    "zh": "🔄高复购",
-    "en": "🔄 High Repurchase",
-    "vi": "🔄 Mua Lại Cao",
-    "th": "🔄 ซื้อซ้ำสูง",
-    "ru": "🔄 Высокие повторные покупки"
-  },
-  "prod_dim_d2_name": {
-    "zh": "复购",
-    "en": "Repurchase",
-    "vi": "Mua lại",
-    "th": "ซื้อซ้ำ",
-    "ru": "Повторные покупки"
-  },
-  "prod_dim_d2_name_high": {
-    "zh": "高复购",
-    "en": "High Repurchase",
-    "vi": "Mua Lại Cao",
-    "th": "ซื้อซ้ำสูง",
-    "ru": "Высокие повторные покупки"
-  },
-  "prod_dim_d2_ref_fmt": {
-    "zh": "标杆 >{n}%",
-    "en": "Benchmark >{n}%",
-    "vi": "Chuẩn >{n}%",
-    "th": "เกณฑ์ >{n}%",
-    "ru": "Порог >{n}%"
-  },
   "prod_dim_d3_data_fmt": {
     "zh": "¥{price}/{unit} · 起订 {moq} {unit}",
     "en": "¥{price}/{unit} · MOQ {moq} {unit}",
@@ -419,41 +377,6 @@
     "vi": "Rào Cản Cao",
     "th": "อุปสรรคสูง",
     "ru": "Высокий порог"
-  },
-  "prod_dim_d4_data_fmt": {
-    "zh": "好评率 {n}%",
-    "en": "Positive Rate {n}%",
-    "vi": "Tỷ lệ tốt {n}%",
-    "th": "อัตรารีวิวดี {n}%",
-    "ru": "Положительные отзывы {n}%"
-  },
-  "prod_dim_d4_label": {
-    "zh": "⭐口碑好",
-    "en": "⭐ Good Reputation",
-    "vi": "⭐ Uy Tín Tốt",
-    "th": "⭐ ชื่อเสียงดี",
-    "ru": "⭐ Хорошая репутация"
-  },
-  "prod_dim_d4_name": {
-    "zh": "口碑",
-    "en": "Reputation",
-    "vi": "Uy tín",
-    "th": "ชื่อเสียง",
-    "ru": "Репутация"
-  },
-  "prod_dim_d4_name_high": {
-    "zh": "口碑好",
-    "en": "Good Reputation",
-    "vi": "Uy Tín Tốt",
-    "th": "ชื่อเสียงดี",
-    "ru": "Хорошая репутация"
-  },
-  "prod_dim_d4_ref_fmt": {
-    "zh": "标杆 ≥{n}%",
-    "en": "Benchmark ≥{n}%",
-    "vi": "Chuẩn ≥{n}%",
-    "th": "เกณฑ์ ≥{n}%",
-    "ru": "Порог ≥{n}%"
   },
   "prod_dim_d5_data_fmt": {
     "zh": "{n} 人想看",
@@ -566,13 +489,6 @@
     "vi": "Thiếu dữ liệu sản phẩm",
     "th": "ข้อมูลสินค้าไม่เพียงพอ",
     "ru": "Недостаточно данных о продукте"
-  },
-  "prod_verdict_fatal_badrate": {
-    "zh": "换品。好评率仅{positive}%——差评太多会拖垮店铺。别碰这个品{risk_note}",
-    "en": "Skip this one. Only {positive}% positive reviews — too many bad reviews will drag down your store. Don't touch it.{risk_note}",
-    "vi": "Bỏ qua sản phẩm này. Chỉ {positive}% đánh giá tốt — quá nhiều đánh giá xấu sẽ kéo tụt cửa hàng. Đừng đụng vào.{risk_note}",
-    "th": "ข้ามสินค้านี้ไปก่อน แค่ {positive}% รีวิวดีเท่านั้น — รีวิวแย่เยอะเกินไปจะลากคะแนนร้านคุณลง อย่าแตะต้องเลย{risk_note}",
-    "ru": "Пропустить. Только {positive}% положительных отзывов — слишком много негатива потянет магазин вниз. Не берите этот товар.{risk_note}"
   },
   "prod_verdict_skip_nodata": {
     "zh": "跳过。核心数据缺{missing_count}项——判断不了。想验证，先拿1件试；不想就换品{risk_note}",
@@ -981,21 +897,81 @@
     "ru": "Опытный магазин"
   },
   "supp_dim_d3_ref_fmt": {
-  "supp_dim_d4_data_fmt": {"zh": "复购率 {n}%", "en": "Repurchase Rate {n}%", "vi": "Tỷ lệ mua lại {n}%", "th": "อัตราซื้อซ้ำ {n}%", "ru": "Повторные покупки {n}%"},
-  "supp_dim_d4_label": {"zh": "🔄高复购", "en": "🔄 High Repurchase", "vi": "🔄 Mua Lại Cao", "th": "🔄 ซื้อซ้ำสูง", "ru": "🔄 Высокие повторные покупки"},
-  "supp_dim_d4_name": {"zh": "复购", "en": "Repurchase", "vi": "Mua lại", "th": "ซื้อซ้ำ", "ru": "Повторные покупки"},
-  "supp_dim_d4_name_high": {"zh": "高复购", "en": "High Repurchase", "vi": "Mua Lại Cao", "th": "ซื้อซ้ำสูง", "ru": "Высокие повторные покупки"},
-  "supp_dim_d4_ref_fmt": {"zh": "标杆 >{n}%", "en": "Benchmark >{n}%", "vi": "Chuẩn >{n}%", "th": "เกณฑ์ >{n}%", "ru": "Порог >{n}%"},
-  "supp_dim_d5_data_fmt": {"zh": "好评率 {n}%", "en": "Positive Rate {n}%", "vi": "Tỷ lệ tốt {n}%", "th": "อัตรารีวิวดี {n}%", "ru": "Положительные отзывы {n}%"},
-  "supp_dim_d5_label": {"zh": "⭐口碑好", "en": "⭐ Good Reputation", "vi": "⭐ Uy Tín Tốt", "th": "⭐ ชื่อเสียงดี", "ru": "⭐ Хорошая репутация"},
-  "supp_dim_d5_name": {"zh": "口碑", "en": "Reputation", "vi": "Uy tín", "th": "ชื่อเสียง", "ru": "Репутация"},
-  "supp_dim_d5_name_high": {"zh": "口碑好", "en": "Good Reputation", "vi": "Uy Tín Tốt", "th": "ชื่อเสียงดี", "ru": "Хорошая репутация"},
-  "supp_dim_d5_ref_fmt": {"zh": "标杆 ≥{n}%", "en": "Benchmark ≥{n}%", "vi": "Chuẩn ≥{n}%", "th": "เกณฑ์ ≥{n}%", "ru": "Порог ≥{n}%"},
     "zh": "标杆 ≥{n}年",
     "en": "Benchmark ≥{n}y",
     "vi": "Chuẩn ≥{n} năm",
     "th": "เกณฑ์ ≥{n} ปี",
     "ru": "Порог ≥{n} г."
+  },
+  "supp_dim_d4_data_fmt": {
+    "zh": "复购率 {n}%",
+    "en": "Repurchase Rate {n}%",
+    "vi": "Tỷ lệ mua lại {n}%",
+    "th": "อัตราซื้อซ้ำ {n}%",
+    "ru": "Повторные покупки {n}%"
+  },
+  "supp_dim_d4_label": {
+    "zh": "🔄高复购",
+    "en": "🔄 High Repurchase",
+    "vi": "🔄 Mua Lại Cao",
+    "th": "🔄 ซื้อซ้ำสูง",
+    "ru": "🔄 Высокие повторные покупки"
+  },
+  "supp_dim_d4_name": {
+    "zh": "复购",
+    "en": "Repurchase",
+    "vi": "Mua lại",
+    "th": "ซื้อซ้ำ",
+    "ru": "Повторные покупки"
+  },
+  "supp_dim_d4_name_high": {
+    "zh": "高复购",
+    "en": "High Repurchase",
+    "vi": "Mua Lại Cao",
+    "th": "ซื้อซ้ำสูง",
+    "ru": "Высокие повторные покупки"
+  },
+  "supp_dim_d4_ref_fmt": {
+    "zh": "标杆 >{n}%",
+    "en": "Benchmark >{n}%",
+    "vi": "Chuẩn >{n}%",
+    "th": "เกณฑ์ >{n}%",
+    "ru": "Порог >{n}%"
+  },
+  "supp_dim_d5_data_fmt": {
+    "zh": "好评率 {n}%",
+    "en": "Positive Rate {n}%",
+    "vi": "Tỷ lệ tốt {n}%",
+    "th": "อัตรารีวิวดี {n}%",
+    "ru": "Положительные отзывы {n}%"
+  },
+  "supp_dim_d5_label": {
+    "zh": "⭐口碑好",
+    "en": "⭐ Good Reputation",
+    "vi": "⭐ Uy Tín Tốt",
+    "th": "⭐ ชื่อเสียงดี",
+    "ru": "⭐ Хорошая репутация"
+  },
+  "supp_dim_d5_name": {
+    "zh": "口碑",
+    "en": "Reputation",
+    "vi": "Uy tín",
+    "th": "ชื่อเสียง",
+    "ru": "Репутация"
+  },
+  "supp_dim_d5_name_high": {
+    "zh": "口碑好",
+    "en": "Good Reputation",
+    "vi": "Uy Tín Tốt",
+    "th": "ชื่อเสียงดี",
+    "ru": "Хорошая репутация"
+  },
+  "supp_dim_d5_ref_fmt": {
+    "zh": "标杆 ≥{n}%",
+    "en": "Benchmark ≥{n}%",
+    "vi": "Chuẩn ≥{n}%",
+    "th": "เกณฑ์ ≥{n}%",
+    "ru": "Порог ≥{n}%"
   },
   "supp_fb_insufficient": {
     "zh": "资质不足",
@@ -1613,26 +1589,12 @@
     "th": "ไม่ใช่ผู้ผลิต",
     "ru": "Не производитель"
   },
-  "prod_verdict_go_repurchase": {
-    "zh": "值得做。销量{sold}件、复购{repurchase}%，需求稳。想推进，先拿样。{risk_note}",
-    "en": "Worth doing. {sold} sold + {repurchase}% repeat, demand holds. To move forward, sample first. {risk_note}",
-    "vi": "Đáng làm. {sold} đã bán + {repurchase}% mua lại, nhu cầu ổn định. Muốn tiến xa, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะทำ ขายไป {sold} ชิ้น + ซื้อซ้ำ {repurchase}% ความต้องการคงที่ อยากเดินหน้าต่อ ให้สั่งตัวอย่างก่อน {risk_note}",
-    "ru": "Стоит делать. {sold} продано + повторных {repurchase}%, спрос стабилен. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
-  },
   "prod_verdict_go_hot_wanted": {
     "zh": "值得做。热销{sold}件、{wanted}人想看，需求双验证。想推进，先拿样。{risk_note}",
     "en": "Worth doing. {sold} sold + {wanted} want-buys, demand double-checked. To move forward, sample first. {risk_note}",
     "vi": "Đáng làm. {sold} bán chạy + {wanted} người muốn mua, nhu cầu được xác nhận đôi lần. Muốn tiến xa, lấy mẫu trước. {risk_note}",
     "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + {wanted} คนสนใจ ความต้องการยืนยันสองชั้น อยากเดินหน้า ให้สั่งตัวอย่างก่อน {risk_note}",
     "ru": "Стоит делать. {sold} продано + {wanted} хотят купить, спрос подтверждён дважды. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
-  },
-  "prod_verdict_go_hot_repeat": {
-    "zh": "值得做。热销{sold}件、复购{repurchase}%，卖得动有人回头。想推进，先拿样。{risk_note}",
-    "en": "Worth doing. {sold} sold + {repurchase}% repeat — it moves, buyers return. To move forward, sample first. {risk_note}",
-    "vi": "Đáng làm. Bán chạy {sold} + {repurchase}% mua lại — bán được và khách quay lại. Muốn tiến xa, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะทำ ขายดี {sold} ชิ้น + ซื้อซ้ำ {repurchase}% — ขายคล่องมีลูกค้ากลับมา อยากเดินหน้า สั่งตัวอย่างก่อน {risk_note}",
-    "ru": "Стоит делать. {sold} продано + {repurchase}% повторных — продаётся, покупатели возвращаются. Чтобы двигаться дальше, сначала закажите образец. {risk_note}"
   },
   "prod_verdict_trial_hot_unknown": {
     "zh": "小批量试。热销{sold}件但复购未知——不确定回头。想验证，先拿少量。{risk_note}",
@@ -1648,33 +1610,12 @@
     "th": "ลองสั่งจำนวนน้อย {wanted} คนสนใจ แต่ขายได้แค่ {sold} ชิ้น — ความต้องการยังไม่ยืนยัน อยากยืนยันให้สั่งลองจำนวนน้อย {risk_note}",
     "ru": "Попробуйте малыми партиями. {wanted} хотят купить, но продано только {sold} — спрос не подтверждён. Чтобы проверить, попробуйте немного. {risk_note}"
   },
-  "prod_verdict_trial_rep_low": {
-    "zh": "值得试。复购{repurchase}%、销量{sold}件——老客复购好，客户群还小。想试，先拿样。{risk_note}",
-    "en": "Worth trying. {repurchase}% repeat, {sold} sold — loyal but small base. To test, sample first. {risk_note}",
-    "vi": "Đáng thử. {repurchase}% mua lại, {sold} đã bán — khách trung thành nhưng lượng còn nhỏ. Muốn thử, lấy mẫu trước. {risk_note}",
-    "th": "คุ้มค่าที่จะลอง ซื้อซ้ำ {repurchase}% ขาย {sold} ชิ้น — ลูกค้าประจำดีแต่ฐานยังเล็ก อยากลองให้สั่งตัวอย่างก่อน {risk_note}",
-    "ru": "Стоит попробовать. {repurchase}% повторных, {sold} продано — лояльные, но база мала. Чтобы попробовать, сначала закажите образец. {risk_note}"
-  },
   "prod_verdict_trial_medium3": {
     "zh": "小批量试。{highlight_count}个维度有亮点——有支撑不够强。想试，少量拿。{risk_note}",
     "en": "Try small. {highlight_count} dimensions show promise — support but not enough. To test, order small. {risk_note}",
     "vi": "Thử với số lượng nhỏ. {highlight_count} tiêu chí có điểm sáng — có hỗ trợ nhưng chưa đủ mạnh. Muốn thử, lấy ít trước. {risk_note}",
     "th": "ลองสั่งจำนวนน้อย {highlight_count} มิติมีจุดเด่น — มีน้ำหนักแต่ยังไม่พอ อยากลองให้สั่งจำนวนน้อย {risk_note}",
     "ru": "Попробуйте малыми партиями. {highlight_count} показателей многообещающие — поддержка есть, но недостаточная. Чтобы попробовать, закажите немного. {risk_note}"
-  },
-  "prod_verdict_caution_hot_low": {
-    "zh": "谨慎。热销{sold}件但复购仅{repurchase}%——可能冲动消费。想推进，小批试。{risk_note}",
-    "en": "Be careful. {sold} sold but only {repurchase}% repeat — possible impulse buys. To move forward, run small. {risk_note}",
-    "vi": "Thận trọng. Bán chạy {sold} nhưng chỉ {repurchase}% mua lại — có thể là mua bốc đồng. Muốn tiến xa, thử với số lượng nhỏ. {risk_note}",
-    "th": "ระวังให้ดี ขายดี {sold} ชิ้น แต่ซื้อซ้ำแค่ {repurchase}% — อาจเป็นการซื้อตามอารมณ์ อยากเดินหน้าให้ลองสั่งจำนวนน้อย {risk_note}",
-    "ru": "Осторожно. {sold} продано, но повторных только {repurchase}% — возможны импульсивные покупки. Чтобы двигаться дальше, пробуйте малыми партиями. {risk_note}"
-  },
-  "prod_verdict_caution_rep_low": {
-    "zh": "谨慎。复购{repurchase}%但销量{sold}件——客户群小。想推进，先拿样测需求。{risk_note}",
-    "en": "Be careful. {repurchase}% repeat but {sold} sold — small base. To move forward, sample to test demand. {risk_note}",
-    "vi": "Thận trọng. {repurchase}% mua lại nhưng mới bán {sold} — lượng khách còn nhỏ. Muốn tiến xa, lấy mẫu kiểm tra nhu cầu. {risk_note}",
-    "th": "ระวังให้ดี ซื้อซ้ำ {repurchase}% แต่ขายได้ {sold} ชิ้น — ฐานลูกค้าเล็ก อยากเดินหน้าให้สั่งตัวอย่างเพื่อทดสอบความต้องการ {risk_note}",
-    "ru": "Осторожно. {repurchase}% повторных, но {sold} продано — база мала. Чтобы двигаться дальше, закажите образец для проверки спроса. {risk_note}"
   },
   "prod_verdict_watch_medium12": {
     "zh": "观望。仅有{highlight_count}个维度有亮点——撑不起来。想验证，先拿 1 件试；不想就换品。{risk_note}",

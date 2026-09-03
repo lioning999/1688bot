@@ -218,14 +218,8 @@ def _build_badges(mapped: dict[str, Any], lang: str) -> list[dict[str, str]]:
                 "html": f'<span class="badge-sm green">{t_7d}</span>',
             })
 
-        # 回头率
-        rp: Any = mapped.get("repurchase")
-        if rp:
-            t_rp: str = _glossary("badge_repurchase_fmt", lang).replace("{n}", str(rp))
-            badges.append({
-                "text": t_rp,
-                "html": f'<span class="badge-sm gold">{t_rp}</span>',
-            })
+        # (v2 已移除「回头率」徽章：复购率是店铺级数据，产品顶部 badge 属数据归属错误，
+        #  复购/好评已在供应商验证卡 supp_dim_d4/d5 展示，此处不冒充产品卖点)
 
         # 混批（Path 2：字典查表，glossary.json）
         badge_labels: list[dict[str, Any]] = mapped.get("badgeLabels") or []
@@ -440,7 +434,7 @@ def _build_product_eval(product_raw: dict[str, Any], mapped: dict[str, Any], lan
 
         result: dict[str, Any] = {
             "score": product_raw.get("score", 0),
-            "max_score": product_raw.get("max_score", 18),
+            "max_score": product_raw.get("max_score", 3.0),  # v2 加权满分 3.0（evaluate 恒给，此为兜底）
             "grade": product_raw.get("grade", ""),
             "summary": _format_verdict(product_raw.get("summary"), lang),
             "verdict": _format_verdict(product_raw.get("verdict"), lang),
@@ -548,7 +542,7 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
 
         return {
             "score": supplier_raw.get("score", 0),
-            "max_score": supplier_raw.get("max_score", 9),
+            "max_score": supplier_raw.get("max_score", 3.0),  # v2 加权满分 3.0（evaluate 恒给，此为兜底）
             "grade": supplier_raw.get("grade", ""),           # CSS class: go/ok/bad/none
             "gradeText": _glossary(str(supplier_raw.get("grade_key", "")), lang),
             "summary": summary_text,
