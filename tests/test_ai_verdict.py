@@ -31,7 +31,7 @@ def test_no_data_dims_trimmed_from_low_quality_product():
 
 
 def test_high_quality_product_keeps_all_dims():
-    """高质商品：6+3 维全有数据 → 全保留。"""
+    """高质商品：产品 4 维 + 供应商 5 维全有数据 → 全保留。"""
     mapped = {
         "priceCNY": {"low": 5.0, "high": 6.0}, "moq": 50, "sold": 2000,
         "repurchase": 40.0, "positive_rate": 98.0, "wantBuy": 200,
@@ -58,8 +58,8 @@ def test_partial_data_keeps_only_available_dims():
     ai = _pack(mapped)
     pkeys = {d["key"] for d in ai["dimensions"]["product"]}
     skeys = {d["key"] for d in ai["dimensions"]["supplier"]}
-    assert pkeys == {"d1", "d3", "d6"}  # d2/d4/d5 no-data 被裁
-    assert skeys == {"d1"}  # d2/d3 no-data 被裁
+    assert pkeys == {"d1", "d3", "d6"}  # v2 产品仅 d1/d3/d5/d6 四维：wantBuy 空 → d5(关注) 被裁
+    assert skeys == {"d1"}  # v2 供应商五维：认证/年限/复购/好评全空 → d2/d3/d4/d5 被裁
     for sec in ("product", "supplier"):
         for d in ai["dimensions"][sec]:
             assert d["data"] not in ("", "no data")
