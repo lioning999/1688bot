@@ -151,7 +151,11 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
 
     sold = signals.get("sold")
     if sold is not None:
-        items.append(f"sales: {sold} units (hot threshold: >1000, potential: >100)")
+        # 只给「真实数字 + 引擎档位词」，不给阈值尺子(1000/100)：尺子不是商品事实，
+        # 喂给 AI 会被当数据抄 → R1 拦下整句降级（2026-09-03 offer2「潜力>100」复盘）
+        _sale_tier = {3: "HOT", 2: "moderate", 1: "low"}.get(
+            int(signals.get("d1", {}).get("score", 0)), "low")
+        items.append(f"sales: {sold} units — {_sale_tier}")
 
     # v2: 产品侧不再读取复购率/好评率（店铺级数据已归供应商评分），
     # 产品 must_mention 只允许真实产品级信号（销量/价格/MOQ/关注/退货风险）。
@@ -159,11 +163,16 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
     moq = signals.get("moq")
     unit = str(signals.get("unit", ""))
     if price is not None and moq is not None:
-        items.append(f"price: {_fmt_money(float(price), money)}/{unit}, MOQ: {moq} {unit}")
+        # 单位经 glossary 转 en（unit_个→pcs），计量单位不进判词 AI 输入原文
+        unit_en = _gl(f"unit_{unit}", "en", "unit")
+        items.append(f"price: {_fmt_money(float(price), money)}/{unit_en}, MOQ: {moq} {unit_en}")
 
     wanted = signals.get("wanted")
     if wanted is not None:
-        items.append(f"want-buy count: {wanted} (high demand: >100, notable: >30)")
+        # 同销量：档位词代替阈值尺子(100/30)
+        _want_tier = {3: "high demand", 2: "notable demand", 1: "low demand"}.get(
+            int(signals.get("d5", {}).get("score", 0)), "low demand")
+        items.append(f"want-buy count: {wanted} — {_want_tier}")
 
     risk_flag = signals.get("risk_flag")
     if risk_flag == "no_return":
@@ -178,9 +187,15 @@ def _pack_supplier_must_mention(supplier_raw: dict[str, Any]) -> list[str]:
     items: list[str] = []
 
     identity = str(signals.get("identity_strength", ""))
+    # d1.data_key 存的是中文字面词（源头旗舰/实力工厂…）→ 查 glossary 转 en 再喂 AI，
+    # 否则模型会把中文原词照抄进判词 → R3 整字段降级（2026-09-03 回归发现）
     flags = str(signals.get("d1", {}).get("data_key", ""))
+    flags_en = _gl(flags, "en", "")
+    if re.search(r"[一-鿿]", flags_en):
+        flags_en = ""
     if identity == "strong":
-        items.append(f"supplier identity: {flags} — verified manufacturer/super factory")
+        prefix = f"supplier identity: {flags_en} — " if flags_en else "supplier identity: "
+        items.append(prefix + "verified manufacturer/super factory")
     elif identity == "medium":
         items.append("supplier identity: self-claimed factory, not externally verified")
     elif identity == "weak":
@@ -188,18 +203,34 @@ def _pack_supplier_must_mention(supplier_raw: dict[str, Any]) -> list[str]:
                      "Markup and quality control risk.")
 
     cert_strength = str(signals.get("cert_strength", ""))
+    # signals.cert_type 是中文原始值（如「深度认证·tuv」）→ 取「·」后 ASCII 段或查表转 en，
+    # 中文原值不得进 must_mention（同防 CJK 泄漏）
     cert_type = str(signals.get("cert_type", ""))
-    if cert_strength == "strong" and cert_type:
-        items.append(f"certification: {cert_type} — deep third-party verification passed")
-    elif cert_strength == "medium" and cert_type:
-        items.append(f"certification: {cert_type} — basic verification only")
+    cert_label = ""
+    if cert_type:
+        _tail = cert_type.rsplit("·", 1)[-1] if "·" in cert_type else cert_type
+        if _tail.isascii():
+            cert_label = _tail.upper()
+        else:
+            cert_label = _gl(cert_type, "en", "")
+            if re.search(r"[一-鿿]", cert_label):
+                cert_label = ""
+    if cert_strength == "strong":
+        prefix = f"certification: {cert_label} — " if cert_label else "certification: "
+        items.append(prefix + "deep third-party verification passed")
+    elif cert_strength == "medium":
+        prefix = f"certification: {cert_label} — " if cert_label else "certification: "
+        items.append(prefix + "basic verification only")
     elif cert_strength == "weak":
         items.append("certification: NONE — no third-party quality audit. "
                      "Higher risk of quality issues.")
 
     years = signals.get("shop_years")
     if years is not None:
-        items.append(f"shop age: {years} years (established: ≥3 yrs, new: <1 yr)")
+        # 同销量：档位词代替年限尺子(≥3年/<1年)
+        _yr_tier = {3: "established", 1: "new"}.get(
+            int(signals.get("d3", {}).get("score", 0)), "unknown")
+        items.append(f"shop age: {years} years — {_yr_tier}")
 
     return items
 
@@ -540,9 +571,11 @@ def validate_ai_output(
 
     # 规则 3：非中文判词禁止含中文字符（zh 走模板不经过此校验，无需区分语言）
     if re.search(r"[一-鿿]", ai_text):
+        _lang = str(ai_input.get("lang", "en"))
+        _lang_name = {"en": "English", "vi": "Vietnamese", "th": "Thai", "ru": "Russian"}.get(_lang, _lang)
         errors.append(
             "Text contains Chinese characters — the verdict must be written "
-            "entirely in the target language (English/Vietnamese/Thai)."
+            f"entirely in the target language ({_lang_name})."
         )
 
     # 规则 4：结论词锁 grade — 首词必须匹配该字段档位对应的结论词（方法论 §三 标准1）

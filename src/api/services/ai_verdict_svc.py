@@ -158,14 +158,17 @@ async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any]
     # 8. 逐字段合并（title + supplierName + 判词，逐字段校验）
     failures: list[dict[str, Any]] = _merge_ai_verdicts(display, ai, ai_input)["failures"]
 
-    # 8.5 校验不过 → 带错误反馈重写一次（重试优先于直接降级模板，用户几乎看不到模板）
-    if failures:
-        logger.info(f"[AI判词] {len(failures)} 个字段校验失败，带反馈重写一次: "
+    # 8.5 校验不过 → 带错误反馈重写（最多 2 次：qwen-flash 常第 2 次才改对，
+    # 重写优先于直接降级模板；每轮把上一版失败字段清单作反馈，通过的字段已即时合入 display）
+    retries = 0
+    while failures and retries < 2:
+        retries += 1
+        logger.info(f"[AI判词] {len(failures)} 个字段校验失败，第 {retries} 次带反馈重写: "
                     + ", ".join(f["field"] for f in failures))
         retry_user: str = _build_retry_feedback(failures)
-        t1: float = time.time()
+        t_retry: float = time.time()
         try:
-            body2: dict[str, Any] | None = await qwen_adapter.chat(
+            body_r: dict[str, Any] | None = await qwen_adapter.chat(
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": json.dumps(ai_input, ensure_ascii=False)},
@@ -176,18 +179,22 @@ async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any]
             )
         except Exception:
             logger.exception("[AI判词] 重写 Qwen 调用异常，维持模板兜底")
-            body2 = None
-        if body2:
-            content2: str = body2.get("choices", [{}])[0].get("message", {}).get("content", "")
-            if content2:
-                try:
-                    ai2: dict[str, Any] = _parse_ai_json(content2)
-                    if ai2:
-                        still: list[dict[str, Any]] = _merge_ai_verdicts(display, ai2, ai_input)["failures"]
-                        logger.info(f"[AI判词] 重写完成 耗时={time.time() - t1:.1f}s "
-                                    f"仍失败={len(still)} 个字段")
-                except Exception:
-                    logger.exception("[AI判词] 重写 JSON 解析失败，维持模板兜底")
+            break
+        if not body_r:
+            break
+        content_r: str = body_r.get("choices", [{}])[0].get("message", {}).get("content", "")
+        if not content_r:
+            break
+        try:
+            ai_r: dict[str, Any] = _parse_ai_json(content_r)
+        except Exception:
+            logger.exception("[AI判词] 重写 JSON 解析失败，维持模板兜底")
+            break
+        if not ai_r:
+            break
+        failures = _merge_ai_verdicts(display, ai_r, ai_input)["failures"]
+        logger.info(f"[AI判词] 第 {retries} 次重写完成 耗时={time.time() - t_retry:.1f}s "
+                    f"仍失败={len(failures)} 个字段")
 
     # 9. 标记 AI 生成（下游 _run 据此判断是否落库 display_i18n）
     display["_aiGenerated"] = lang
