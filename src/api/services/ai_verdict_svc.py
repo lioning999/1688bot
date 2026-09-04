@@ -2,10 +2,11 @@
 
 从 analyze_svc.py 拆分（Phase 2 重构）。包含：
   - AI 判词输入打包 + Qwen 调用 + 输出校验 + 逐字段合并
-  - build_result_with_display（lang≠zh → AI 路径，lang=zh → 模板路径）
+  - build_result_with_display（lang ∈ AI_LANGS → AI 路径，zh/其他 → 模板路径）
 """
 
 import json
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -15,9 +16,18 @@ from adapters.qwen_adapter import qwen_adapter
 from domain.display.builder import build_display
 from domain.display.ai_verdict import pack_ai_input, validate_ai_output
 from domain.evaluate import evaluate_product, evaluate_supplier, evaluate_summary
+from utils.i18n_core import AI_LANGS
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+_CJK_RE = re.compile(r"[一-鿿]")
+
+
+def _strip_cjk(text: str) -> str:
+    """去残留汉字（AI 未完全转写时保拉丁段）；若纯中文则原样返回（病理态，避免丢字段）。"""
+    out = _CJK_RE.sub("", text)
+    return out if out.strip() else text
 
 # ---- AI 判词 prompt 配置 ----
 _HERE = Path(__file__).parent.parent / "domain" / "display"
@@ -33,15 +43,15 @@ async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang:
     """构建 display + 翻译（或 AI 判词）。
 
     lang=zh 或空 → 模板路径（build_display 直接出中文 display）
-    lang=en/vi/th → AI 判词路径（build_with_ai：一次 Qwen 出判词+翻译）
+    lang ∈ AI_LANGS（en/vi/th/ru）→ AI 判词路径（build_with_ai：一次 Qwen 出判词+翻译）
     display 构建失败不影响 mapped 返回。
     """
     result: dict[str, Any] = {**mapped}
 
     try:
         money: dict[str, Any] | None = _make_money(lang)
-        if lang and lang != "zh":
-            # AI 判词路径（en/vi/th）
+        if lang in AI_LANGS:
+            # AI 判词路径（en/vi/th/ru）
             display = await build_with_ai(mapped, lang, money)
             logger.info(f"[TRACE-DISPLAY-AI] offer_id={offer_id} lang={lang} "
                         f"aiGenerated={display.get('_aiGenerated', '')} "
@@ -83,7 +93,7 @@ async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any]
     display: dict[str, Any] = build_display(mapped, lang, money)
 
     # 2. 语言检查：仅 en/vi/th/ru 走 AI 判词
-    if lang not in ("en", "vi", "th", "ru"):
+    if lang not in AI_LANGS:
         return display
 
     if not Config.QWEN_API_KEY:
@@ -158,10 +168,10 @@ async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any]
     # 8. 逐字段合并（title + supplierName + 判词，逐字段校验）
     failures: list[dict[str, Any]] = _merge_ai_verdicts(display, ai, ai_input)["failures"]
 
-    # 8.5 校验不过 → 带错误反馈重写（最多 2 次：qwen-flash 常第 2 次才改对，
-    # 重写优先于直接降级模板；每轮把上一版失败字段清单作反馈，通过的字段已即时合入 display）
+    # 8.5 校验不过 → 带错误反馈重写（重写仅 1 次，总调用 ≤2 次；仍不对即降级模板，
+    # 防多烧 token。每轮把上一版失败字段清单作反馈，通过的字段已即时合入 display）
     retries = 0
-    while failures and retries < 2:
+    while failures and retries < 1:
         retries += 1
         logger.info(f"[AI判词] {len(failures)} 个字段校验失败，第 {retries} 次带反馈重写: "
                     + ", ".join(f["field"] for f in failures))
@@ -250,10 +260,10 @@ def _merge_ai_verdicts(
     # title（基础检查：非空 + 长度合理）
     title: str = str(ai.get("translated_title", ""))
     if title and title.strip() and len(title.strip()) > 3:
-        display["title"] = title.strip()
+        display["title"] = _strip_cjk(title.strip())
 
     # 公司名翻译（基础检查：非空 + 长度合理）→ factory.supplierName + supplierEval.companyName 同步
-    sname: str = str(ai.get("translated_supplier_name", ""))
+    sname: str = _strip_cjk(str(ai.get("translated_supplier_name", "")))
     if sname and sname.strip() and len(sname.strip()) > 1:
         if "factory" in display:
             display["factory"]["supplierName"] = sname.strip()
@@ -261,7 +271,7 @@ def _merge_ai_verdicts(
             display["supplierEval"]["companyName"] = sname.strip()
 
     # 排名标签翻译（1688 原始中文 → 目标语言）→ factory.rankText（emoji 前缀与 glossary emoji_rank 一致）
-    rank_t: str = str(ai.get("translated_rank", ""))
+    rank_t: str = _strip_cjk(str(ai.get("translated_rank", "")))
     if rank_t and rank_t.strip():
         if "factory" in display and isinstance(display["factory"], dict):
             display["factory"]["rankText"] = "🏆 " + rank_t.strip()

@@ -38,5 +38,26 @@ def test_fmt_dim_num_ru_thousand_sep():
     """ru 千分位用空格、小数用逗号；en 保持逗号千分位。"""
     assert _fmt_dim_num(8900, "ru") == "8 900"
     assert _fmt_dim_num(67.5, "ru") == "67,5"
+
+
+def test_nonzh_machine_fields_no_cjk_gate():
+    """批C 出口闸：非 zh 的工厂透传中文（认证/徽章/发货地/specs）不得发给前端；zh 保留原样。"""
+    from utils.i18n_core import cjk_in
+    mapped = dict(_MAPPED)
+    mapped.update({
+        "shippingLocation": "浙江 义乌",
+        "specs": [{"name": "材质", "value": "ABS"}, {"name": "Type", "value": "LED"}],
+    })
+    for lang in ("en", "ru", "vi", "th"):
+        d = build_display(mapped, lang, {"symbol": "$", "per_cny": 0.14, "decimals": 2})
+        f = d["factory"]
+        for field in ("certType", "factoryFlags", "shippingLocation"):
+            assert not cjk_in(str(f.get(field, ""))), f"{lang} factory.{field} 漏中文: {f.get(field)!r}"
+        assert not any(cjk_in(str(s.get("name", ""))) or cjk_in(str(s.get("value", "")))
+                       for s in d["specs"]), f"{lang} specs 漏中文"
+    d_zh = build_display(mapped, "zh")
+    assert d_zh["factory"]["certType"] == "SGS 实地认证"
+    assert d_zh["factory"]["shippingLocation"] == "浙江 义乌"
+    assert d_zh["specs"] and d_zh["specs"][0]["name"] == "材质"
     assert _fmt_dim_num(8900, "en") == "8,900"
     assert _fmt_dim_num(8900, "") == "8,900"

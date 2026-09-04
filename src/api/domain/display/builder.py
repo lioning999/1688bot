@@ -13,18 +13,25 @@ from pathlib import Path
 from typing import Any, cast
 
 from domain.evaluate import evaluate_product, evaluate_supplier, evaluate_summary
+from utils.i18n_core import LANGS, cjk_in
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+# 残留汉字清理（AI 未完全转写字段的安全网）
+_CJK_RE = re.compile(r"[一-鿿]")
 
 # ---- 加载配置 JSON ----
 _HERE = Path(__file__).parent
 with open(_HERE.parent / "data" / "glossary.json", "r", encoding="utf-8") as _f:
     GL = json.load(_f)
+# 旧中文键 → ASCII 键过渡表（glossary.json _aliases，键全 ASCII 化后本表随旧引用清理而删）
+_ALIAS: dict[str, str] = cast(dict[str, str], GL.get("_aliases", {}))
 
 
 def _glossary(key: str, lang: str, default: str = "") -> str:
     """glossary.json 查表（结构：{key: {en, vi, th, zh}}）。"""
+    key = _ALIAS.get(key, key)
     entry: Any = GL.get(key, {})
     if not isinstance(entry, dict):
         return default or key
@@ -60,6 +67,44 @@ _EXPECTED_KEYS: set[str] = {
 }
 
 
+def _cjk_machine_gate(d: dict[str, Any], lang: str) -> None:
+    """非 zh 出口闸：工厂透传中文字段（认证/徽章/发货地）翻译或置空，specs 中文不渲染。
+
+    zh 路径原样返回。AI 覆盖的内容字段（title/判词等）不在此闸内（各自走翻译/校验）。
+    """
+    if lang == "zh":
+        return
+    f = d.get("factory")
+    if isinstance(f, dict):
+        f = cast(dict[str, Any], f)
+        for field in ("certType", "factoryFlags", "shippingLocation"):
+            v = f.get(field)
+            if not isinstance(v, str) or not cjk_in(v):
+                continue
+            cand = _glossary(v, lang, "") if field == "certType" else ""
+            if field == "certType" and (not cand or cjk_in(cand)):
+                _tail = v.rsplit("·", 1)[-1] if "·" in v else ""
+                cand = _tail.upper() if _tail and _tail.isascii() else ""
+            f[field] = cand
+        # 名称类字段：AI 未完全转写（如 "Yiwu Rongcheng工艺品 Company"）→ 去残留汉字，保拉丁段
+        v = f.get("supplierName")
+        if isinstance(v, str) and cjk_in(v):
+            f["supplierName"] = _CJK_RE.sub("", v).strip()
+    se = d.get("supplierEval")
+    if isinstance(se, dict):
+        se = cast(dict[str, Any], se)
+        for field in ("companyName", "shippingLocation"):
+            v = se.get(field)
+            if isinstance(v, str) and cjk_in(v):
+                se[field] = _CJK_RE.sub("", v).strip() if field == "companyName" else ""
+    specs = d.get("specs")
+    if isinstance(specs, list):
+        d["specs"] = [
+            s for s in cast(list[dict[str, Any]], specs)
+            if not (cjk_in(s.get("name", "")) or cjk_in(s.get("value", "")))
+        ]
+
+
 def build_display(mapped: dict[str, Any], lang: str = "en", money: dict[str, Any] | None = None) -> dict[str, Any]:
     """从 mapped 构建 display JSON。
 
@@ -73,7 +118,7 @@ def build_display(mapped: dict[str, Any], lang: str = "en", money: dict[str, Any
         构建失败返回最小可用结构（不抛异常）。
     """
     # 兜底 lang（不支持的语言默认英文）
-    safe_lang: str = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
+    safe_lang: str = lang if lang in LANGS else "en"
 
     # 验货报告评判（domain 内部组合：evaluator → display）
     product_raw: dict[str, Any] = evaluate_product(mapped)
@@ -123,6 +168,9 @@ def build_display(mapped: dict[str, Any], lang: str = "en", money: dict[str, Any
         missing = _EXPECTED_KEYS - set(d)
         if missing:
             logger.warning(f"build_display missing keys: {missing}")
+
+        # ---- 非 zh 机器字段 CJK 门禁（中文透传不得发给前端） ----
+        _cjk_machine_gate(d, safe_lang)
 
         return d
     except Exception:
@@ -212,7 +260,7 @@ def _build_badges(mapped: dict[str, Any], lang: str) -> list[dict[str, str]]:
     try:
         # 7 天退货
         if mapped.get("return7day") == "OK":
-            t_7d: str = _glossary("7天无理由退货", lang, "7-Day Returns")
+            t_7d: str = _glossary("svc_7day_return", lang, "7-Day Returns")
             badges.append({
                 "text": t_7d,
                 "html": f'<span class="badge-sm green">{t_7d}</span>',
@@ -228,7 +276,7 @@ def _build_badges(mapped: dict[str, Any], lang: str) -> list[dict[str, str]]:
             for b in badge_labels
         )
         if has_mixed:
-            mixed_text: str = _glossary("支持混批", lang, "Mixed Batch OK")
+            mixed_text: str = _glossary("svc_mixed_batch", lang, "Mixed Batch OK")
             badges.append({
                 "text": mixed_text,
                 "html": f'<span class="badge-sm green">{mixed_text}</span>',
@@ -484,6 +532,8 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
             # data：优先 static key，其次 format string，最后 data_text（ASCII 透传）
             data_key: str = str(dim.get("data_key", ""))
             if data_key:
+                # 旧中文键 → ASCII（_aliases 过渡表）：display JSON data_key 恒 ASCII，前端逻辑按此判断
+                data_key = _ALIAS.get(data_key, data_key)
                 d_out["data"] = _glossary(data_key, lang)
                 # 保留 data_key 供前端 JS 逻辑判断
                 d_out["data_key"] = data_key
@@ -519,7 +569,7 @@ def _build_supplier_eval(supplier_raw: dict[str, Any], mapped: dict[str, Any], l
         help_texts: dict[str, str] = {}
         for dim in dims_out:
             dk: str = str(dim.get("data_key", ""))
-            if dk == "实力商家":
+            if dk == "seller_strength_merchant":
                 help_texts["verified"] = _glossary("supp_help_verified", lang)
             elif dk == "supp_dim_d2_data_no_cert":
                 help_texts["noCert"] = _glossary("supp_help_no_cert", lang)

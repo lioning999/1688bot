@@ -31,7 +31,7 @@ from domain.evaluate.evaluator import evaluate_product  # noqa: E402
 
 # 测试产品（覆盖 go/trial/watch 三档 + 阶梯价 + 金额两级）
 PRODUCTS = ["991204283590", "1053910572406", "685469710262"]
-LANGS = ["en", "vi", "th"]
+LANGS = ["en", "vi", "th", "ru"]
 E2E = "--e2e" in sys.argv
 
 PASS, FAIL = [], []
@@ -60,6 +60,8 @@ def _money(lang: str) -> dict:
         return {"symbol": "₫", "per_cny": float(Config.FX_VND) / cny, "decimals": 0}
     if lang == "th":
         return {"symbol": "฿", "per_cny": float(Config.FX_THB) / cny, "decimals": 0}
+    if lang == "ru":
+        return {"symbol": "₽", "per_cny": float(Config.FX_RUB) / cny, "decimals": 0}
     raise ValueError(lang)
 
 
@@ -82,6 +84,11 @@ def l1():
     ]
     for name, got, want in cases:
         check(f"_fmt_money {name}", got == want, f"got={got} want={want}")
+
+    # ru：曾漏测的货币路径（_money 原无 ru 分支，会直接崩）
+    m_ru = _money("ru")
+    s_ru = _fmt_money(3.5, m_ru)
+    check("_fmt_money ru ₽", s_ru.startswith("₽") and "¥" not in s_ru, f"got={s_ru}")
 
     # _build_price + _build_price_tiers：1053910572406（9-9.5 CNY, 3 tiers）
     mapped = _load_mapped("1053910572406")
@@ -208,6 +215,10 @@ def _is_thai(text: str) -> bool:
     return bool(re.search(r"[฀-๿]", text))
 
 
+def _is_russian(text: str) -> bool:
+    return bool(re.search(r"[А-Яа-яЁё]", text))
+
+
 def _verify_e2e_product(offer_id: str, lang: str):
     from services.ai_verdict_svc import build_with_ai
     mapped = _load_mapped(offer_id)
@@ -240,9 +251,9 @@ def _verify_e2e_product(offer_id: str, lang: str):
 
     # 4) 判词货币符号：出现的货币符号必须都是目标符号（判词不提金额也允许，维度数等非金额数字不需符号）
     vtext = (display.get("productEval") or {}).get("verdict", "")
-    others = {"en": "₫฿", "vi": "$฿", "th": "$₫"}[lang]
+    others = {"en": "₫฿₽", "vi": "$฿₽", "th": "$₫₽", "ru": "$₫฿"}[lang]
     sym = money["symbol"]
-    syms_found = set(re.findall(r"[¥$₫฿]", vtext))
+    syms_found = set(re.findall(r"[¥$₫฿₽]", vtext))
     check(f"[e2e] {tag} 判词货币符号一致", syms_found <= {sym}, f"found={syms_found} vtext={vtext[:50]}")
     check(f"[e2e] {tag} 判词无它币符号", not any(o in vtext for o in others), f"vtext={vtext[:50]}")
 
@@ -251,6 +262,8 @@ def _verify_e2e_product(offer_id: str, lang: str):
         check(f"[e2e] {tag} 越南语", _is_vietnamese(vtext), f"vtext={vtext[:50]}")
     elif lang == "th":
         check(f"[e2e] {tag} 泰语", _is_thai(vtext), f"vtext={vtext[:50]}")
+    elif lang == "ru":
+        check(f"[e2e] {tag} 俄语", _is_russian(vtext), f"vtext={vtext[:50]}")
 
 
 # ====================================================================
@@ -259,7 +272,7 @@ def _verify_e2e_product(offer_id: str, lang: str):
 def l4():
     print("\n[L4 前端静态] lang JSON currency.symbol")
     base = Path(__file__).resolve().parent.parent / "src" / "chrome-ext" / "lang"
-    expect = {"zh": "¥", "en": "$", "vi": "₫", "th": "฿"}
+    expect = {"zh": "¥", "en": "$", "vi": "₫", "th": "฿", "ru": "₽"}
     for lang, sym in expect.items():
         data = json.load(open(base / f"{lang}.json", encoding="utf-8"))
         got = data.get("currency.symbol", "")

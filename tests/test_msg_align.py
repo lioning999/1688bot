@@ -1,12 +1,14 @@
 """msg_code 前后端对齐契约测试 — 机器兜底，锁住「后端/前端发的码 ⊆ 前端翻译」。
 
-病根：加/删 msg 码靠人 grep，漏了前端翻译、或 4 语言 key 不对齐，没人红。
-本测试是纯文件扫描 + JSON 解析，不 import 后端、不依赖运行环境，跑一次比对两端。
+病根：加/删 msg 码靠人 grep，漏了前端翻译、或语言 key 不对齐，没人红。
+本测试是纯文件扫描 + JSON 解析，不依赖运行环境，跑一次比对两端。
 
 断言 3 条：
-  1 后端「显式发出的码」⊆ 前端 4 语言 msg.* key（后端每个码都有翻译）
-  2 前端自发码（api.js / service-worker.js）⊆ 前端 4 语言 msg.* key
-  3 zh/en/vi/th 四语言 msg.* key 集合完全一致（删一个漏三个 → 红）
+  1 后端「显式发出的码」⊆ 前端全部语言（LANGS）msg.* key（后端每个码都有翻译）
+  2 前端自发码（api.js / service-worker.js）⊆ 前端全部语言 msg.* key
+  3 zh 为基准，其余语言 msg.* key 集合完全一致（删一个漏多个 → 红）
+
+语言集合来自 utils/i18n_core.LANGS 单一真源（曾手写 4 元组漏了 ru → ru 无人锁）。
 
 注意：exceptions.py 的 4 个默认值（VALIDATION_ERROR 等）是函数签名默认参数
 （`msg_code: str = "X"`），从不达前端，故不扫——正则只匹配「显式发出」的语法。
@@ -16,11 +18,12 @@ import json
 import re
 from pathlib import Path
 
+from utils.i18n_core import LANGS
+
 ROOT = Path(__file__).resolve().parent.parent
 API_DIR = ROOT / "src" / "api"
 EXT_DIR = ROOT / "src" / "chrome-ext"
 LANG_DIR = EXT_DIR / "lang"
-LANGS = ("zh", "en", "vi", "th")
 
 # 后端「显式发出」的 3 种语法（均双引号字符串字面量；排除默认参数 `msg_code: str = "X"`）
 _BACKEND_PATTERNS = (
@@ -66,21 +69,21 @@ def _missing(codes: set[str]) -> dict[str, list[str]]:
 
 
 def test_backend_codes_have_all_translations():
-    """后端每个显式发出的码，4 语言都必须有 msg.* 翻译。"""
+    """后端每个显式发出的码，全部语言（LANGS）都必须有 msg.* 翻译。"""
     missing = _missing(_backend_codes())
     assert not missing, f"后端码缺翻译: {missing}"
 
 
 def test_frontend_codes_have_all_translations():
-    """前端自发码（api.js / SW）也必须 4 语言有 msg.* 翻译。"""
+    """前端自发码（api.js / SW）也必须全部语言有 msg.* 翻译。"""
     missing = _missing(_frontend_codes())
     assert not missing, f"前端自发码缺翻译: {missing}"
 
 
-def test_four_langs_msg_keys_aligned():
-    """4 语言 msg.* key 集合完全一致，zh 为基准。"""
+def test_all_langs_msg_keys_aligned():
+    """全语言 msg.* key 集合一致（删一个漏多个 → 红），zh 为基准。"""
     zh = _lang_keys("zh")
-    for lang in ("en", "vi", "th"):
+    for lang in LANGS[1:]:
         keys = _lang_keys(lang)
         assert keys == zh, (
             f"{lang} 与 zh 的 msg.* key 不一致\n"

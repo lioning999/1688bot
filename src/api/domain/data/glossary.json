@@ -1,34 +1,94 @@
 {
   "_about": "Sourcely 术语/模板字典 — 唯一翻译数据源。5语言平行(zh/en/vi/th/ru)。改中文KEY时必须同步检查其他3语言翻译。",
-  "24小时发货": {
+  "_aliases": {
+    "unit_个": "unit_piece",
+    "unit_件": "unit_item",
+    "unit_只": "unit_each",
+    "unit_副": "unit_pair",
+    "unit_双": "unit_pair_2",
+    "unit_对": "unit_set",
+    "unit_克": "unit_gram",
+    "unit_千克": "unit_kg",
+    "unit_吨": "unit_ton",
+    "unit_米": "unit_meter",
+    "unit_平方米": "unit_sqm",
+    "unit_码": "unit_yard",
+    "unit_包": "unit_pack",
+    "unit_盒": "unit_box",
+    "unit_箱": "unit_carton",
+    "unit_袋": "unit_bag",
+    "unit_瓶": "unit_bottle",
+    "unit_条": "unit_bar",
+    "unit_套": "unit_set_2",
+    "unit_把": "unit_bunch",
+    "实力工厂": "seller_strength_factory",
+    "实力商家": "seller_strength_merchant",
+    "超级工厂": "seller_super_factory",
+    "源头旗舰": "seller_flagship",
+    "源头工厂": "seller_source_factory",
+    "生产厂家": "seller_manufacturer",
+    "工厂直供": "seller_factory_direct",
+    "通品工厂": "seller_general_factory",
+    "贸易商": "seller_trader",
+    "普通商家": "seller_regular_merchant",
+    "非生产厂家": "seller_not_manufacturer",
+    "深度验厂": "cert_deep_inspection",
+    "实地认证": "cert_onsite_verified",
+    "第三方验厂": "cert_third_party",
+    "SGS 实地认证": "cert_sgs_onsite",
+    "支持混批": "svc_mixed_batch",
+    "7天无理由退货": "svc_7day_return",
+    "晚发必赔": "svc_late_compensation",
+    "24小时发货": "svc_24h_ship",
+    "严选晚发必赔": "svc_strict_late_comp",
+    "48小时发货": "svc_48h_ship",
+    "买家保障": "svc_buyer_protection",
+    "7天包换": "svc_7day_exchange",
+    "免费拿样": "svc_free_sample",
+    "包邮": "svc_free_shipping",
+    "品质不符包赔": "svc_quality_compensation",
+    "跨境专供": "svc_crossborder",
+    "暂无认证": "label_no_cert",
+    "暂无排名": "label_no_rank",
+    "品类排名": "label_category_rank",
+    "不适用": "label_not_applicable",
+    "批发价": "label_wholesale",
+    "现货": "label_in_stock",
+    "累计销量": "label_total_sales",
+    "回头率": "label_repeat_rate",
+    "产业带": "place_industry",
+    "源头产地": "place_source",
+    "集散地": "place_distribution_hub"
+  },
+  "svc_24h_ship": {
     "zh": "24小时发货",
     "en": "24-Hour Dispatch",
     "vi": "Giao Hàng Trong 24 Giờ",
     "th": "จัดส่งภายใน 24 ชม.",
     "ru": "Отправка за 24 часа"
   },
-  "48小时发货": {
+  "svc_48h_ship": {
     "zh": "48小时发货",
     "en": "48-Hour Dispatch",
     "vi": "Giao Hàng Trong 48 Giờ",
     "th": "จัดส่งภายใน 48 ชม.",
     "ru": "Отправка за 48 часов"
   },
-  "7天包换": {
+  "svc_7day_exchange": {
     "zh": "7天包换",
     "en": "7-Day Exchange",
     "vi": "Đổi Hàng 7 Ngày",
     "th": "เปลี่ยนสินค้า 7 วัน",
     "ru": "Обмен в течение 7 дней"
   },
-  "7天无理由退货": {
+  "svc_7day_return": {
     "zh": "7天无理由退货",
     "en": "7-Day Returns",
     "vi": "Đổi Trả 7 Ngày",
     "th": "คืนสินค้า 7 วัน",
     "ru": "Возврат в течение 7 дней"
   },
-  "SGS 实地认证": {
+  "cert_sgs_onsite": {
     "zh": "SGS 实地认证",
     "en": "SGS On-site Certification",
     "vi": "Chứng Nhận SGS Tại Chỗ",
@@ -772,7 +832,7 @@
   },
   "supp_dim_d1_label_adv": {
     "zh": "🏭认证工厂",
-    "en": "🏭 Verified Factory",
+    "en": "🏭 Established Factory",
     "vi": "🏭 Nhà Máy Được Chứng Nhận",
     "th": "🏭 โรงงานที่ผ่านการรับรอง",
     "ru": "🏭 Тип поставщика"
@@ -800,7 +860,7 @@
   },
   "supp_dim_d1_name_adv": {
     "zh": "认证工厂",
-    "en": "Verified Factory",
+    "en": "Established Factory",
     "vi": "Nhà Máy Được Chứng Nhận",
     "th": "โรงงานที่ผ่านการรับรอง",
     "ru": "Тип поставщика"
@@ -1013,7 +1073,7 @@
     "en": "Established factory, traceable",
     "vi": "",
     "th": "",
-    "ru": "Надёжная фабрика, отслеживаемая"
+    "ru": "Опытная фабрика, отслеживаемая"
   },
   "supp_good_years_old": {
     "zh": "{years}年",
@@ -1218,371 +1278,371 @@
     "th": "{n} ปีบน 1688",
     "ru": "{n} г. на 1688"
   },
-  "unit_个": {
+  "unit_piece": {
     "zh": "个",
     "en": "pcs",
     "vi": "cái",
     "th": "ชิ้น",
     "ru": "шт."
   },
-  "unit_件": {
+  "unit_item": {
     "zh": "件",
     "en": "pcs",
     "vi": "cái",
     "th": "ชิ้น",
     "ru": "шт."
   },
-  "unit_克": {
+  "unit_gram": {
     "zh": "克",
     "en": "g",
     "vi": "g",
     "th": "ก.",
     "ru": "г"
   },
-  "unit_副": {
+  "unit_pair": {
     "zh": "副",
     "en": "pair",
     "vi": "đôi",
     "th": "คู่",
     "ru": "пара"
   },
-  "unit_包": {
+  "unit_pack": {
     "zh": "包",
     "en": "pack",
     "vi": "gói",
     "th": "แพ็ค",
     "ru": "упак."
   },
-  "unit_千克": {
+  "unit_kg": {
     "zh": "千克",
     "en": "kg",
     "vi": "kg",
     "th": "กก.",
     "ru": "кг"
   },
-  "unit_双": {
+  "unit_pair_2": {
     "zh": "双",
     "en": "pair",
     "vi": "đôi",
     "th": "คู่",
     "ru": "пара"
   },
-  "unit_只": {
+  "unit_each": {
     "zh": "只",
     "en": "pcs",
     "vi": "cái",
     "th": "ชิ้น",
     "ru": "шт."
   },
-  "unit_吨": {
+  "unit_ton": {
     "zh": "吨",
     "en": "t",
     "vi": "tấn",
     "th": "ตัน",
     "ru": "т"
   },
-  "unit_套": {
+  "unit_set_2": {
     "zh": "套",
     "en": "set",
     "vi": "bộ",
     "th": "ชุด",
     "ru": "компл."
   },
-  "unit_对": {
+  "unit_set": {
     "zh": "对",
     "en": "pair",
     "vi": "đôi",
     "th": "คู่",
     "ru": "пара"
   },
-  "unit_平方米": {
+  "unit_sqm": {
     "zh": "平方米",
     "en": "m²",
     "vi": "m²",
     "th": "ตร.ม.",
     "ru": "м²"
   },
-  "unit_把": {
+  "unit_bunch": {
     "zh": "把",
     "en": "pcs",
     "vi": "cái",
     "th": "ชิ้น",
     "ru": "шт."
   },
-  "unit_条": {
+  "unit_bar": {
     "zh": "条",
     "en": "pcs",
     "vi": "cái",
     "th": "ชิ้น",
     "ru": "шт."
   },
-  "unit_瓶": {
+  "unit_bottle": {
     "zh": "瓶",
     "en": "bottle",
     "vi": "chai",
     "th": "ขวด",
     "ru": "бутылка"
   },
-  "unit_盒": {
+  "unit_box": {
     "zh": "盒",
     "en": "box",
     "vi": "hộp",
     "th": "กล่อง",
     "ru": "коробка"
   },
-  "unit_码": {
+  "unit_yard": {
     "zh": "码",
     "en": "yd",
     "vi": "yd",
     "th": "หลา",
     "ru": "ярд"
   },
-  "unit_箱": {
+  "unit_carton": {
     "zh": "箱",
     "en": "carton",
     "vi": "thùng",
     "th": "ลัง",
     "ru": "ящик"
   },
-  "unit_米": {
+  "unit_meter": {
     "zh": "米",
     "en": "m",
     "vi": "m",
     "th": "ม.",
     "ru": "м"
   },
-  "unit_袋": {
+  "unit_bag": {
     "zh": "袋",
     "en": "pack",
     "vi": "túi",
     "th": "ถุง",
     "ru": "пакет"
   },
-  "不适用": {
+  "label_not_applicable": {
     "zh": "不适用",
     "en": "N/A",
     "vi": "Không Áp Dụng",
     "th": "ไม่เกี่ยวข้อง",
     "ru": "Н/П"
   },
-  "严选晚发必赔": {
+  "svc_strict_late_comp": {
     "zh": "严选晚发必赔",
     "en": "On-Time Guaranteed",
     "vi": "Đảm Bảo Giao Đúng Hạn",
     "th": "รับประกันจัดส่งตรงเวลา",
     "ru": "Гарантия своевременной доставки"
   },
-  "买家保障": {
+  "svc_buyer_protection": {
     "zh": "买家保障",
     "en": "Buyer Protection",
     "vi": "Bảo Vệ Người Mua",
     "th": "คุ้มครองผู้ซื้อ",
     "ru": "Защита покупателя"
   },
-  "产业带": {
+  "place_industry": {
     "zh": "产业带",
     "en": "Industrial Cluster",
     "vi": "Cụm Công Nghiệp",
     "th": "กลุ่มอุตสาหกรรม",
     "ru": "Промышленный кластер"
   },
-  "免费拿样": {
+  "svc_free_sample": {
     "zh": "免费拿样",
     "en": "Free Sample",
     "vi": "Mẫu Miễn Phí",
     "th": "ตัวอย่างฟรี",
     "ru": "Бесплатный образец"
   },
-  "包邮": {
+  "svc_free_shipping": {
     "zh": "包邮",
     "en": "Free Shipping",
     "vi": "Miễn Phí Vận Chuyển",
     "th": "จัดส่งฟรี",
     "ru": "Бесплатная доставка"
   },
-  "品类排名": {
+  "label_category_rank": {
     "zh": "品类排名",
     "en": "Category Rank",
     "vi": "Xếp Hạng Ngành Hàng",
     "th": "อันดับหมวดหมู่",
     "ru": "Рейтинг категории"
   },
-  "品质不符包赔": {
+  "svc_quality_compensation": {
     "zh": "品质不符包赔",
     "en": "Quality Guaranteed",
     "vi": "Đảm Bảo Chất Lượng",
     "th": "รับประกันคุณภาพ",
     "ru": "Гарантия качества"
   },
-  "回头率": {
+  "label_repeat_rate": {
     "zh": "回头率",
     "en": "Repurchase Rate",
     "vi": "Tỷ Lệ Mua Lại",
     "th": "อัตราการซื้อซ้ำ",
     "ru": "Повторные покупки"
   },
-  "实力商家": {
+  "seller_strength_merchant": {
     "zh": "实力商家",
-    "en": "Verified Seller",
-    "vi": "Người Bán Được Xác Minh",
-    "th": "ผู้ขายที่ผ่านการรับรอง",
-    "ru": "Проверенный продавец"
+    "en": "Established Seller",
+    "vi": "Người bán có năng lực",
+    "th": "ผู้ขายที่มีศักยภาพ",
+    "ru": "Опытный продавец"
   },
-  "实力工厂": {
+  "seller_strength_factory": {
     "zh": "实力工厂",
-    "en": "Verified Factory",
-    "vi": "Nhà Máy Đã Kiểm Định",
-    "th": "โรงงานที่ผ่านการรับรอง",
-    "ru": "Проверенная фабрика"
+    "en": "Established Factory",
+    "vi": "Nhà máy có năng lực",
+    "th": "โรงงานที่มีศักยภาพ",
+    "ru": "Опытная фабрика"
   },
-  "实地认证": {
+  "cert_onsite_verified": {
     "zh": "实地认证",
     "en": "On-site Certification",
     "vi": "Chứng Nhận Tại Chỗ",
     "th": "การรับรองหน้างาน",
     "ru": "Сертификация на месте"
   },
-  "工厂直供": {
+  "seller_factory_direct": {
     "zh": "工厂直供",
     "en": "Factory Direct",
     "vi": "Nhà Máy Cung Cấp Trực Tiếp",
     "th": "โรงงานจำหน่ายตรง",
     "ru": "Напрямую с фабрики"
   },
-  "批发价": {
+  "label_wholesale": {
     "zh": "批发价",
     "en": "Wholesale Price",
     "vi": "Giá Sỉ",
     "th": "ราคาส่ง",
     "ru": "Оптовая цена"
   },
-  "支持混批": {
+  "svc_mixed_batch": {
     "zh": "支持混批",
     "en": "Mixed Batch OK",
     "vi": "Hỗ Trợ Đơn Hàng Nhỏ",
     "th": "รับออเดอร์คละ",
     "ru": "Смешанные партии — да"
   },
-  "晚发必赔": {
+  "svc_late_compensation": {
     "zh": "晚发必赔",
     "en": "Late Delivery Compensation",
     "vi": "Bồi Thường Giao Hàng Trễ",
     "th": "ชดเชยหากจัดส่งล่าช้า",
     "ru": "Компенсация за задержку доставки"
   },
-  "普通商家": {
+  "seller_regular_merchant": {
     "zh": "普通商家",
     "en": "Standard Seller",
     "vi": "Nhà Bán Hàng Thường",
     "th": "ผู้ขายทั่วไป",
     "ru": "Обычный продавец"
   },
-  "暂无排名": {
+  "label_no_rank": {
     "zh": "暂无排名",
     "en": "No Ranking",
     "vi": "Chưa Có Xếp Hạng",
     "th": "ยังไม่มีอันดับ",
     "ru": "Нет рейтинга"
   },
-  "暂无认证": {
+  "label_no_cert": {
     "zh": "暂无认证",
     "en": "No Certification",
     "vi": "Chưa Có Chứng Nhận",
     "th": "ยังไม่มีการรับรอง",
     "ru": "Нет сертификации"
   },
-  "深度验厂": {
+  "cert_deep_inspection": {
     "zh": "深度验厂",
     "en": "Deep Factory Audit",
     "vi": "Kiểm Toán Nhà Máy Chuyên Sâu",
     "th": "การตรวจสอบโรงงานเชิงลึก",
     "ru": "Углублённый аудит фабрики"
   },
-  "源头产地": {
+  "place_source": {
     "zh": "源头产地",
     "en": "Source Region",
     "vi": "Vùng Sản Xuất Gốc",
     "th": "แหล่งผลิตต้นทาง",
     "ru": "Регион происхождения"
   },
-  "源头工厂": {
+  "seller_source_factory": {
     "zh": "源头工厂",
-    "en": "Factory",
+    "en": "Source Factory",
     "vi": "Nhà Máy",
     "th": "โรงงาน",
-    "ru": "Фабрика"
+    "ru": "Фабрика-первоисточник"
   },
-  "源头旗舰": {
+  "seller_flagship": {
     "zh": "源头旗舰",
     "en": "Flagship Factory",
     "vi": "Nhà Máy Flagship",
     "th": "โรงงานเรือธง",
     "ru": "Флагманская фабрика"
   },
-  "现货": {
+  "label_in_stock": {
     "zh": "现货",
     "en": "In Stock / Ready Stock",
     "vi": "Hàng Có Sẵn",
     "th": "สินค้าพร้อมส่ง",
     "ru": "В наличии"
   },
-  "生产厂家": {
+  "seller_manufacturer": {
     "zh": "生产厂家",
     "en": "Manufacturer",
     "vi": "Nhà Sản Xuất",
     "th": "ผู้ผลิต",
     "ru": "Производитель"
   },
-  "第三方验厂": {
+  "cert_third_party": {
     "zh": "第三方验厂",
     "en": "Third-Party Factory Audit",
     "vi": "Kiểm Toán Bên Thứ Ba",
     "th": "การตรวจสอบโดยบุคคลที่สาม",
     "ru": "Аудит фабрики третьей стороной"
   },
-  "累计销量": {
+  "label_total_sales": {
     "zh": "累计销量",
     "en": "Total Sales",
     "vi": "Tổng Doanh Số",
     "th": "ยอดขายรวม",
     "ru": "Общий объём продаж"
   },
-  "贸易商": {
+  "seller_trader": {
     "zh": "贸易商",
     "en": "Trader",
     "vi": "Công Ty",
     "th": "บริษัท",
     "ru": "Посредник"
   },
-  "超级工厂": {
+  "seller_super_factory": {
     "zh": "超级工厂",
     "en": "Super Factory",
     "vi": "Siêu Nhà Máy",
     "th": "ซูเปอร์แฟคทอรี่",
     "ru": "Супер-фабрика"
   },
-  "跨境专供": {
+  "svc_crossborder": {
     "zh": "跨境专供",
     "en": "Cross-Border Supply",
     "vi": "Cung Cấp Xuyên Biên Giới",
     "th": "ซัพพลายข้ามพรมแดน",
     "ru": "Трансграничные поставки"
   },
-  "通品工厂": {
+  "seller_general_factory": {
     "zh": "通品工厂",
     "en": "Standard Factory",
     "vi": "Nhà Máy Tiêu Chuẩn",
     "th": "โรงงานมาตรฐาน",
     "ru": "Стандартная фабрика"
   },
-  "集散地": {
+  "place_distribution_hub": {
     "zh": "集散地",
     "en": "Distribution Hub",
     "vi": "Trung Tâm Phân Phối",
     "th": "ศูนย์กระจายสินค้า",
     "ru": "Центр распределения"
   },
-  "非生产厂家": {
+  "seller_not_manufacturer": {
     "zh": "非生产厂家",
     "en": "Non-Manufacturer",
     "vi": "Không Phải Nhà Sản Xuất",

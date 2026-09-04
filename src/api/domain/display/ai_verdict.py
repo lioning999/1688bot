@@ -14,16 +14,21 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, cast
 
+from utils.i18n_core import cjk_in
+
 # ---- 加载配置 JSON ----
 _HERE = Path(__file__).parent
 with open(_HERE.parent / "data" / "glossary.json", "r", encoding="utf-8") as _f:
     _GL = json.load(_f)
+# 旧中文键 → ASCII 键过渡表（与 builder._ALIAS 同源，均读 glossary.json _aliases）
+_ALIAS: dict[str, str] = cast(dict[str, str], _GL.get("_aliases", {}))
 with open(_HERE / "verdict_prompts.json", "r", encoding="utf-8") as _f:
     _VP = json.load(_f)
 
 
 def _gl(key: str, lang: str, default: str = "") -> str:
     """glossary.json 查表。"""
+    key = _ALIAS.get(key, key)
     entry: Any = _GL.get(key, {})
     if not isinstance(entry, dict):
         return default or key
@@ -98,13 +103,13 @@ def pack_ai_input(
             "summary_grade": str(summary_raw.get("grade", "")),
         },
         "currency": str(money["symbol"]) if money else "¥",
-        "must_mention": _pack_product_must_mention(product_raw, mapped, money),
-        "supplier_must_mention": _pack_supplier_must_mention(supplier_raw),
+        "must_mention": _pack_product_must_mention(product_raw, mapped, money, lang),
+        "supplier_must_mention": _pack_supplier_must_mention(supplier_raw, lang),
         "must_not_say": _pack_product_must_not_say(p_tier, product_raw),
         "supplier_must_not_say": _pack_supplier_must_not_say(s_tier, supplier_raw),
         "action": _pack_action(product_raw, supplier_raw),
         "context": _pack_context(mapped, supplier_raw, lang, money),
-        "dimensions": _pack_dimensions(product_raw, supplier_raw, money),
+        "dimensions": _pack_dimensions(product_raw, supplier_raw, money, lang),
         "to_translate": {
             "title": str(mapped.get("title", "")),
             "supplier_name": str(mapped.get("supplierName", "")),
@@ -144,8 +149,8 @@ def _derive_tone(p_tier: str) -> str:
 
 # ---- must_mention builders ----
 
-def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, Any], money: dict[str, Any] | None = None) -> list[str]:
-    """从产品评估提取 AI 判词必须提及的事实列表。"""
+def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, Any], money: dict[str, Any] | None = None, lang: str = "en") -> list[str]:
+    """从产品评估提取 AI 判词必须提及的事实列表（单位按目标语言给出，防 AI 二次翻译）。"""
     signals: dict[str, Any] = product_raw.get("signals", {})
     items: list[str] = []
 
@@ -163,9 +168,9 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
     moq = signals.get("moq")
     unit = str(signals.get("unit", ""))
     if price is not None and moq is not None:
-        # 单位经 glossary 转 en（unit_个→pcs），计量单位不进判词 AI 输入原文
-        unit_en = _gl(f"unit_{unit}", "en", "unit")
-        items.append(f"price: {_fmt_money(float(price), money)}/{unit_en}, MOQ: {moq} {unit_en}")
+        # 单位经 glossary 转目标语言（术语单跳：AI 直接复用给定词，禁止再翻一遍）
+        unit_txt = _gl(f"unit_{unit}", lang, "unit")
+        items.append(f"price: {_fmt_money(float(price), money)}/{unit_txt}, MOQ: {moq} {unit_txt}")
 
     wanted = signals.get("wanted")
     if wanted is not None:
@@ -181,17 +186,17 @@ def _pack_product_must_mention(product_raw: dict[str, Any], mapped: dict[str, An
     return items
 
 
-def _pack_supplier_must_mention(supplier_raw: dict[str, Any]) -> list[str]:
-    """从供应商评估提取 AI 判词必须提及的事实列表。"""
+def _pack_supplier_must_mention(supplier_raw: dict[str, Any], lang: str = "en") -> list[str]:
+    """从供应商评估提取 AI 判词必须提及的事实列表（身份/认证术语按目标语言给，防翻译漂移）。"""
     signals: dict[str, Any] = supplier_raw.get("signals", {})
     items: list[str] = []
 
     identity = str(signals.get("identity_strength", ""))
-    # d1.data_key 存的是中文字面词（源头旗舰/实力工厂…）→ 查 glossary 转 en 再喂 AI，
-    # 否则模型会把中文原词照抄进判词 → R3 整字段降级（2026-09-03 回归发现）
+    # d1.data_key（经 _aliases 归一为 ASCII 键）→ 查 glossary 目标语言直取，
+    # 与 display d1 数据同源同词 → AI 必须复用该词，禁止另造同义词（根治 Надёжная/Проверенная 漂移）
     flags = str(signals.get("d1", {}).get("data_key", ""))
-    flags_en = _gl(flags, "en", "")
-    if re.search(r"[一-鿿]", flags_en):
+    flags_en = _gl(flags, lang, "")
+    if cjk_in(flags_en):
         flags_en = ""
     if identity == "strong":
         prefix = f"supplier identity: {flags_en} — " if flags_en else "supplier identity: "
@@ -212,8 +217,8 @@ def _pack_supplier_must_mention(supplier_raw: dict[str, Any]) -> list[str]:
         if _tail.isascii():
             cert_label = _tail.upper()
         else:
-            cert_label = _gl(cert_type, "en", "")
-            if re.search(r"[一-鿿]", cert_label):
+            cert_label = _gl(cert_type, lang, "")
+            if cjk_in(cert_label):
                 cert_label = ""
     if cert_strength == "strong":
         prefix = f"certification: {cert_label} — " if cert_label else "certification: "
@@ -397,8 +402,9 @@ def _pack_dimensions(
     product_raw: dict[str, Any],
     supplier_raw: dict[str, Any],
     money: dict[str, Any] | None = None,
+    lang: str = "en",
 ) -> dict[str, Any]:
-    """将 evaluator 维度转为 AI 可读的简化格式（价格按 money 本地化）。"""
+    """将 evaluator 维度转为 AI 可读简化格式（术语/单位按目标语言，价格按 money 本地化）。"""
     product_dims: list[dict[str, Any]] = []
     for dim in product_raw.get("dimensions", []):
         if not isinstance(dim, dict):
@@ -410,9 +416,9 @@ def _pack_dimensions(
         product_dims.append({
             "key": str(d.get("key", "")),
             "signal": {3: "positive", 2: "neutral", 1: "negative"}.get(score, "unknown"),
-            "label": _gl(str(d.get("name_key", "")), "en"),
-            "data": _dim_data_text(d, money),
-            "ref": _dim_ref_text(d),
+            "label": _gl(str(d.get("name_key", "")), lang),
+            "data": _dim_data_text(d, money, lang),
+            "ref": _dim_ref_text(d, lang),
         })
 
     supplier_dims: list[dict[str, Any]] = []
@@ -424,37 +430,41 @@ def _pack_dimensions(
         score_s: int = int(d.get("score", 0))
         if score_s == 0:
             continue  # no-data 维度不打包，省 token
-        data_s: str = _dim_data_text(d)
+        data_s: str = _dim_data_text(d, None, lang)
         if not data_s and str(d.get("key")) == "d2":
+            # 认证中文旁路 → 目标语言/ASCII（不得把中文原词喂 AI，防判词抄中文被 R3 降级）
             cert_type_raw: str = str(supplier_signals.get("cert_type", ""))
             if cert_type_raw:
-                data_s = cert_type_raw
+                _tail = cert_type_raw.rsplit("·", 1)[-1] if "·" in cert_type_raw else cert_type_raw
+                data_s = _tail.upper() if _tail.isascii() else _gl(cert_type_raw, lang, "")
+                if cjk_in(data_s):
+                    data_s = ""
         supplier_dims.append({
             "key": str(d.get("key", "")),
             "signal": {3: "positive", 2: "neutral", 1: "negative"}.get(score_s, "unknown"),
             "label": _gl(str(d.get("name_key", "")), "en"),
             "data": data_s,
-            "ref": _dim_ref_text(d),
+            "ref": _dim_ref_text(d, lang),
         })
 
     return {"product": product_dims, "supplier": supplier_dims}
 
 
-def _dim_data_text(dim: dict[str, Any], money: dict[str, Any] | None = None) -> str:
-    """从维度 dict 提取人类可读的数据文本（English，供 AI 参考；价格按 money 本地化）。"""
+def _dim_data_text(dim: dict[str, Any], money: dict[str, Any] | None = None, lang: str = "en") -> str:
+    """从维度 dict 提取人类可读的数据文本（术语/单位按 lang，供 AI 参考；价格按 money 本地化）。"""
     score: int = int(dim.get("score", 0))
     if score == 0:
         return "no data"
 
     data_key: str = str(dim.get("data_key", ""))
     if data_key:
-        return _gl(data_key, "en", data_key)
+        return _gl(data_key, lang, data_key)
 
     data_fmt: str = str(dim.get("data_fmt", ""))
     data_num: Any = dim.get("data_num")
     if data_fmt and data_num is not None:
         try:
-            return _gl(data_fmt, "en").format(n=_fmt_dim_num(data_num))
+            return _gl(data_fmt, lang).format(n=_fmt_dim_num(data_num))
         except (KeyError, ValueError):
             return str(data_num)
 
@@ -463,7 +473,7 @@ def _dim_data_text(dim: dict[str, Any], money: dict[str, Any] | None = None) -> 
         parts: list[str] = []
         for k, v in data_params.items():
             if k == "unit":
-                parts.append(_gl(f"unit_{v}", "en", str(v)))
+                parts.append(_gl(f"unit_{v}", lang, str(v)))
             elif k == "price" and isinstance(v, (int, float)):
                 parts.append(_fmt_money(float(v), money))
             elif isinstance(v, (int, float)):
@@ -479,13 +489,13 @@ def _dim_data_text(dim: dict[str, Any], money: dict[str, Any] | None = None) -> 
     return ""
 
 
-def _dim_ref_text(dim: dict[str, Any]) -> str:
-    """从维度 dict 提取参考阈值文本（English，供 AI 参考）。"""
+def _dim_ref_text(dim: dict[str, Any], lang: str = "en") -> str:
+    """从维度 dict 提取参考阈值文本（按 lang，供 AI 参考）。"""
     ref_fmt: str = str(dim.get("ref_fmt", ""))
     ref_num: Any = dim.get("ref_num")
     if ref_fmt and ref_num is not None:
         try:
-            return _gl(ref_fmt, "en").format(n=_fmt_dim_num(ref_num))
+            return _gl(ref_fmt, lang).format(n=_fmt_dim_num(ref_num))
         except (KeyError, ValueError):
             return ""
 
@@ -494,7 +504,7 @@ def _dim_ref_text(dim: dict[str, Any]) -> str:
         parts: list[str] = []
         for k, v in ref_params.items():
             if k == "unit":
-                parts.append(_gl(f"unit_{v}", "en", str(v)))
+                parts.append(_gl(f"unit_{v}", lang, str(v)))
             elif isinstance(v, (int, float)):
                 parts.append(f"{v}")
             else:
@@ -581,7 +591,7 @@ def validate_ai_output(
     # 规则 4：结论词锁 grade — 首词必须匹配该字段档位对应的结论词（方法论 §三 标准1）
     errors.extend(_check_conclusion_word(ai_text, ai_input, dimension_sections))
 
-    # 规则 5：恰好 ≤3 句 + 每句不超 90 字（方法论 §三 标准6）
+    # 规则 5：恰好 ≤3 句 + 总长 ≤200 字（方法论 §三 标准6；不用每句阈值，见 _check_sentence_structure）
     errors.extend(_check_sentence_structure(ai_text))
 
     # 规则 6：综合判词禁祈使/催促（方法论 §四·五）
@@ -691,6 +701,7 @@ def _dim_first_numbers(dims: list[Any]) -> list[str]:
     for d in dims:
         if not isinstance(d, dict):
             continue
+        d = cast(dict[str, Any], d)
         m: re.Match[str] | None = re.search(r"\d[\d.,]*\d|\d", str(d.get("data", "")))
         if m:
             nums.append(m.group(0))
