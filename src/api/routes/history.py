@@ -34,12 +34,9 @@ async def list_history(request: Request) -> dict[str, Any]:
 
 @router.delete("/api/history/{analysis_id}")
 async def delete_history(analysis_id: int, request: Request) -> dict[str, Any]:
+    """删除一条分析记录。校验归属后才删除。需 JWT 认证（/api/ 前缀自动拦截）。"""
     if analysis_id <= 0:
         raise ValidationError(msg_code="HISTORY_NOT_FOUND", message="无效的记录ID")
-    """删除一条分析记录。校验归属后才删除。
-
-    需 JWT 认证（/api/ 前缀自动拦截）。
-    """
     user_id: int = getattr(request.state, "user_id", 0) or 0
     if not user_id:
         raise AppError(message="请先登录", code="LOGIN_REQUIRED", msg_code="LOGIN_REQUIRED",

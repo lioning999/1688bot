@@ -7,8 +7,8 @@
 
 内部实现拆分：
   _base.py      — 共享工具 + 阈值常量
-  _product.py   — 产品 6 维 → 致命检查 → 12 规则 → 4 档 grade → 判词
-  _supplier.py  — 供应商 3 维 → 黑箱检查 → 6 规则 → 4 档 grade → 判词
+  _product.py   — 产品 4 维（d1/d5/d3/d6）加权 → 档位 → 4 档 grade → 判词
+  _supplier.py  — 供应商 5 维（d1–d5）加权，档位由身份/认证/年限骨架判定 → 判词
 
 依据：docs/技术-评分标准与标签体系.md
 """

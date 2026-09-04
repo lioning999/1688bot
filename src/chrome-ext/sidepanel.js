@@ -369,9 +369,11 @@
       descEl.textContent = '';
       return 'none';
     }
+    // 分母以 display 自带 max_score 为准（v2 加权后已变），无值才回落写死的旧 18/9
+    var max = (evalData.max_score != null) ? evalData.max_score : maxScore;
     var score = evalData.score != null ? evalData.score : '—';
     var grade = evalData.grade || 'none';
-    scoreEl.textContent = score + '/' + maxScore + ' ' + I18N.t('report.scoreUnit');
+    scoreEl.textContent = score + '/' + max + ' ' + I18N.t('report.scoreUnit');
     scoreEl.className = 'eval-group-score ' + grade;
     // desc 用 summary（短描述），不用 verdict（长判词）
     var desc = evalData.summary || evalData.verdict || '';
@@ -397,10 +399,11 @@
       html += '<div class="eval-extra">📦 ' + escHtml(stock.text) + '</div>';
     }
 
-    // 补充：排名（来自 factory.rankText）
+    // 补充：排名（来自 factory.rankText；display 已带 🏆 前缀，缺时才补，防双 emoji）
     var rankText = (display.factory && display.factory.rankText) ? display.factory.rankText : '';
     if (rankText) {
-      html += '<div class="eval-extra">🏆 ' + escHtml(rankText) + '</div>';
+      var rankPrefix = rankText.indexOf('🏆') === 0 ? '' : '🏆 ';
+      html += '<div class="eval-extra">' + rankPrefix + escHtml(rankText) + '</div>';
     }
 
     // 判词

@@ -87,7 +87,3 @@ class GoogleAuthAdapter:
 
         logger.info(f"Google auth success: sub={payload.get('sub', '')[:8]}... email={payload.get('email', '?')}")
         return dict(payload)
-
-
-# 模块级单例
-google_auth_adapter = GoogleAuthAdapter()

@@ -2,8 +2,8 @@
 
 报告 = 3 条消息（2026-09-01 拍板）：
   render_card(display)     → 第 1 条 caption：产品图 + 核心结论（标题/价格/MOQ/销量/Summary）
-  render_product(display)  → 第 2 条正文：产品验证（6 维）
-  render_supplier(display) → 第 3 条正文：供应商验证（3 维 + 排名/公司/产业带）
+  render_product(display)  → 第 2 条正文：产品验证（4 维 + 🏆 排名/📦 库存）
+  render_supplier(display) → 第 3 条正文：供应商验证（5 维 + 公司/产业带）
 
 内容/布局对齐插件 sidepanel.js 显示结构；价格俄式（₽ 在后、空格千分位、逗号小数）。
 上游文案全部 html.escape，防 Telegram 解析报错（防坑 #1）。
