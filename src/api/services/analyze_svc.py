@@ -20,6 +20,7 @@ from repositories.analysis_repo import AnalysisRepository
 from repositories.user_repo import UserRepository
 from services.ai_verdict_svc import build_result_with_display
 from utils.exceptions import ExternalServiceError, InsufficientQuotaError
+from utils.i18n_core import LANGS
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -147,7 +148,7 @@ class AnalyzeService:
                                                "error_msg_code": "INTERNAL_ERROR",
                                                "error_http_status": 500, "created_at": time.time()}
                             return
-                        safe_lang = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
+                        safe_lang = lang if lang in LANGS else "en"
                         mapped = map_raw(saved.get("raw", {}), raw_url, offer_id)
                         result = await build_result_with_display(mapped, offer_id, safe_lang)
                         display: dict[str, Any] = cast(dict[str, Any], result.get("display")) or {}
@@ -248,6 +249,7 @@ class AnalyzeService:
             lang: str = ""
             seller_label: str = ""
             seller_grade: str = "none"
+            title_display: str = ""
             di18n_raw = row.pop("display_i18n", None)
             if di18n_raw:
                 try:
@@ -261,11 +263,13 @@ class AnalyzeService:
                             seller_label = str(trust.get("label", ""))
                             supplier_eval: dict[str, Any] = cast(dict[str, Any], fd.get("supplierEval")) or {}
                             seller_grade = str(supplier_eval.get("grade", "none"))
+                            title_display = str(fd.get("title") or row.get("title") or "")
                 except (json.JSONDecodeError, TypeError, StopIteration):
                     pass
             row["lang"] = lang
             row["seller_label"] = seller_label
             row["seller_grade"] = seller_grade
+            row["title_display"] = title_display
         return rows
 
     async def delete_record(self, analysis_id: int, user_id: int) -> bool:
@@ -285,7 +289,7 @@ class AnalyzeService:
         if not saved:
             return None
 
-        safe_lang: str = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
+        safe_lang: str = lang if lang in LANGS else "en"
 
         display_i18n_raw = saved.get("display_i18n")
         display_i18n: dict[str, Any] = {}
@@ -328,7 +332,7 @@ class AnalyzeService:
             # ---- 1. DB 检查（3.1：复用 raw_json + display_i18n） ----
             saved = await self.repo.get_by_offer_id(offer_id, user_id)
             if saved:
-                safe_lang = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
+                safe_lang = lang if lang in LANGS else "en"
                 display_i18n: dict[str, Any] = {}
                 di18n_raw = saved.get("display_i18n")
                 if di18n_raw:
@@ -427,7 +431,7 @@ class AnalyzeService:
             display: dict[str, Any] = result.get("display", {}) or {}
             # G12：读 _aiGenerated（旧名 _translatedLang 恒空导致非 zh 不落库），读后剥离内部标记
             display_lang: str = str(display.pop("_aiGenerated", ""))
-            save_lang = lang if lang in ("en", "vi", "th", "zh", "ru") else "en"
+            save_lang = lang if lang in LANGS else "en"
             if user_id and (save_lang == "zh" or display_lang):
                 try:
                     await self._save_to_db_upsert(raw, mapped, {save_lang: display}, user_id, offer_id)

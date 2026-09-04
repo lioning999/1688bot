@@ -10,6 +10,7 @@
   "pro_status_err": "👑 Не удалось получить баланс. Попробуйте позже.",
 
   "menu.check": "🔍 Проверить",
+  "menu.history": "📋 История",
   "menu.sample": "🧪 Образец",
   "menu.pro": "👑 PRO",
   "menu.help": "❓ Помощь",
@@ -27,5 +28,15 @@
   "report.supplierEval": "🏭 Оценка поставщика",
   "report.moreSpecs": "и ещё {n}",
   "report.scoreFmt": "{score}/{max}",
-  "report.verdict": "🎯 Вердикт"
+  "report.verdict": "🎯 Вердикт",
+
+  "history_title": "📋 История анализов",
+  "history_total": "Всего: {total}",
+  "history_page_fmt": "стр. {page}/{pages}",
+  "history_open_fail": "Не удалось открыть запись. Попробуйте позже.",
+
+  "pro_card": "👑 PRO — $19.9/мес\n✅ 300 проверок · без лимита по времени\n✅ История до 100 записей\n✅ Приоритетная скорость\n\n🔓 Как оплатить:",
+  "pro_balance": "Ваш баланс: {n} запросов.",
+  "pro_contact": "💬 Связаться с менеджером",
+  "pro_business": "💼 Для бизнеса"
 }

@@ -76,6 +76,19 @@ class BackendClient:
             return await self._get(f"/api/analyze/{task_id}", {"Authorization": f"Bearer {jwt}"})
         return await self._with_auth(telegram_uid, _call)
 
+    async def history(self, telegram_uid: str) -> tuple[int, dict[str, Any]]:
+        """拉当前用户历史记录（后端已按 tier 截断 20/100，含非 zh 展示标题）。"""
+        async def _call(jwt: str) -> tuple[int, dict[str, Any]]:
+            return await self._get("/api/history", {"Authorization": f"Bearer {jwt}"})
+        return await self._with_auth(telegram_uid, _call)
+
+    async def report(self, telegram_uid: str, offer_id: str) -> tuple[int, dict[str, Any]]:
+        """拉某 offer 已保存的 ru 报告 display（复用后端 display_i18n，不重抓）。"""
+        async def _call(jwt: str) -> tuple[int, dict[str, Any]]:
+            return await self._get(f"/api/report/{offer_id}?lang=ru",
+                                   {"Authorization": f"Bearer {jwt}"})
+        return await self._with_auth(telegram_uid, _call)
+
     async def quota(self, telegram_uid: str) -> int | None:
         async def _call(jwt: str) -> tuple[int, dict[str, Any]]:
             return await self._get("/api/quota", {"Authorization": f"Bearer {jwt}"})

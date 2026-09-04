@@ -1,7 +1,7 @@
 """Telegram bot 主进程 — 长轮询 getUpdates + 消息分发。
 
 零新增依赖：直接调 Telegram Bot API（httpx 长轮询），手动 offset。
-报告 = 2 条消息自动连发：第 1 条 sendPhoto（图+核心结论），第 2 条 sendMessage（完整验证）。
+报告 = 3 条消息自动连发：第 1 条 sendPhoto（图+核心结论），第 2 条产品验证，第 3 条供应商验证。
 菜单 = reply keyboard 常驻 + 报告底部 inline 按钮（callback_query 分发）。
 收到 409 冲突自动退避；sendMessage/Photo 失败自动降级。
 """
@@ -26,22 +26,57 @@ _HTML_TAG_RE = re.compile(r"<[^>]+>")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("sourcely-bot")
 
+# 历史列表每页行数（A 模式：不记页码状态，翻页原地 editMessageText）
+_HIST_PAGE_SIZE = 6
+_GRADE_MARKS = {"go": "🟢", "ok": "🟡", "bad": "🔴", "none": "⬜"}
 
-def _mk_inline(item_url: str, sample: bool = False) -> dict[str, Any]:
-    """报告底部 inline 按钮：查看商品（url 按钮）+ 可选拿样品（callback）。"""
-    row: list[dict[str, str]] = []
-    if item_url:
-        row.append({"text": t("report.open"), "url": item_url})
-    if sample:
-        row.append({"text": t("report.sample"), "callback_data": "sample"})
-    return {"inline_keyboard": [row]} if row else {}
+
+def _hist_title_short(it: dict[str, Any]) -> str:
+    """历史行标题：优先已存展示标题（非 zh，防中文泄漏进 ru 列表），截断保按钮不超宽。"""
+    title = str(it.get("title_display") or it.get("title") or it.get("offer_id") or "").strip()
+    return title if len(title) <= 26 else title[:26] + "…"
+
+
+def _hist_label(it: dict[str, Any]) -> str:
+    """历史行按钮文案：结论 emoji + DD.MM 日期 + 标题。"""
+    grade = _GRADE_MARKS.get(str(it.get("seller_grade") or ""), "⬜")
+    created = str(it.get("created_at") or "")
+    date = f"{created[8:10]}.{created[5:7]}" if len(created) >= 10 else ""
+    return f"{grade} {date} · {_hist_title_short(it)}".strip(" ·")
+
+
+def _history_payload(items: list[dict[str, Any]], page: int) -> tuple[str, dict[str, Any] | None]:
+    """组历史列表消息：头部文本 + 逐行按钮 + 底部翻页行。page 越界自动钳制到合法范围。"""
+    total = len(items)
+    pages = max(1, -(-total // _HIST_PAGE_SIZE))
+    page = min(max(1, page), pages)
+    head = f"{t('history_title')} · {t('history_total', total=total)}"
+    rows: list[list[dict[str, str]]] = []
+    for it in items[(page - 1) * _HIST_PAGE_SIZE:page * _HIST_PAGE_SIZE]:
+        offer = str(it.get("offer_id") or "")
+        if offer:
+            rows.append([{"text": _hist_label(it), "callback_data": f"o:{offer}"}])
+    nav: list[dict[str, str]] = []
+    if page > 1:
+        nav.append({"text": "⬅️", "callback_data": f"h:{page - 1}"})
+    nav.append({"text": t("history_page_fmt", page=page, pages=pages), "callback_data": "nop"})
+    if page < pages:
+        nav.append({"text": "➡️", "callback_data": f"h:{page + 1}"})
+    if nav:
+        rows.append(nav)
+    return head, {"inline_keyboard": rows} if rows else None
+
+
+def _mk_inline(item_url: str) -> dict[str, Any]:
+    """报告底部 inline 按钮：仅 1688 查看商品 url 按钮（拿样入口已撤，报告不再挂 callback）。"""
+    return {"inline_keyboard": [[{"text": t("report.open"), "url": item_url}]]} if item_url else {}
 
 
 def _mk_menu() -> dict[str, Any]:
-    """底部常驻 reply keyboard 菜单（查供应商 + PRO 付费入口，简洁两键）。"""
+    """底部常驻 reply keyboard 菜单（历史 + PRO 两 Tab；发链接随时分析，无需菜单键）。"""
     return {
         "keyboard": [
-            [{"text": t("menu.check")}, {"text": t("menu.pro")}],
+            [{"text": t("menu.history")}, {"text": t("menu.pro")}],
         ],
         "resize_keyboard": True,
     }
@@ -143,6 +178,9 @@ class TelegramBot:
         if text == t("menu.sample"):
             await self.send(chat_id, t("sample_pending"))
             return
+        if text == t("menu.history"):
+            await self._send_history(chat_id, tg_uid)
+            return
         if text == t("menu.pro"):
             await self._send_pro(chat_id, tg_uid)
             return
@@ -166,9 +204,18 @@ class TelegramBot:
 
     async def _handle_callback(self, cq: dict[str, Any]) -> None:
         chat_id = int(cq["message"]["chat"]["id"])
+        tg_uid = str((cq.get("from") or {}).get("id", chat_id))
         data = str(cq.get("data") or "")
         if data == "sample":
             await self.send(chat_id, t("sample_pending"))
+        elif data.startswith("o:"):  # 历史某行 → 打开已保存报告
+            await self._open_history(chat_id, tg_uid, data[2:])
+        elif data.startswith("h:"):  # 历史翻页 → 原地刷新当前消息
+            try:
+                page = int(data[2:])
+            except ValueError:
+                page = 1
+            await self._edit_history_page(cq, tg_uid, page)
         await self._request("answerCallbackQuery", {"callback_query_id": cq["id"]})
 
     # ---- 分析闭环（2 条消息自动连发） ----
@@ -220,8 +267,8 @@ class TelegramBot:
         if not sent_photo:
             await self.send(chat_id, card, markup1)  # 降级：纯文本卡片，内容不丢
 
-        # 第 2、3 条：产品验证 / 供应商验证（挂 [查看商品][拿样品]），逐条失败隔离
-        markup2 = _mk_inline(item_url, sample=True) or None
+        # 第 2、3 条：产品验证 / 供应商验证（与第 1 条一致，仅 [查看商品]），逐条失败隔离
+        markup2 = _mk_inline(item_url) or None
         for part in (product, supplier):
             if not part:
                 continue
@@ -231,13 +278,65 @@ class TelegramBot:
             except Exception:
                 logger.exception("验证消息发送失败，跳过本条")
 
+    # ---- 历史（A 模式：零状态，每次从第 1 页；翻页原地 editMessageText） ----
+
+    async def _fetch_history(self, tg_uid: str) -> list[dict[str, Any]] | None:
+        code, data = await self.backend.history(tg_uid)
+        if code != 200:
+            return None
+        return cast(list[Any], (data.get("data") or {}).get("items") or [])
+
+    async def _send_history(self, chat_id: int, tg_uid: str) -> None:
+        """按 [История] → 拉最新列表，从第 1 页发新消息。"""
+        items = await self._fetch_history(tg_uid)
+        if items is None:
+            await self.send(chat_id, t("history.loadFailed"))
+            return
+        if not items:
+            await self.send(chat_id, t("history.empty"))
+            return
+        text, kb = _history_payload(items, 1)
+        await self.send(chat_id, text, kb)
+
+    async def _edit_history_page(self, cq: dict[str, Any], tg_uid: str, page: int) -> None:
+        """翻页：重拉最新列表 + editMessageText 原地刷新（不依赖任何记忆状态）。"""
+        items = await self._fetch_history(tg_uid)
+        if items is None:
+            return
+        text, kb = _history_payload(items, page)
+        await self._request("editMessageText", {
+            "chat_id": cq["message"]["chat"]["id"],
+            "message_id": cq["message"]["message_id"],
+            "text": text,
+            "parse_mode": "HTML",
+            "reply_markup": kb or {},
+        })
+
+    async def _open_history(self, chat_id: int, tg_uid: str, offer_id: str) -> None:
+        """点历史某行 → 拉已存 ru 报告 display → 复用现有 3 条消息渲染。"""
+        code, data = await self.backend.report(tg_uid, offer_id)
+        result = (data.get("data") or {}).get("result") or {} if data else {}
+        display = cast(dict[str, Any], result.get("display") or {})
+        if code != 200 or not display:
+            await self.send(chat_id, t("history_open_fail"))
+            return
+        await self._send_report(chat_id, display)
+
     async def _send_pro(self, chat_id: int, tg_uid: str) -> None:
-        """PRO 菜单：显示当前配额 + 开通引导（阶段 3 接付款）。"""
+        """PRO 卡：套餐文案 + 当前余额 + 联系客服直连（阶段 3 人工收款）。"""
+        lines: list[str] = [t("pro_card")]
         quota = await self.backend.quota(tg_uid)
         if quota is not None:
-            await self.send(chat_id, t("pro_status", n=quota))
+            lines.append(t("pro_balance", n=quota))
         else:
-            await self.send(chat_id, t("pro_status_err"))
+            lines.append(t("pro_status_err"))
+        kb: dict[str, Any] | None = None
+        if Config.MANAGER_TG_LINK:
+            kb = {"inline_keyboard": [
+                [{"text": t("pro_contact"), "url": Config.MANAGER_TG_LINK}],
+                [{"text": t("pro_business"), "url": Config.MANAGER_TG_LINK}],
+            ]}
+        await self.send(chat_id, "\n".join(lines), kb)
 
     async def _send_backend_error(self, chat_id: int, data: dict[str, Any]) -> None:
         """后端错误 → msg_code → ru 文案；无翻译降级内部错误提示。"""

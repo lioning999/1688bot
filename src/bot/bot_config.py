@@ -15,6 +15,9 @@ class Config:
     BOT_SECRET: str = os.getenv("BOT_SECRET", "")  # bot→后端 鉴权共享密钥
     BOT_API_BASE: str = os.getenv("BOT_API_BASE", "http://127.0.0.1:8008").rstrip("/")
 
+    # ---- 客服 / 人工收款 ----
+    MANAGER_TG_LINK: str = os.getenv("MANAGER_TG_LINK", "")  # PRO「联系客服」直达 tg 链接（可空，空则不显示按钮）
+
     # ---- 轮询 / 超时 ----
     POLL_TIMEOUT: int = int(os.getenv("BOT_POLL_TIMEOUT", "30"))      # getUpdates 长轮询秒数（Telegram 上限 50）
     ANALYZE_POLL_INTERVAL: int = int(os.getenv("BOT_ANALYZE_INTERVAL", "3"))  # 轮询分析状态间隔
