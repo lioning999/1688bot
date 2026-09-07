@@ -16,18 +16,19 @@ router = APIRouter(tags=["history"])
 
 
 @router.get("/api/history")
-async def list_history(request: Request) -> dict[str, Any]:
+async def list_history(request: Request, lang: str = "") -> dict[str, Any]:
     """返回当前用户最近 20 条分析记录。
 
     需 JWT 认证（/api/ 前缀自动拦截）。
     只读 analysis 表，不调任何外部服务。
+    lang → 列表标题/结论档位优先取该语言 display（命中优先，缺则存储第一个）。
     """
     user_id: int = getattr(request.state, "user_id", 0) or 0
     if not user_id:
         raise AppError(message="请先登录", code="LOGIN_REQUIRED", msg_code="LOGIN_REQUIRED",
                        http_status=401)
 
-    items = await analyze_service.get_history(user_id)
+    items = await analyze_service.get_history(user_id, lang=lang)
     logger.info(f"[History] 列表查询 user_id={user_id} 记录数={len(items)}")
     return {"code": 200, "msg_code": "OK", "data": {"items": items}, "message": "ok"}
 

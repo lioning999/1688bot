@@ -70,17 +70,21 @@ async def build_result_with_display(mapped: dict[str, Any], offer_id: str, lang:
 
 
 def _make_money(lang: str) -> dict[str, Any] | None:
-    """按目标语言返回本地货币配置（符号 / 1 CNY 兑换系数 / 小数位）。None 保持 ¥。"""
+    """按目标语言返回本地货币配置（符号 / 1 CNY 兑换系数 / 小数位 / 美元系数）。
+
+    zh（及空 lang）也返回 dict（per_cny=1.0 保持人民币），用于携带 usd_per_cny 供拿样美元价。
+    """
     cny_usd: float = float(Config.CNY_USD_RATE)
+    usd_per_cny: float = 1.0 / cny_usd  # USD 价系数：display.price.usd = CNY × usd_per_cny
     if lang == "en":
-        return {"symbol": "$", "per_cny": 1.0 / cny_usd, "decimals": 2}
+        return {"symbol": "$", "per_cny": usd_per_cny, "decimals": 2, "usd_per_cny": usd_per_cny}
     if lang == "vi":
-        return {"symbol": "₫", "per_cny": float(Config.FX_VND) / cny_usd, "decimals": 0}
+        return {"symbol": "₫", "per_cny": float(Config.FX_VND) / cny_usd, "decimals": 0, "usd_per_cny": usd_per_cny}
     if lang == "th":
-        return {"symbol": "฿", "per_cny": float(Config.FX_THB) / cny_usd, "decimals": 0}
+        return {"symbol": "฿", "per_cny": float(Config.FX_THB) / cny_usd, "decimals": 0, "usd_per_cny": usd_per_cny}
     if lang == "ru":
-        return {"symbol": "₽", "per_cny": float(Config.FX_RUB) / cny_usd, "decimals": 0}
-    return None
+        return {"symbol": "₽", "per_cny": float(Config.FX_RUB) / cny_usd, "decimals": 0, "usd_per_cny": usd_per_cny}
+    return {"symbol": "¥", "per_cny": 1.0, "decimals": 2, "usd_per_cny": usd_per_cny}
 
 
 async def build_with_ai(mapped: dict[str, Any], lang: str, money: dict[str, Any] | None = None) -> dict[str, Any]:

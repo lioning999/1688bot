@@ -90,3 +90,17 @@ def test_all_langs_msg_keys_aligned():
             f"  zh 有 {lang} 无: {sorted(zh - keys)}\n"
             f"  {lang} 有 zh 无: {sorted(keys - zh)}"
         )
+
+
+def test_bot_lang_msg_matches_chrome_ext_ru():
+    """bot 自持 msg.* 副本必须与 chrome-ext ru 完全同值（含 key 集合），防两处漂移。
+
+    bot 已自包含（不读 chrome-ext），此处锁住「改了网页那份要同步 bot 那份」。
+    """
+    chrome = json.loads((LANG_DIR / "ru.json").read_text(encoding="utf-8"))
+    bot_lang = json.loads((ROOT / "src" / "bot" / "lang" / "ru.json").read_text(encoding="utf-8"))
+    shared_bot = {k: v for k, v in bot_lang.items() if k.startswith("msg.")}
+    assert shared_bot == {k: v for k, v in chrome.items() if k.startswith("msg.")}, (
+        "bot/lang/ru.json 与 chrome-ext/lang/ru.json 的 msg.* 不一致："
+        "改 msg.* 文案/加码时两处必须同步（同值）。"
+    )

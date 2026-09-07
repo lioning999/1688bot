@@ -63,11 +63,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       return true;
 
     case 'API_GET_REPORT':
-      proxy('/api/report/' + payload.offerId, { method: 'GET' }).then(sendResponse);
+      proxy('/api/report/' + payload.offerId + (payload.lang ? '?lang=' + payload.lang : ''), { method: 'GET' }).then(sendResponse);
       return true;
 
     case 'API_GET_HISTORY':
-      proxy('/api/history?page=' + (payload.page || 1) + '&limit=' + (payload.limit || 50), { method: 'GET' }).then(sendResponse);
+      proxy('/api/history?page=' + (payload.page || 1) + '&limit=' + (payload.limit || 50) + (payload.lang ? '&lang=' + payload.lang : ''), { method: 'GET' }).then(sendResponse);
       return true;
 
     case 'API_DELETE_HISTORY':

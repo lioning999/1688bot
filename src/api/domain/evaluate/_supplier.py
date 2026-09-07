@@ -178,9 +178,9 @@ def _dim_key(key: str, score: int, icon: str, name_key: str, label_key: str, dat
 
 
 def _dim_fmt(key: str, score: int, icon: str, name_key: str, label_key: str,
-             data_fmt: str, data_num: int | None,
-             ref_fmt: str = "", ref_num: int | None = None) -> dict[str, Any]:
-    """构建 data_fmt 型维度 dict（年限）。"""
+             data_fmt: str, data_num: int | float | None,
+             ref_fmt: str = "", ref_num: int | float | None = None) -> dict[str, Any]:
+    """构建 data_fmt 型维度 dict（年限）。data_num/ref_num 允许 float（d4/d5 是百分点）。"""
     return {"key": key, "score": score, "icon": icon,
             "name_key": name_key, "label_key": label_key,
             "data_fmt": data_fmt, "data_num": data_num,

@@ -12,22 +12,19 @@ var I18N = (function () {
     ru: { label: 'Русский' }
   };
 
-  var current = LOCALES.en;
+  var current = LOCALES.ru;
   var messages = {};
   var _initialized = false;
 
   function detect(cb) {
-    var navLang = (navigator.language || 'en').slice(0, 2).toLowerCase();
-    var supported = ['zh', 'en', 'vi', 'th', 'ru'];
-    var detected = supported.indexOf(navLang) !== -1 ? navLang : 'en';
-
+    // 默认俄语（当前主打 RU 市场）；用户切过语言或后端 default_lang 同步后以存储为准
     chrome.storage.local.get('sourcely_lang', function (items) {
-      load(items.sourcely_lang || detected, cb);
+      load(items.sourcely_lang || 'ru', cb);
     });
   }
 
   function load(lang, cb) {
-    if (!LOCALES[lang]) lang = 'en';
+    if (!LOCALES[lang]) lang = 'ru';
     current = LOCALES[lang];
     current.lang = lang;
 

@@ -340,6 +340,13 @@ body {
   font-family:var(--font-mono);
 }
 
+/* 补充信息行：label 独占一行、值在其下换行（公司名/产业带/库存/排名） */
+.eval-dim.stack {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
 /* 判词 */
 .eval-human {
   margin-top:var(--s3);
@@ -460,14 +467,6 @@ body {
   vertical-align:middle;
 }
 .fee-note { color:var(--ink-3); font-style:italic; }
-.fee-total {
-  font-size:var(--fs-lg);
-  font-weight:700;
-  text-align:right;
-  padding-top:var(--s3);
-  border-top:2px solid var(--ink);
-  margin-top:var(--s2);
-}
 
 /* 服务保障 */
 .inspect-guarantee {

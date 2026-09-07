@@ -54,12 +54,12 @@ var API = (function () {
     return send('API_GET_TASK', { taskId: taskId });
   }
 
-  function getReport(offerId) {
-    return send('API_GET_REPORT', { offerId: offerId });
+  function getReport(offerId, lang) {
+    return send('API_GET_REPORT', { offerId: offerId, lang: lang || '' });
   }
 
-  function getHistory(page, limit) {
-    return send('API_GET_HISTORY', { page: page || 1, limit: limit || 50 });
+  function getHistory(page, limit, lang) {
+    return send('API_GET_HISTORY', { page: page || 1, limit: limit || 50, lang: lang || '' });
   }
 
   function toggleFavorite(id) {

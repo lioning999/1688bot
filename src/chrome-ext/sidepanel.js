@@ -44,7 +44,7 @@
     EL.supplierEvalScore = document.getElementById('supplierEvalScore');
     EL.supplierEvalDesc = document.getElementById('supplierEvalDesc');
     EL.supplierEvalBody = document.getElementById('supplierEvalBody');
-    // sample
+    // sample（拿样定金统一美元，见 docs/修复-历史记录与拿样货币一致性.md）
     EL.qtyMinus = document.getElementById('qtyMinus');
     EL.qtyPlus = document.getElementById('qtyPlus');
     EL.qtyVal = document.getElementById('qtyVal');
@@ -52,8 +52,7 @@
     EL.depositTotal = document.getElementById('depositTotal');
     EL.feeUnitPrice = document.getElementById('feeUnitPrice');
     EL.feeQty = document.getElementById('feeQty');
-    EL.balanceTotal = document.getElementById('balanceTotal');
-    EL.totalFee = document.getElementById('totalFee');
+    EL.feeService = document.getElementById('feeService');
     // lang
     EL.langBtns = document.querySelectorAll('.lang-btn');
     // save — 已移除，分析自动落库
@@ -89,8 +88,15 @@
   var _activeTaskId = null;
   var _searching = false;
   var _currentOfferId = null;
-  var _currentPriceLow = 0;  // 用于费用计算
+  var _reportLang = '';       // 当前报告 display 的存储语言（价格符号按它标，不跟 UI 语言）
+  var _currentUsdLow = 0;     // display.price.usd.low（拿样定金美元计价）
   var _currentMoq = 1;
+
+  // 货币表：报告价格符号/小数位按存储语言取（zh/en/vi/th/ru），UI 文案语言无关
+  var _CURRENCY = {
+    zh: { s: '¥', d: 2 }, en: { s: '$', d: 2 }, vi: { s: '₫', d: 0 },
+    th: { s: '฿', d: 0 }, ru: { s: '₽', d: 0 }
+  };
 
   function stopPolling() {
     if (_pollTimer) { clearTimeout(_pollTimer); _pollTimer = null; }
@@ -140,6 +146,7 @@
     var offerId = extractOfferId(url);
     _currentOfferId = offerId;
     var lang = I18N.getLang();
+    _reportLang = lang;  // 本次分析请求语言 = 报告存储语言
 
     API.analyze(url, lang).then(function (res) {
       if (!res || res.code !== 200) {
@@ -195,6 +202,8 @@
   // ---- 渲染入口 ----
   function render(data) {
     if (!data) return;
+    if (data.lang) _reportLang = data.lang;            // 历史快照：后端返回存储语言
+    else if (!_reportLang) _reportLang = I18N.getLang();
     var display = data.display;
     // ===== TRACE: 打印后端返回的原始 display JSON 字段名 =====
     console.log('[TRACE] display keys:', Object.keys(display || {}));
@@ -276,13 +285,12 @@
     EL.p01Title.textContent = display.title || '—';
 
     if (p.low != null) {
-      EL.p01Price.textContent = fmtMoney(p.low);
-      if (p.high != null && p.high !== p.low) EL.p01Price.textContent += ' – ' + fmtMoney(p.high);
-      _currentPriceLow = Number(p.low);
+      EL.p01Price.textContent = fmtMoney(p.low, _reportLang);
+      if (p.high != null && p.high !== p.low) EL.p01Price.textContent += ' – ' + fmtMoney(p.high, _reportLang);
     } else {
       EL.p01Price.textContent = '—';
-      _currentPriceLow = 0;
     }
+    _currentUsdLow = (p.usd && Number(p.usd.low)) || (_reportLang === 'en' ? Number(p.low || 0) : 0);
     EL.p01Unit.textContent = '/' + (p.unit ? escHtml(p.unit) : (I18N.t('inspect.piecesUnit') || '件'));
 
     EL.p01Moq.textContent = p.moq != null ? String(p.moq) : '—';
@@ -301,7 +309,7 @@
       for (var i = 0; i < Math.min(tiers.length, 3); i++) {
         var t = tiers[i];
         var range = t.qty_min != null ? (escHtml(t.qty_min) + (t.qty_max != null ? ('-' + escHtml(t.qty_max)) : '+')) : '';
-        parts.push(range + (I18N.t('inspect.piecesUnit') || '件') + ' ' + (t.unit_price != null ? fmtMoney(t.unit_price) : '—'));
+        parts.push(range + (I18N.t('inspect.piecesUnit') || '件') + ' ' + (t.unit_price != null ? fmtMoney(t.unit_price, _reportLang) : '—'));
       }
       EL.p01Tier.style.display = '';
       EL.p01TierText.innerHTML = parts.join(' │ ');
@@ -393,17 +401,23 @@
 
     var html = _renderDimRows(evalData.dimensions);
 
-    // 补充：库存状态
+    // 补充：库存状态（label 行 + 值行）
     var stock = evalData.stockLevel;
     if (stock) {
-      html += '<div class="eval-extra">📦 ' + escHtml(stock.text) + '</div>';
+      html += '<div class="eval-dim stack">' +
+        '<span class="eval-dim-label">📦 ' + (I18N.t('inspect.stock') || '库存') + '</span>' +
+        '<span class="eval-dim-data">' + escHtml(stock.text) + '</span>' +
+        '</div>';
     }
 
-    // 补充：排名（来自 factory.rankText；display 已带 🏆 前缀，缺时才补，防双 emoji）
+    // 补充：排名（label 行 🏆 词条 + 值行；rankText 自带 🏆 前缀，值行剥掉防双 emoji）
     var rankText = (display.factory && display.factory.rankText) ? display.factory.rankText : '';
     if (rankText) {
-      var rankPrefix = rankText.indexOf('🏆') === 0 ? '' : '🏆 ';
-      html += '<div class="eval-extra">' + rankPrefix + escHtml(rankText) + '</div>';
+      var rankValue = rankText.replace(/^🏆\s*/, '');
+      html += '<div class="eval-dim stack">' +
+        '<span class="eval-dim-label">🏆 ' + (I18N.t('inspect.rank') || '排名') + '</span>' +
+        '<span class="eval-dim-data">' + escHtml(rankValue) + '</span>' +
+        '</div>';
     }
 
     // 判词
@@ -426,19 +440,19 @@
 
     var html = _renderDimRows(evalData.dimensions);
 
-    // 补充：公司名称
+    // 补充：公司名称（label 行 + 值行）
     var companyName = evalData.companyName || (display.factory && display.factory.supplierName) || '';
     if (companyName) {
-      html += '<div class="eval-dim">' +
+      html += '<div class="eval-dim stack">' +
         '<span class="eval-dim-label">🏢 ' + (I18N.t('inspect.companyName') || '公司名称') + '</span>' +
         '<span class="eval-dim-data">' + escHtml(companyName) + '</span>' +
         '</div>';
     }
 
-    // 补充：产业带
+    // 补充：产业带（label 行 + 值行）
     var cluster = evalData.industryCluster || '';
     if (cluster) {
-      html += '<div class="eval-dim">' +
+      html += '<div class="eval-dim stack">' +
         '<span class="eval-dim-label">📍 ' + (I18N.t('inspect.industryCluster') || '产业带') + '</span>' +
         '<span class="eval-dim-data">' + escHtml(cluster) + '</span>' +
         '</div>';
@@ -460,34 +474,24 @@
     updateFee();
   }
 
-  // 货币格式化：符号来自 i18n（zh 默认 ¥），小数位按语言（VND/THB 0 位，USD/CNY 2 位）
-  function fmtMoney(n) {
-    var lang = I18N.getLang();
-    var sym = I18N.t('currency.symbol') || '¥';
-    var dec = { en: 2, vi: 0, th: 0, zh: 2, ru: 0 }[lang];
-    if (dec == null) dec = 2;
-    return sym + Number(n).toLocaleString(lang, { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  // 货币格式化：符号/小数位按货币语言取（默认报告存储语言 _reportLang，兜底当前 UI 语言）。
+  // 报告价格必须传存储语言，避免"切 UI 语言把存好的 ₽ 数值标成 $"。
+  function fmtMoney(n, lang) {
+    lang = lang || _reportLang || I18N.getLang();
+    var c = _CURRENCY[lang] || { s: '¥', d: 2 };
+    return c.s + Number(n).toLocaleString(lang, { minimumFractionDigits: c.d, maximumFractionDigits: c.d });
   }
 
-  // 费用计算
+  // 拿样定金（统一美元）：商品美元价 × 数量 + $10 服务费。尾款只文字说明、无合计约（见 docs/修复-历史记录与拿样货币一致性.md）
+  var _SAMPLE_FEE_USD = 10;
+
   function updateFee() {
-    var qty = parseInt(EL.qtyVal.textContent) || 2;
-    var unitPrice = _currentPriceLow || 0;
-    var domesticFreight = 10;
-    var depositTotal = unitPrice * qty + domesticFreight;
-
-    EL.feeUnitPrice.textContent = unitPrice.toFixed(2);
+    var qty = parseInt(EL.qtyVal.textContent, 10) || 1;
+    var usdUnit = Number(_currentUsdLow) || 0;
+    EL.feeUnitPrice.textContent = fmtMoney(usdUnit, 'en');
     EL.feeQty.textContent = String(qty);
-    EL.depositTotal.textContent = '¥' + depositTotal.toFixed(2);
-
-    // 尾款估算（国际运费 + 服务费，粗略估计）
-    var balanceLow = depositTotal / 7.2 * 0.5;
-    var balanceHigh = depositTotal / 7.2 * 0.8;
-    EL.balanceTotal.textContent = '$' + balanceLow.toFixed(2) + ' – $' + balanceHigh.toFixed(2);
-
-    var totalLow = depositTotal / 7.2 + balanceLow;
-    var totalHigh = depositTotal / 7.2 + balanceHigh;
-    EL.totalFee.textContent = '$' + totalLow.toFixed(2) + ' – $' + totalHigh.toFixed(2);
+    if (EL.feeService) EL.feeService.textContent = fmtMoney(_SAMPLE_FEE_USD, 'en');
+    EL.depositTotal.textContent = fmtMoney(usdUnit * qty + _SAMPLE_FEE_USD, 'en');
   }
 
   // ---- 事件 ----
@@ -697,7 +701,7 @@
     if (!display) return;
     stopPolling(); _activeTaskId = null; _searching = false;  // 停掉进行中的轮询，避免历史报告被分析结果顶掉
     showEmpty('ready');
-    render({ display: display });
+    render({ display: display, lang: displayData.lang || '' });  // lang=后端返回的存储语言
   };
 
   if (document.readyState === 'loading') {

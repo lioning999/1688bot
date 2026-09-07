@@ -61,3 +61,16 @@ def test_nonzh_machine_fields_no_cjk_gate():
     assert d_zh["specs"] and d_zh["specs"][0]["name"] == "材质"
     assert _fmt_dim_num(8900, "en") == "8,900"
     assert _fmt_dim_num(8900, "") == "8,900"
+
+
+def test_price_usd_when_money_injects_usd_factor():
+    """拿样美元价：money 带 usd_per_cny → price.usd = CNY × 系数；不带则不输出。"""
+    money = {"symbol": "₽", "per_cny": 13.19, "decimals": 0, "usd_per_cny": 0.149254}
+    d = build_display(_MAPPED, "ru", money)
+    assert d["price"]["usd"]["low"] == round(5.0 * 0.149254, 6)
+    assert d["price"]["usd"]["high"] == round(6.0 * 0.149254, 6)
+
+    d_none = build_display(_MAPPED, "ru", {"symbol": "₽", "per_cny": 13.19, "decimals": 0})
+    assert "usd" not in d_none["price"]
+    d_zh = build_display(_MAPPED, "zh")  # 纯模板调用（money=None）
+    assert "usd" not in d_zh["price"]

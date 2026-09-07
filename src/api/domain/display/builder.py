@@ -202,12 +202,19 @@ def _build_price(mapped: dict[str, Any], lang: str, money: dict[str, Any] | None
     cny_d = cast(dict[str, Any], cny) if isinstance(cny, dict) else {}
     raw_unit: str = _s(mapped.get("unit"))
     per_cny: float = float(money["per_cny"]) if money else 1.0  # 汇率 svc 层注入，None 保持人民币
-    return {
-        "low": round(float(cny_d.get("low", 0) or 0) * per_cny, 6),
-        "high": round(float(cny_d.get("high", 0) or 0) * per_cny, 6),
+    low_cny: float = float(cny_d.get("low", 0) or 0)
+    high_cny: float = float(cny_d.get("high", 0) or 0)
+    price: dict[str, Any] = {
+        "low": round(low_cny * per_cny, 6),
+        "high": round(high_cny * per_cny, 6),
         "moq": mapped.get("moq"),
         "unit": _glossary(f"unit_{raw_unit}", lang, raw_unit),  # type: ignore[reportUnknownMemberType]
     }
+    # 拿样美元价（前端定金用）：money 注入 usd_per_cny 才输出，None（纯模板调用）不输出
+    usd_factor = float(money["usd_per_cny"]) if money and money.get("usd_per_cny") else None
+    if usd_factor:
+        price["usd"] = {"low": round(low_cny * usd_factor, 6), "high": round(high_cny * usd_factor, 6)}
+    return price
 
 
 def _build_price_tiers(mapped: dict[str, Any], money: dict[str, Any] | None) -> list[dict[str, Any]]:

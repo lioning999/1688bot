@@ -235,9 +235,9 @@ class AnalyzeService:
             return None
         return task
 
-    async def get_history(self, user_id: int, limit: int = 0) -> list[dict[str, Any]]:
+    async def get_history(self, user_id: int, limit: int = 0, lang: str = "") -> list[dict[str, Any]]:
         """查用户最近的分析记录（只读 DB，不调 Apify）。
-        从 display_i18n 提取分析语言 + 卖家标签，供前端显示本地货币价格。
+        从 display_i18n 提取：标题（按存储语言，lang 命中优先否则第一个）、综合结论档位、卖家标签。
         limit=0 → 按用户 tier 取上限（free=20/paid=100），否则用给定值。
         """
         if limit <= 0:
@@ -246,29 +246,36 @@ class AnalyzeService:
             limit = Config.HISTORY_PAID_MAX if tier == "paid" else Config.HISTORY_FREE_MAX
         rows = await self.repo.get_history(user_id, limit)
         for row in rows:
-            lang: str = ""
+            show_lang: str = ""
             seller_label: str = ""
             seller_grade: str = "none"
+            verdict_grade: str = "none"
             title_display: str = ""
             di18n_raw = row.pop("display_i18n", None)
             if di18n_raw:
                 try:
                     di18n: dict[str, Any] = json.loads(di18n_raw) if isinstance(di18n_raw, str) else di18n_raw
                     if di18n:
-                        lang = next(iter(di18n), "")
-                        first_display: Any = di18n.get(lang, {})
-                        if isinstance(first_display, dict):
-                            fd: dict[str, Any] = cast(dict[str, Any], first_display)
+                        # 语言命中优先，否则第一个非空（历史=入库样，快照优先）
+                        show_lang = lang if (lang and di18n.get(lang)) else next(iter(di18n), "")
+                        disp: Any = di18n.get(show_lang) if show_lang else {}
+                        if isinstance(disp, dict):
+                            fd: dict[str, Any] = cast(dict[str, Any], disp)
                             trust: dict[str, Any] = cast(dict[str, Any], fd.get("trustBar")) or {}
                             seller_label = str(trust.get("label", ""))
                             supplier_eval: dict[str, Any] = cast(dict[str, Any], fd.get("supplierEval")) or {}
                             seller_grade = str(supplier_eval.get("grade", "none"))
+                            summary: dict[str, Any] = cast(dict[str, Any], fd.get("summaryLine")) or {}
+                            verdict_grade = str(summary.get("grade", "none"))
                             title_display = str(fd.get("title") or row.get("title") or "")
                 except (json.JSONDecodeError, TypeError, StopIteration):
                     pass
-            row["lang"] = lang
+            row["lang"] = show_lang
             row["seller_label"] = seller_label
             row["seller_grade"] = seller_grade
+            row["verdict_grade"] = verdict_grade
+            if title_display:
+                row["title"] = title_display
             row["title_display"] = title_display
         return rows
 
@@ -281,15 +288,14 @@ class AnalyzeService:
         return await self.repo.toggle_favorite(analysis_id, user_id)
 
     async def get_saved_report(self, offer_id: str, user_id: int, lang: str = "") -> dict[str, Any] | None:
-        """从 DB 读已保存的报告，返回缓存好的 display（display_i18n）。
+        """历史报告只读快照：直接返回 DB 存的 display，不重建、不随语言切换生成新语言。
 
-        请求语言有缓存 → 直接返回；没有 → 复用 raw_json 重建该语言（跳过 Apify）。
+        语言命中优先返回该语言；否则返回存储的第一个非空 display（历史=入库样）。
+        返回附带存储语言 lang，供前端按它标价格货币（不跟当前 UI 语言走）。
         """
         saved = await self.repo.get_by_offer_id(offer_id, user_id)
         if not saved:
             return None
-
-        safe_lang: str = lang if lang in LANGS else "en"
 
         display_i18n_raw = saved.get("display_i18n")
         display_i18n: dict[str, Any] = {}
@@ -299,24 +305,21 @@ class AnalyzeService:
             except json.JSONDecodeError:
                 display_i18n = {}
 
-        # 有当前语言缓存 → 直接返回；缺语言 → 复用 raw_json 重建（跳过 Apify，跑 mapper + 判词/翻译）
-        if safe_lang in display_i18n and display_i18n[safe_lang]:
-            return {"display": display_i18n[safe_lang]}
-
-        raw: dict[str, Any] = saved.get("raw", {}) or {}
-        raw_url: str = str(raw.get("detailUrl") or "") or Config.URL_1688_DETAIL.format(offer_id=offer_id)
-        mapped: dict[str, Any] = map_raw(raw, raw_url, offer_id)
-        result: dict[str, Any] = await build_result_with_display(mapped, offer_id, safe_lang)
-        display: dict[str, Any] = result.get("display", {}) or {}
-        # G12：读 _aiGenerated（旧名 _translatedLang 恒空导致非 zh 不落库），读后剥离内部标记
-        ai_generated = display.pop("_aiGenerated", None)
-        if safe_lang == "zh" or ai_generated:
-            display_i18n[safe_lang] = display
-            try:
-                await self.repo.update_display_i18n(offer_id, user_id, json.dumps(display_i18n, ensure_ascii=False))
-            except Exception:
-                logger.exception(f"历史报告重建语言{safe_lang}后回写失败 offer_id={offer_id}")
-        return {"display": display}
+        chosen: dict[str, Any] | None = None
+        chosen_lang: str = ""
+        if display_i18n:
+            if lang and display_i18n.get(lang):
+                chosen = cast(dict[str, Any], display_i18n[lang])
+                chosen_lang = lang
+            else:
+                for k, v in display_i18n.items():
+                    if v:
+                        chosen = cast(dict[str, Any], v)
+                        chosen_lang = k
+                        break
+        if chosen is None:
+            return None
+        return {"display": chosen, "lang": chosen_lang}
 
     # ------------------------------------------------------------------
     # 后台分析流水线

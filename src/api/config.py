@@ -97,6 +97,11 @@ class Config:
     FX_RUB: float = float(os.getenv("FX_RUB", "95"))
     FX_PHP: float = float(os.getenv("FX_PHP", "57.2"))
 
+    # ---- PRO 支付定价（Telegram Stars 自动收款，方案见 docs/Telegram bot Stars 收款方案.md） ----
+    PRO_PRICE_USD: float = float(os.getenv("PRO_PRICE_USD", "19.9"))  # PRO 展示价（美元/月）
+    PRO_STARS: int = int(os.getenv("PRO_STARS", "1500"))  # Stars 计费星数（≈$19.9，上线前按官方星价表核对）
+    PRO_PURCHASE_QUOTA: int = int(os.getenv("PRO_PURCHASE_QUOTA", "300"))  # 单次购买授信检查次数（PRO_PURCHASE_QUOTA）
+
     # ---- Qwen3 翻译（新加坡节点，OpenAI 兼容接口） ----
     QWEN_API_KEY: str = os.getenv("QWEN_API_KEY", "")
     QWEN_MODEL: str = os.getenv("QWEN_MODEL", "qwen-flash")

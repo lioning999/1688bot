@@ -1,19 +1,14 @@
-"""i18n — 合并 bot 专属文案 + 共享 msg.* 翻译。
+"""i18n — bot 专属文案，自包含（不再读 chrome-ext）。
 
-msg.* 是后端→前端错误码契约，唯一翻译来源 = chrome-ext/lang/ru.json（铁律九）。
-bot 只读不写，避免双份翻译漂移。bot 专属键覆盖（加 emoji 等）。
+msg.*（后端错误码）在 bot/lang/ru.json 内置一份与 chrome-ext 共享同值；
+两端一致性由 tests/test_msg_align.py 锁对齐，改一处须同步另一处。
 """
 
 import json
 from pathlib import Path
 
 _BOT_DIR = Path(__file__).resolve().parent
-_SHARED = json.load(open(_BOT_DIR.parent / "chrome-ext" / "lang" / "ru.json", encoding="utf-8"))
-_BOT = json.load(open(_BOT_DIR / "lang" / "ru.json", encoding="utf-8"))
-
-_T: dict[str, str] = {}
-_T.update(_SHARED)   # 先加载共享（msg.* 等）
-_T.update(_BOT)      # bot 专属覆盖
+_T: dict[str, str] = json.load(open(_BOT_DIR / "lang" / "ru.json", encoding="utf-8"))
 
 
 def t(key: str, **kwargs: object) -> str:

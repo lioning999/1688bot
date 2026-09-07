@@ -202,18 +202,17 @@
         <span id="moqHint" style="font-size:var(--fs-xs);color:var(--ink-3);margin-left:var(--s2);">起订 1 件</span>
       </div>
 
-      <!-- 费用明细 -->
+      <!-- 费用明细（拿样定金统一美元：商品美元价 × 数量 + $10 服务费） -->
       <div class="fee-box">
         <div class="fee-block">
-          <div class="fee-head"><span data-i18n="inspect.deposit">定金</span> <b id="depositTotal">¥—</b></div>
-          <div class="fee-item"><span class="fee-dot"></span><span data-i18n="inspect.productLabel">商品</span> ¥<b id="feeUnitPrice">—</b> × <b id="feeQty">2</b> <span data-i18n="inspect.piecesUnit">件</span></div>
-          <div class="fee-item"><span class="fee-dot"></span><span data-i18n="inspect.domesticFreight">国内运费</span> ¥10.00</div>
+          <div class="fee-head"><span data-i18n="inspect.deposit">定金</span> <b id="depositTotal">$—</b></div>
+          <div class="fee-item"><span class="fee-dot"></span><span data-i18n="inspect.productLabel">商品</span> <b id="feeUnitPrice">—</b> × <b id="feeQty">2</b> <span data-i18n="inspect.piecesUnit">件</span></div>
+          <div class="fee-item"><span class="fee-dot"></span><span data-i18n="inspect.serviceFee">服务费</span> <b id="feeService">$10.00</b></div>
         </div>
         <div class="fee-block">
-          <div class="fee-head"><span data-i18n="inspect.balance">尾款</span> <b id="balanceTotal">$—</b></div>
-          <div class="fee-item fee-note" data-i18n="inspect.balanceNote">验货确认后付（国际运费 + 服务费）</div>
+          <div class="fee-head"><span data-i18n="inspect.balance">尾款</span></div>
+          <div class="fee-item fee-note" data-i18n="inspect.balanceNote">国际物流按实际另报（验货后确认）</div>
         </div>
-        <div class="fee-total"><span data-i18n="inspect.totalEstimate">合计约</span> <b id="totalFee">$—</b></div>
       </div>
 
       <!-- 服务保障 -->

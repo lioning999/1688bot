@@ -39,7 +39,7 @@ def _hist_title_short(it: dict[str, Any]) -> str:
 
 def _hist_label(it: dict[str, Any]) -> str:
     """历史行按钮文案：结论 emoji + DD.MM 日期 + 标题。"""
-    grade = _GRADE_MARKS.get(str(it.get("seller_grade") or ""), "⬜")
+    grade = _GRADE_MARKS.get(str(it.get("verdict_grade") or it.get("seller_grade") or ""), "⬜")
     created = str(it.get("created_at") or "")
     date = f"{created[8:10]}.{created[5:7]}" if len(created) >= 10 else ""
     return f"{grade} {date} · {_hist_title_short(it)}".strip(" ·")
@@ -204,7 +204,8 @@ class TelegramBot:
 
     async def _handle_callback(self, cq: dict[str, Any]) -> None:
         chat_id = int(cq["message"]["chat"]["id"])
-        tg_uid = str((cq.get("from") or {}).get("id", chat_id))
+        user: dict[str, Any] = cq.get("from") or {}
+        tg_uid = str(user.get("id", chat_id))
         data = str(cq.get("data") or "")
         if data == "sample":
             await self.send(chat_id, t("sample_pending"))
@@ -284,7 +285,8 @@ class TelegramBot:
         code, data = await self.backend.history(tg_uid)
         if code != 200:
             return None
-        return cast(list[Any], (data.get("data") or {}).get("items") or [])
+        payload: dict[str, Any] = data.get("data") or {}
+        return cast(list[Any], payload.get("items") or [])
 
     async def _send_history(self, chat_id: int, tg_uid: str) -> None:
         """按 [История] → 拉最新列表，从第 1 页发新消息。"""
@@ -315,7 +317,8 @@ class TelegramBot:
     async def _open_history(self, chat_id: int, tg_uid: str, offer_id: str) -> None:
         """点历史某行 → 拉已存 ru 报告 display → 复用现有 3 条消息渲染。"""
         code, data = await self.backend.report(tg_uid, offer_id)
-        result = (data.get("data") or {}).get("result") or {} if data else {}
+        payload: dict[str, Any] = (data or {}).get("data") or {}
+        result: dict[str, Any] = payload.get("result") or {}
         display = cast(dict[str, Any], result.get("display") or {})
         if code != 200 or not display:
             await self.send(chat_id, t("history_open_fail"))

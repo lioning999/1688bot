@@ -43,7 +43,7 @@ var HistoryPage = (function () {
     }).catch(function () {
       // 拿不到 history_max 就用默认 _maxItems，继续拉列表
     }).then(function () {
-      return API.getHistory(1, _maxItems);
+      return API.getHistory(1, _maxItems, I18N.getLang());
     }).then(function (res) {
       if (!res || res.code !== 200) {
         var els = getEls();
@@ -117,7 +117,7 @@ var HistoryPage = (function () {
       var thumb = item.image_url || '';
       var title = item.title || item.offer_id || '';
       var time = formatTime(item.created_at);
-      var grade = item.seller_grade || 'none';  // 后端 evaluate_supplier 算好的四档，不再正则匹配文本
+      var grade = item.verdict_grade || item.seller_grade || 'none';  // 综合结论档位（summaryLine.grade），与报告标题一致
       var gradeEmoji = { go:'🟢', ok:'🟡', bad:'🔴', none:'⬜' };
       var favOn = item.favorited;
 
@@ -220,7 +220,7 @@ var HistoryPage = (function () {
     document.getElementById('tab-report').classList.add('active');
     document.getElementById('tab-history').classList.remove('active');
 
-    API.getReport(offerId).then(function (res) {
+    API.getReport(offerId, I18N.getLang()).then(function (res) {
       if (res && res.code === 200 && res.data && res.data.result) {
         if (typeof window._renderReport === 'function') {
           window._renderReport(res.data.result);
@@ -252,13 +252,13 @@ var HistoryPage = (function () {
     if (!modal) return;
     // 并行拉取 report
     var promises = ids.map(function (oid) {
-      return API.getReport(oid).then(function (res) {
+      return API.getReport(oid, I18N.getLang()).then(function (res) {
         if (res && res.code === 200 && res.data && res.data.result) {
-          return { offerId: oid, display: res.data.result.display || res.data.result };
+          return { offerId: oid, display: res.data.result.display || res.data.result, lang: res.data.result.lang || '' };
         }
-        return { offerId: oid, display: null };
+        return { offerId: oid, display: null, lang: '' };
       }).catch(function () {
-        return { offerId: oid, display: null };
+        return { offerId: oid, display: null, lang: '' };
       });
     });
     Promise.all(promises).then(function (results) {
@@ -276,11 +276,16 @@ var HistoryPage = (function () {
     var wrap = document.getElementById('compareTableWrap');
     if (!wrap) return;
 
-    // 金额格式化：货币符号 + 千分位（与主报告 sidepanel.js fmtMoney 一致）
-    function _fmtMoney(n) {
-      var sym = I18N.t('currency.symbol') || '¥';
-      var lang = I18N.getLang() || 'zh';
-      return sym + Number(n).toLocaleString(lang, { maximumFractionDigits: 0 });
+    // 每份 display 标注自己的存储语言 → 价格货币符号按它走（历史=入库样，不跟 UI 语言）
+    results.forEach(function (r) {
+      if (r && r.display) r.display.__moneyLang = r.lang || I18N.getLang();
+    });
+
+    // 金额格式化：货币符号/小数位按语言（compact 0 位小数，与主报告 fmtMoney 语义一致）
+    var _CMAP = { zh:'¥', en:'$', vi:'₫', th:'฿', ru:'₽' };
+    function _fmtMoney(n, lang) {
+      var l = lang || I18N.getLang() || 'zh';
+      return (_CMAP[l] || '¥') + Number(n).toLocaleString(l, { maximumFractionDigits: 0 });
     }
 
     // 每行对比项：{label, extract(display)}
@@ -289,8 +294,9 @@ var HistoryPage = (function () {
       { label: I18N.t('compare.price') || '价格',    fn: function (d) {
         if (!d || !d.price) return '-';
         var lo = d.price.low, hi = d.price.high;
-        if (lo === hi) return _fmtMoney(lo);          // 同价只显示一个
-        return _fmtMoney(lo) + '-' + _fmtMoney(hi);   // 范围显示两个
+        var ml = d.__moneyLang;
+        if (lo === hi) return _fmtMoney(lo, ml);          // 同价只显示一个
+        return _fmtMoney(lo, ml) + '-' + _fmtMoney(hi, ml);   // 范围显示两个
       } },
       { label: I18N.t('compare.moq') || '起批',      fn: function (d) { return d && d.price && d.price.moq ? d.price.moq + ' ' + (I18N.t('inspect.piecesUnit') || '件') : '-'; } },
       { label: I18N.t('compare.product') || '产品评分', fn: function (d) { return d && d.productEval ? (d.productEval.grade || '') + ' ' + (d.productEval.score || 0) + '/' + (d.productEval.max_score || 18) : '-'; } },
